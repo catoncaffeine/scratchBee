@@ -17,7 +17,9 @@
     * should we place as stalked and user can move it to where they want or find an empty space and add there *(not sure worth doing)*
 * tool to remove selected objects from canvas
 * tool to clear canvas
+
 ####Export canvas (take view)
 ---
+
 ####Import canvas (teacher)
 ---

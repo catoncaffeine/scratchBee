@@ -1,31 +1,34 @@
 var ScratchPad = {
 	instances: [],
-	defaultMenu: ["freeDrawing", "eraser"],
-	defaultDimension: {width: 500,height: 500},
 	init: function(wrapper, config) {
 		var instance = ScratchPad.buildInstance(wrapper, config);
 		ScratchPad.buildMenu(instance);
 		instance.canvas = ScratchPad.buildPad(instance);
 		ScratchPad.instances[instance.id]= instance;
 	},
+    getDefaultMenu: function() {
+        return ["freeDrawing", "eraser"];
+    },
+    getDefaultDimension: function() {
+        return {width: 500,height: 500};
+    },
 	buildInstance: function(wrapper, config) {
 		var identifier = new Date().getTime();
 		var instance = {id: "sp_" + identifier};
 		instance.wrapper = $(wrapper)[0];
 		if(config === undefined || config.menu === undefined) {
-			instance.menu = ScratchPad.defaultMenu;
+			instance.menu = ScratchPad.getDefaultMenu();
 		} else {
 			instance.menu = config.menu;
 		}
 
 		if(config === undefined || config.menu === undefined) {
-			instance.dimension = ScratchPad.defaultDimension;
+			instance.dimension = ScratchPad.getDefaultDimension();
 		} else {
 			instance.dimension = config.dimension;
 		}
 		return instance;
 	},
-
 	buildMenu: function(instance) {
 		$(instance.wrapper).append("<div class='sp-menu'></div>");
 		var $menu = $(instance.wrapper).find(".sp-menu");

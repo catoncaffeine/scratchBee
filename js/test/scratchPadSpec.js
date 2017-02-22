@@ -11,7 +11,7 @@ describe('Test ScratchPad',function(){
         var instance = {};
         instance.id=1;
         instance.wrapper =  $('#test');
-        instance.menu = ScratchPad.defaultMenu;
+        instance.menu = ScratchPad.getDefaultMenu();
         ScratchPad.buildMenu(instance);
         var $menu = $(instance.wrapper).find(".sp-menu");
         expect($menu.html()).toContain('<div class="sp-drawing">Drawing</div><div class="sp-eraser">Eraser</div>');
@@ -44,8 +44,8 @@ describe('Test ScratchPad',function(){
     it('tests buildInstance', function(){
        var instance = ScratchPad.buildInstance('#test',{});
         expect(instance.id).not.toBeNull();
-        expect(instance.menu).toBe(ScratchPad.defaultMenu);
-        expect(instance.dimension).toBe(ScratchPad.defaultDimension);
+        expect(instance.menu).toEqual(ScratchPad.getDefaultMenu());
+        expect(instance.dimension).toEqual(ScratchPad.getDefaultDimension());
     });
     
     it('tests buildInstance with a config', function(){

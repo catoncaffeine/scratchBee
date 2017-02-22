@@ -2,6 +2,9 @@ describe('Test ScratchPad',function(){
     beforeEach(function(){
         $("<div id='test'></div>").appendTo('body');
     });
+    afterEach(function(){
+        $('#test').remove();
+    });
     it('tests buildMenu ', function(){
        
         
@@ -54,4 +57,15 @@ describe('Test ScratchPad',function(){
         expect(instance.menu).toBe(menu);
         expect(instance.dimension).toBe(dimension);
     });
+    it('test buildPad', function(){
+        spyOn(fabric,'Canvas').andCallFake(function(){
+            
+        })
+        var instance = {id:1, dimension:ScratchPad.defaultDimension};
+        instance.wrapper = $('#test');
+        ScratchPad.buildPad(instance);
+        expect(fabric.Canvas).toHaveBeenCalledWith(instance.id,{isDrawingMode:true});
+        expect($('#1').attr('width')).toBe(ScratchPad.defaultDimension.width);
+    });
+    
 });

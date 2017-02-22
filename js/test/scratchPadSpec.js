@@ -13,7 +13,17 @@ describe('Test ScratchPad',function(){
         var $menu = $(instance.wrapper).find(".sp-menu");
         expect($menu.html()).toContain('<div class="sp-drawing">Drawing</div><div class="sp-eraser">Eraser</div>');
     });
-    
+    it('tests buildMenu with unknown items', function(){
+       
+        
+        var instance = {};
+        instance.id=1;
+        instance.wrapper =  $('#test');
+        instance.menu = ["menu1","menu2","eraser"];
+        ScratchPad.buildMenu(instance);
+        var $menu = $(instance.wrapper).find(".sp-menu");
+        expect($menu.html()).toContain('<div class="sp-eraser">Eraser</div>');
+    });
     it('tests init', function(){
         var instance = {id:1, canvas:{}};
         spyOn(ScratchPad,'buildInstance').andCallFake(function(){

@@ -61,11 +61,11 @@ describe('Test ScratchPad',function(){
         spyOn(fabric,'Canvas').andCallFake(function(){
             
         })
-        var instance = {id:1, dimension:ScratchPad.defaultDimension};
+        var instance = {id:1, dimension:{width:200,height:200}};
         instance.wrapper = $('#test');
         ScratchPad.buildPad(instance);
         expect(fabric.Canvas).toHaveBeenCalledWith(instance.id,{isDrawingMode:true});
-        expect($('#1').attr('width')).toBe(ScratchPad.defaultDimension.width);
+        expect($('#1').attr('width')).toBe('200');
     });
     
 });

@@ -3,6 +3,9 @@
 	<head>
 		<!-- Fabric JS -->
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.3/fabric.min.js"></script>
+        
+        <!-- Font Awesome -->
+        <script src="https://use.fontawesome.com/6746cf655f.js"></script>
 		
 		<!-- jQuery -->
 		<script src="https://code.jquery.com/jquery-1.12.4.min.js" 
@@ -14,12 +17,24 @@
 		<script type="text/javascript">
 			$(document).ready(function(){
 				ScratchPad.init("#scratchPad1");
+                ScratchPad.init("#scratchPad2");
+                
 			});
 		</script>
+        
+        <!-- Styles will need to be extracted! -->
+        <style> 
+            .sp-wrapper {
+                
+            }
+        
+        </style>
 	</head>
 
 	<body>
-		<div id='scratchPad1' class="scratchPadWrapper">
+		<div id='scratchPad1'>
 		</div>
+        <div id="scratchPad2">
+        </div>
 	</body>
 </html>

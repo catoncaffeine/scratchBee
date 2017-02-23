@@ -9,7 +9,8 @@ var ScratchPad = {
         ScratchPad.convertToFabric(instance);
 	},
     getDefaultMenu: function() {
-        return ScratchPad.menuMode.default.slice();
+//        return ScratchPad.menuMode.default.slice();
+        return [ScratchPad.menuItem.drawing, ScratchPad.menuItem.eraser];
     },
     getDefaultDimension: function() {
         return {width: 500, height: 500};
@@ -18,38 +19,41 @@ var ScratchPad = {
 		var identifier = new Date().getTime();
 		var instance = {id: "sp_" + identifier};
         instance.domElement = $(wrapper)[0];
-        instance.wrapper = $("<div class='sp-wrapper' data-sp-id='"+instance.id+"'></div>");
+        
 		if(config === undefined || config.menu === undefined) {
 			instance.menu = ScratchPad.getDefaultMenu();
 		} else {
 			instance.menu = config.menu;
 		}
 
-		if(config === undefined || config.menu === undefined) {
+		if(config === undefined || config.dimension === undefined) {
 			instance.dimension = ScratchPad.getDefaultDimension();
 		} else {
 			instance.dimension = config.dimension;
 		}
+        instance.wrapper = $("<div class='sp-wrapper panel panel-default' data-sp-id='"+instance.id+"' style='width:"+instance.dimension.width+";height:"+instance.dimension.height+"'></div>");
 		return instance;
 	},
     
 	buildMenu: function(instance) {
-		$(instance.wrapper).append("<div class='sp-menu'></div>");
+		$(instance.wrapper).append("<div class='sp-menu panel-heading'></div>");
 		var $menu = $(instance.wrapper).find(".sp-menu");
 
 		if(instance.menu.indexOf(ScratchPad.menuItem.drawing) !== -1 ) {
-			$menu.append("<div class='sp-drawing'>Drawing</div>");
+			$menu.append("<i class='sp-drawing fa fa-pencil' data-toggle='tooltip' title='Drawing'></i>");
 		}        
 
 		if(instance.menu.indexOf(ScratchPad.menuItem.eraser) !== -1) {
-			$menu.append("<div class='sp-eraser'>Eraser</div>");
+			$menu.append("<i class='sp-eraser fa fa-eraser' data-toggle='tooltip' title='Eraser'></i>");
 		}
 	},
 
 	buildPad: function(instance){
 		var width = instance.dimension.width, height = instance.dimension.height;
+        var headingHeight = $(instance.wrapper).find('.sp-menu').height();
+        height =height-headingHeight;
 		$(instance.wrapper).find(".sp-menu").after(""
-			+ "<div class='sp-canvas-wrapper'>"
+			+ "<div class='sp-canvas-wrapper panel-body'>"
 			+    "<canvas class='sp-canvas' id='"+instance.id+"' width='"+width+"' height='"+height+"'></canvas>"
 			+ "</div>");
 	},
@@ -64,7 +68,21 @@ var ScratchPad = {
     },
     
     bindEvents: function(instance) {
-        // should events go here or with menu build?
+        if(instance.menu.indexOf(ScratchPad.menuItem.eraser)!==-1){
+            $(instance.wrapper).on('click','.sp-eraser',function(){
+                instance.canvas.isDrawingMode = false;
+                instance.canvas.remove(instance.canvas.getActiveObject());
+                ScratchPad.toggleActiveMenu(instance, this);
+            });
+        }
+        
+        if(instance.menu.indexOf(ScratchPad.menuItem.drawing) !==-1){
+            $(instance.wrapper).on('click', '.sp-drawing', function(){
+                instance.canvas.isDrawingMode = true;
+                ScratchPad.toggleActiveMenu(instance, this);
+            });
+            
+        }
     },
     
     menuItem: {
@@ -72,9 +90,16 @@ var ScratchPad = {
         drawing: "drawing"
     },
     menuChucks: {
-        basic: [ScratchPad.menuItem.drawing, ScratchPad.menuItem.eraser]
+//        basic: [ScratchPad.menuItem.drawing, ScratchPad.menuItem.eraser]
     },
     menuMode: {
-        default: ScratchPad.menuChucks.basic
+//        default: [ScratchPad.menuItem.drawing, ScratchPad.menuItem.eraser]
+    },
+    
+    toggleActiveMenu: function(instance, clickedElement){
+        $(instance.wrapper).find(".active").removeClass('active');
+        $(clickedElement).addClass('active');
     }
+
+
 }

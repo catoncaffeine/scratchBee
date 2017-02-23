@@ -17,18 +17,42 @@
 		<script type="text/javascript">
 			$(document).ready(function(){
 				ScratchPad.init("#scratchPad1");
-                ScratchPad.init("#scratchPad2");
+                ScratchPad.init("#scratchPad2",{menu:[ScratchPad.menuItem.drawing]});
                 
 			});
 		</script>
         
         <!-- Styles will need to be extracted! -->
         <style> 
-            .sp-wrapper {
-                
+            .sp-wrapper .fa {
+                padding: 5px;
+                margin: 1px;
+            }
+            .sp-wrapper .fa:hover:not(.active){
+                border-radius: 2px;
+/*                background-color: lightgray;*/
+                box-shadow: 1px 1px 1px;
+                cursor: pointer;
+            }
+            
+            .sp-wrapper .fa.active{
+                border-bottom: 1px solid #eae8e8;
+                border-right: 1px solid #eae8e8;
+                border-top: 1px solid #a9a7a7;
+                border-left: 1px solid #a9a7a7;
+                border-radius: 2px;
+            }
+            .sp-wrapper .panel-body{
+                padding: 0px;
+            }
+            .sp-wrapper .canvas-container{
+                width: 100%;
+                height: 100%;
             }
         
         </style>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 	</head>
 
 	<body>

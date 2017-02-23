@@ -14,7 +14,7 @@ describe('Test ScratchPad',function(){
         instance.menu = ScratchPad.getDefaultMenu();
         ScratchPad.buildMenu(instance);
         var $menu = $(instance.wrapper).find(".sp-menu");
-        expect($menu.html()).toContain('<div class="sp-drawing">Drawing</div><div class="sp-eraser">Eraser</div>');
+        expect($menu.html().indexOf('sp-drawing')).not.toBe(-1);
     });
     it('tests buildMenu with unknown items', function(){
        
@@ -22,10 +22,10 @@ describe('Test ScratchPad',function(){
         var instance = {};
         instance.id=1;
         instance.wrapper =  $('#test');
-        instance.menu = ["menu1","menu2","eraser"];
+        instance.menu =["menu1","menu2",ScratchPad.menuOptions.eraser];
         ScratchPad.buildMenu(instance);
         var $menu = $(instance.wrapper).find(".sp-menu");
-        expect($menu.html()).toContain('<div class="sp-eraser">Eraser</div>');
+        expect($menu.html().indexOf("sp-eraser")).not.toBe(-1);
     });
     it('tests init', function(){
         var instance = {id:1, canvas:{}};
@@ -34,10 +34,12 @@ describe('Test ScratchPad',function(){
         })
         spyOn(ScratchPad,'buildMenu').andCallFake(function(){});
         spyOn(ScratchPad,'buildPad').andCallFake(function(){ return {};});
+        spyOn(ScratchPad,'bindEvents').andCallFake(function(){});
         ScratchPad.init('#test',{});
         expect(ScratchPad.buildInstance).toHaveBeenCalledWith('#test',{});
         expect(ScratchPad.buildMenu).toHaveBeenCalledWith(instance);
         expect(ScratchPad.buildPad).toHaveBeenCalledWith(instance);
+        expect(ScratchPad.bindEvents).toHaveBeenCalledWith(instance);
         expect(ScratchPad.instances[1]).toBe(instance);
     });
     

@@ -7,6 +7,7 @@ var ScratchPad = {
 		ScratchPad.instances[instance.id]= instance;
         ScratchPad.renderScratchPad(instance);
         ScratchPad.convertToFabric(instance);
+        return instance;
 	},
     getDefaultMenu: function() {
 //        return ScratchPad.menuMode.default.slice();
@@ -40,7 +41,7 @@ var ScratchPad = {
 		var $menu = $(instance.wrapper).find(".sp-menu");
 
 		if(instance.menu.indexOf(ScratchPad.menuItem.drawing) !== -1 ) {
-			$menu.append("<i class='sp-drawing fa fa-pencil' data-toggle='tooltip' title='Drawing'></i>");
+			$menu.append("<i class='sp-drawing fa fa-pencil active' data-toggle='tooltip' title='Drawing'></i>");
 		}        
 
 		if(instance.menu.indexOf(ScratchPad.menuItem.eraser) !== -1) {
@@ -50,8 +51,6 @@ var ScratchPad = {
 
 	buildPad: function(instance){
 		var width = instance.dimension.width, height = instance.dimension.height;
-        var headingHeight = $(instance.wrapper).find('.sp-menu').height();
-        height =height-headingHeight;
 		$(instance.wrapper).find(".sp-menu").after(""
 			+ "<div class='sp-canvas-wrapper panel-body'>"
 			+    "<canvas class='sp-canvas' id='"+instance.id+"' width='"+width+"' height='"+height+"'></canvas>"
@@ -59,11 +58,15 @@ var ScratchPad = {
 	},
     
     convertToFabric: function(instance) {
+        var headerHeight = +($(instance.wrapper).find('.sp-menu').css('height').slice(0,-2));
+        var height = instance.dimension.height - headerHeight;
+        $(instance.wrapper).find('#'+instance.id).attr('height',height);
         instance.canvas = new fabric.Canvas(instance.id, {isDrawingMode: true});
     },
     
     renderScratchPad: function(instance){
         $(instance.wrapper).appendTo($(instance.domElement));
+
         ScratchPad.bindEvents(instance);
     },
     
@@ -71,7 +74,10 @@ var ScratchPad = {
         if(instance.menu.indexOf(ScratchPad.menuItem.eraser)!==-1){
             $(instance.wrapper).on('click','.sp-eraser',function(){
                 instance.canvas.isDrawingMode = false;
-                instance.canvas.remove(instance.canvas.getActiveObject());
+                
+               instance.canvas.on('object:selected', function(){ 
+                   instance.canvas.remove(instance.canvas.getActiveObject());
+                });
                 ScratchPad.toggleActiveMenu(instance, this);
             });
         }
@@ -83,6 +89,7 @@ var ScratchPad = {
             });
             
         }
+
     },
     
     menuItem: {
@@ -90,15 +97,16 @@ var ScratchPad = {
         drawing: "drawing"
     },
     menuChucks: {
-//        basic: [ScratchPad.menuItem.drawing, ScratchPad.menuItem.eraser]
+        basic: ["drawing", "eraser"]
     },
     menuMode: {
-//        default: [ScratchPad.menuItem.drawing, ScratchPad.menuItem.eraser]
+        default: ["drawing", "eraser"]
     },
     
     toggleActiveMenu: function(instance, clickedElement){
         $(instance.wrapper).find(".active").removeClass('active');
         $(clickedElement).addClass('active');
+
     }
 
 

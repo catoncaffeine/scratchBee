@@ -7,6 +7,7 @@ var ScratchPad = {
 		ScratchPad.instances[instance.id]= instance;
         ScratchPad.renderScratchPad(instance);
         ScratchPad.convertToFabric(instance);
+        return instance;
 	},
     getDefaultMenu: function() {
         return ScratchPad.menuMode.default.slice();
@@ -25,7 +26,7 @@ var ScratchPad = {
 			instance.menu = config.menu;
 		}
 
-		if(config === undefined || config.menu === undefined) {
+		if(config === undefined || config.dimension === undefined) {
 			instance.dimension = ScratchPad.getDefaultDimension();
 		} else {
 			instance.dimension = config.dimension;
@@ -48,7 +49,7 @@ var ScratchPad = {
 
 	buildPad: function(instance){
 		var width = instance.dimension.width, height = instance.dimension.height;
-		$(instance.wrapper).find(".sp-menu").after(""
+		$(instance.wrapper).append(""
 			+ "<div class='sp-canvas-wrapper'>"
 			+    "<canvas class='sp-canvas' id='"+instance.id+"' width='"+width+"' height='"+height+"'></canvas>"
 			+ "</div>");
@@ -60,11 +61,6 @@ var ScratchPad = {
     
     renderScratchPad: function(instance){
         $(instance.wrapper).appendTo($(instance.domElement));
-        ScratchPad.bindEvents(instance);
-    },
-    
-    bindEvents: function(instance) {
-        // should events go here or with menu build?
     },
     
     menuItem: {
@@ -72,9 +68,9 @@ var ScratchPad = {
         drawing: "drawing"
     },
     menuChucks: {
-        basic: [ScratchPad.menuItem.drawing, ScratchPad.menuItem.eraser]
+        basic: ["drawing", "eraser"]
     },
     menuMode: {
-        default: ScratchPad.menuChucks.basic
+        default: ["drawing", "eraser"]
     }
 }

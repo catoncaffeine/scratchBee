@@ -6,8 +6,6 @@ describe('Test ScratchPad',function(){
         $('#test').remove();
     });
     it('tests buildMenu ', function(){
-       
-        
         var instance = {};
         instance.id=1;
         instance.wrapper =  $('#test');
@@ -17,8 +15,6 @@ describe('Test ScratchPad',function(){
         expect($menu.html()).toContain('<div class="sp-drawing">Drawing</div><div class="sp-eraser">Eraser</div>');
     });
     it('tests buildMenu with unknown items', function(){
-       
-        
         var instance = {};
         instance.id=1;
         instance.wrapper =  $('#test');
@@ -34,6 +30,7 @@ describe('Test ScratchPad',function(){
         })
         spyOn(ScratchPad,'buildMenu').andCallFake(function(){});
         spyOn(ScratchPad,'buildPad').andCallFake(function(){ return {};});
+        spyOn(ScratchPad,'convertToFabric').andCallFake(function(){ return {};});
         ScratchPad.init('#test',{});
         expect(ScratchPad.buildInstance).toHaveBeenCalledWith('#test',{});
         expect(ScratchPad.buildMenu).toHaveBeenCalledWith(instance);
@@ -57,15 +54,19 @@ describe('Test ScratchPad',function(){
         expect(instance.menu).toBe(menu);
         expect(instance.dimension).toBe(dimension);
     });
-    it('test buildPad', function(){
-        spyOn(fabric,'Canvas').andCallFake(function(){
-            
-        })
-        var instance = {id:1, dimension:{width:200,height:200}};
-        instance.wrapper = $('#test');
+    it('test buildPad adds html canvas to scratch pad', function(){
+        var instance = {id: "1", wrapper:$('#test'), dimension:{width:200,height:200}};
         ScratchPad.buildPad(instance);
-        expect(fabric.Canvas).toHaveBeenCalledWith(instance.id,{isDrawingMode:true});
-        expect($('#1').attr('width')).toBe('200');
+        expect($("#test canvas").length).toBe(1);
+        expect($("#test .sp-canvas-wrapper .sp-canvas#1").length).toBe(1);
+        expect($("#test .sp-canvas-wrapper .sp-canvas#1").attr("width")).toBe("200");
+        expect($("#test .sp-canvas-wrapper .sp-canvas#1").attr("height")).toBe("200");
     });
-    
+    it('test convert to Fabric calls FabricJS', function(){
+        spyOn(fabric,'Canvas');
+        var config = {dimension:{width:200,height:200}};
+        var instance = ScratchPad.init("#test", config);
+        expect(fabric.Canvas).toHaveBeenCalledWith(instance.id,{isDrawingMode:true});
+        expect($('#'+instance.id).attr('width')).toBe('200');
+    });
 });

@@ -1,6 +1,7 @@
 <html>
 
 	<head>
+        <title>ScratchPad</title>
 		<!-- Fabric JS -->
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.3/fabric.min.js"></script>
         
@@ -17,8 +18,7 @@
 		<script type="text/javascript">
 			$(document).ready(function(){
 				ScratchPad.init("#scratchPad1");
-                ScratchPad.init("#scratchPad2",{menu:[ScratchPad.menuItem.drawing]});
-                
+                ScratchPad.init("#scratchPad2",{menu:[ScratchPad.menuItem.drawing],dimension:{width:600, hight:200}});
 			});
 		</script>
         
@@ -28,7 +28,7 @@
                 padding: 5px;
                 margin: 1px;
             }
-            .sp-wrapper .fa:hover:not(.active){
+            .sp-wrapper .fa:hover:not(.active):not(.fa-th-large){
                 border-radius: 2px;
 /*                background-color: lightgray;*/
                 box-shadow: 1px 1px 1px;
@@ -48,6 +48,10 @@
             .sp-wrapper .canvas-container{
                 width: 100%;
                 height: 100%;
+            }
+            .sp-menu .vertical-divider{
+                border-right:1px dotted lightgrey;
+                margin: 0px 2px;
             }
         
         </style>

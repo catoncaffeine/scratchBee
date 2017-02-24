@@ -83,31 +83,18 @@ describe('test events on scratchpad', function(){
     afterEach(function(){
         $('#test').remove();
     });
-    it('tests toggle class with active object', function(){
+    it('tests toggle class with active menu', function(){
         $('#test').append('<i class="sp-eraser active"></i>');
         var instance = {id:1, wrapper:$('#test')};
         ScratchPad.toggleActiveMenu(instance, $('.active'));
         expect($('.sp-eraser').hasClass('active')).toBeFalsy();
     });
-    it('test toggle class on non active menu', function(){
+    it('tests toggle class on non active menu', function(){
        $('#test').append('<i class="sp-eraser"></i>');
         $('#test').append('<i class="sp-drawing active"></i>');
         var instance = {id:1, wrapper:$('#test')}
         ScratchPad.toggleActiveMenu(instance, $('.sp-eraser'));
         expect($('.sp-eraser').hasClass('active')).toBeTruthy();
         expect($('.active').length).toBe(1);
-    });
-    it('tests free drawing mode',function(){
-//       var instance = {id:1, menu:[ScratchPad.menuItem.drawing]};
-//       $('#test').append('<i class="sp-drawing"></i>');
-       ScratchPad.init('#test');
-       spyOn(fabric,'Canvas').andCallFake(function(value){
-           console.log(value);
-       });
-       $('.sp-drawing').trigger('click');
-//       expect(fabric.Canvas).toHaveBeenCalled();
-   });
-    it('tests eraser events', function(){
-
     });
 });

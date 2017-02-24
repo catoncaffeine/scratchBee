@@ -39,7 +39,7 @@ var ScratchPad = {
 	buildMenu: function(instance) {
 		$(instance.wrapper).append("<div class='sp-menu panel-heading'></div>");
 		var $menu = $(instance.wrapper).find(".sp-menu");
-
+        $menu.append("<i class='sp fa fa-th-large' data-toggle='tooltip' title='Scratchpad'></i>");
 		if(instance.menu.indexOf(ScratchPad.menuItem.drawing) !== -1 ) {
 			$menu.append("<i class='sp-drawing fa fa-pencil active' data-toggle='tooltip' title='Drawing'></i>");
 		}        
@@ -47,6 +47,11 @@ var ScratchPad = {
 		if(instance.menu.indexOf(ScratchPad.menuItem.eraser) !== -1) {
 			$menu.append("<i class='sp-eraser fa fa-eraser' data-toggle='tooltip' title='Eraser'></i>");
 		}
+        if(instance.menu){
+            $menu.append("<i class='vertical-divider'></i>");
+        }
+        
+        
 	},
 
 	buildPad: function(instance){
@@ -62,6 +67,8 @@ var ScratchPad = {
         var height = instance.dimension.height - headerHeight;
         $(instance.wrapper).find('#'+instance.id).attr('height',height);
         instance.canvas = new fabric.Canvas(instance.id, {isDrawingMode: true});
+        instance.canvas.freeDrawingBrush = new fabric.PencilBrush(instance.canvas);
+        instance.canvas.freeDrawingBrush.width = 2;
     },
     
     renderScratchPad: function(instance){
@@ -73,19 +80,44 @@ var ScratchPad = {
     bindEvents: function(instance) {
         if(instance.menu.indexOf(ScratchPad.menuItem.eraser)!==-1){
             $(instance.wrapper).on('click','.sp-eraser',function(){
+                var current = this;
                 instance.canvas.isDrawingMode = false;
-                
-               instance.canvas.on('object:selected', function(){ 
-                   instance.canvas.remove(instance.canvas.getActiveObject());
+                ScratchPad.toggleActiveMenu(instance, current);
+                instance.canvas.on('object:selected', function(e){
+                    if(e.target && ($(current).hasClass('sp-eraser') && $(current).hasClass('active'))){
+                    
+                        instance.canvas.remove(e.target);
+                    }
                 });
-                ScratchPad.toggleActiveMenu(instance, this);
+                if($(current).hasClass('active')){
+//                    instance.canvas.getObjects().map(function(object){
+//
+//                            object.on('click', function(){
+//                                console.log('i was clicked');
+//                                instance.canvas.remove(object);
+//                            });
+//                       return object.set('active', true);
+//                    });
+//                    instance.canvas.renderAll();
+                    var activeGroup = instance.canvas.getActiveGroup();
+                    var activeObject = instance.canvas.getActiveObject();
+                    if(activeGroup){
+                        var objects = activeGroup.getObjects();
+                        instance.canvas.discardActiveGroup(); 
+                        objects.forEach(function(object){
+                            instance.canvas.remove(object);
+                        })
+                    }else if(activeObject){
+                        instance.canvas.remove(activeObject);
+                    }
+                }
             });
         }
         
         if(instance.menu.indexOf(ScratchPad.menuItem.drawing) !==-1){
             $(instance.wrapper).on('click', '.sp-drawing', function(){
-                instance.canvas.isDrawingMode = true;
                 ScratchPad.toggleActiveMenu(instance, this);
+                instance.canvas.isDrawingMode = $(this).hasClass('active'); 
             });
             
         }
@@ -104,9 +136,16 @@ var ScratchPad = {
     },
     
     toggleActiveMenu: function(instance, clickedElement){
-        $(instance.wrapper).find(".active").removeClass('active');
-        $(clickedElement).addClass('active');
+        if($(clickedElement).hasClass('active')){
+            $(clickedElement).toggleClass('active');
+        }else{
+            $(instance.wrapper).find(".active").removeClass('active');
+            $(clickedElement).addClass('active');
+        }
 
+    },
+    exportCanvas : function(instance){
+        
     }
 
 

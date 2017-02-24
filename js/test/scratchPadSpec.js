@@ -124,7 +124,7 @@ describe('test scratchpad destroy methods', function(){
         expect(canvas.dispose).toHaveBeenCalled();
         expect(ScratchPad.instances['1']).toBeUndefined();
     });
-    it('tests single instance deletion by inknown instance', function(){
+    it('tests single instance deletion by unknown instance', function(){
         var canvas = {
             dispose : function(){}
         };

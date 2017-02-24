@@ -59,19 +59,55 @@ describe('Test ScratchPad',function(){
         expect(instance.menu).toBe(menu);
         expect(instance.dimension).toBe(dimension);
     });
-//    it('test buildPad adds html canvas to scratch pad', function(){
-//        var instance = {id: "1", wrapper:$('#test'), dimension:{width:200,height:200}};
-//        ScratchPad.buildPad(instance);
-//        expect($("#test canvas").length).toBe(1);
-//        expect($("#test .sp-canvas-wrapper .sp-canvas#1").length).toBe(1);
-//        expect($("#test .sp-canvas-wrapper .sp-canvas#1").attr("width")).toBe("200");
-//        expect($("#test .sp-canvas-wrapper .sp-canvas#1").attr("height")).toBe("200");
-//    });
+    it('test buildPad adds html canvas to scratch pad', function(){
+        var instance = {id: "1", wrapper:$('#test'), dimension:{width:200,height:200}};
+        $('#test').append('<div class="sp-menu"></div>');
+        ScratchPad.buildPad(instance);
+        expect($("#test canvas").length).toBe(1);
+        expect($("#test .sp-canvas-wrapper .sp-canvas#1").length).toBe(1);
+        expect($("#test .sp-canvas-wrapper .sp-canvas#1").attr("width")).toBe("200");
+        expect($("#test .sp-canvas-wrapper .sp-canvas#1").attr("height")).toBe("200");
+    });
     it('test convert to Fabric calls FabricJS', function(){
         spyOn(fabric,'Canvas');
         var config = {dimension:{width:200,height:200}};
         var instance = ScratchPad.init("#test", config);
         expect(fabric.Canvas).toHaveBeenCalledWith(instance.id,{isDrawingMode:true});
         expect($('#'+instance.id).attr('width')).toBe('200');
+    });
+});
+describe('test events on scratchpad', function(){
+    beforeEach(function(){
+        $("<div id='test'></div>").appendTo('body');
+    });
+    afterEach(function(){
+        $('#test').remove();
+    });
+    it('tests toggle class with active object', function(){
+        $('#test').append('<i class="sp-eraser active"></i>');
+        var instance = {id:1, wrapper:$('#test')};
+        ScratchPad.toggleActiveMenu(instance, $('.active'));
+        expect($('.sp-eraser').hasClass('active')).toBeFalsy();
+    });
+    it('test toggle class on non active menu', function(){
+       $('#test').append('<i class="sp-eraser"></i>');
+        $('#test').append('<i class="sp-drawing active"></i>');
+        var instance = {id:1, wrapper:$('#test')}
+        ScratchPad.toggleActiveMenu(instance, $('.sp-eraser'));
+        expect($('.sp-eraser').hasClass('active')).toBeTruthy();
+        expect($('.active').length).toBe(1);
+    });
+    it('tests free drawing mode',function(){
+//       var instance = {id:1, menu:[ScratchPad.menuItem.drawing]};
+//       $('#test').append('<i class="sp-drawing"></i>');
+       ScratchPad.init('#test');
+       spyOn(fabric,'Canvas').andCallFake(function(value){
+           console.log(value);
+       });
+       $('.sp-drawing').trigger('click');
+//       expect(fabric.Canvas).toHaveBeenCalled();
+   });
+    it('tests eraser events', function(){
+
     });
 });

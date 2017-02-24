@@ -76,6 +76,70 @@ describe('Test ScratchPad',function(){
         expect($('#'+instance.id).attr('width')).toBe('200');
     });
 });
+describe('test scratchpad destroy methods', function(){
+   it('tests single instance deletion by id', function(){
+        var canvas = {
+            dispose : function(){}
+        };
+        spyOn(canvas,'dispose');
+        ScratchPad.instances = {
+            1:{
+                id:1,
+                canvas : canvas,
+                wrapper: $('#test')
+            }
+        }
+        ScratchPad.destroyInstanceById('1');
+        expect(ScratchPad.instances['1']).toBeUndefined();
+        expect(canvas.dispose).toHaveBeenCalled();
+    }); 
+    it('tests single instance deletion by invalid id', function(){
+        var canvas = {
+            dispose : function(){}
+        };
+        spyOn(canvas,'dispose');
+        ScratchPad.instances = {
+            1:{
+              id:1,
+              canvas : canvas,
+              wrapper: $('#test')
+            }
+        }
+        ScratchPad.destroyInstanceById('2');
+        expect(canvas.dispose).not.toHaveBeenCalled();
+        expect(ScratchPad.instances['1']).toBeDefined();
+    });
+    it('tests single instance deletion by instance', function(){
+        var canvas = {
+            dispose : function(){}
+        };
+        var instance = {
+            id:1,
+            canvas : canvas,
+            wrapper: $('#test')
+        }
+        spyOn(canvas,'dispose');
+        ScratchPad.instances = {1: instance};
+        ScratchPad.destroyInstance(instance);
+        expect(canvas.dispose).toHaveBeenCalled();
+        expect(ScratchPad.instances['1']).toBeUndefined();
+    });
+    it('tests single instance deletion by inknown instance', function(){
+        var canvas = {
+            dispose : function(){}
+        };
+        var instance = {
+            id:1,
+            canvas : canvas,
+            wrapper: $('#test')
+        }
+        spyOn(canvas,'dispose');
+        ScratchPad.instances = {1: instance};
+        ScratchPad.destroyInstance({});
+        expect(canvas.dispose).not.toHaveBeenCalled();
+        expect(ScratchPad.instances['1']).toBeDefined();
+    });
+});
 describe('test events on scratchpad', function(){
     beforeEach(function(){
         $("<div id='test'></div>").appendTo('body');

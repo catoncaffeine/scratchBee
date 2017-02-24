@@ -90,15 +90,7 @@ var ScratchPad = {
                     }
                 });
                 if($(current).hasClass('active')){
-//                    instance.canvas.getObjects().map(function(object){
-//
-//                            object.on('click', function(){
-//                                console.log('i was clicked');
-//                                instance.canvas.remove(object);
-//                            });
-//                       return object.set('active', true);
-//                    });
-//                    instance.canvas.renderAll();
+
                     var activeGroup = instance.canvas.getActiveGroup();
                     var activeObject = instance.canvas.getActiveObject();
                     if(activeGroup){
@@ -144,8 +136,28 @@ var ScratchPad = {
         }
 
     },
-    exportCanvas : function(instance){
+    exportCanvas : function(id){
+        return ScratchPad.instances[id]? ScratchPad.instances[id].canvas.toDataURL():"";
+    },
+    destroyAll:  function(){
+         Object.keys(ScratchPad.instances).forEach(function(ele){ 
+             var instance = ScratchPad.instances[ele]; 
+             ScratchPad.destroyInstance(instance);
+         }); 
+         ScratchPad=null
+    },
+    destroyInstance: function(instance){
+        if(instance !== undefined && ScratchPad.instances[instance.id]){
+        instance.canvas.dispose();
         
+        $(instance.domElement).empty();
+        delete ScratchPad.instances[instance.id];
+        }
+    },
+    destroyInstanceById: function(id){
+        if(ScratchPad.instances[id]){
+            ScratchPad.destroyInstance(ScratchPad.instances[id]);
+        }
     }
 
 

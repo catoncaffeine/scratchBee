@@ -34,7 +34,7 @@ describe('Test ScratchPad',function(){
         spyOn(ScratchPad,'bindEvents').andCallFake(function(){});
 
         spyOn(ScratchPad,'convertToFabric').andCallFake(function(){ return {};});
-
+		spyOn(ScratchPad,'bindEventsToMouseDown').andCallFake(function(){ return {};});
         ScratchPad.init('#test',{});
         expect(ScratchPad.buildInstance).toHaveBeenCalledWith('#test',{});
         expect(ScratchPad.buildMenu).toHaveBeenCalledWith(instance);
@@ -71,6 +71,7 @@ describe('Test ScratchPad',function(){
     it('test convert to Fabric calls FabricJS', function(){
         spyOn(fabric,'Canvas');
         var config = {dimension:{width:200,height:200}};
+		spyOn(ScratchPad, 'bindEventsToMouseDown').andCallFake(function(){});
         var instance = ScratchPad.init("#test", config);
         expect(fabric.Canvas).toHaveBeenCalledWith(instance.id,{isDrawingMode:true});
         expect($('#'+instance.id).attr('width')).toBe('200');

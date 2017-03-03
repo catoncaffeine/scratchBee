@@ -4,21 +4,24 @@
         <title>ScratchPad</title>
 		<!-- Fabric JS -->
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.3/fabric.min.js"></script>
-        
-        <!-- Font Awesome -->
-        <script src="https://use.fontawesome.com/6746cf655f.js"></script>
-		
 		<!-- jQuery -->
 		<script src="https://code.jquery.com/jquery-1.12.4.min.js" 
 				integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous">
 		</script>
+         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Font Awesome -->
+        <script src="https://use.fontawesome.com/6746cf655f.js"></script>
+		
+		
 
 		<!-- Scratch pad -->
 		<script src="js/main/scratchPad.js"></script>
+		<script src="js/main/scratchPadTools.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function(){
-				ScratchPad.init("#scratchPad1");
-                ScratchPad.init("#scratchPad2",{menu:[ScratchPad.menuItem.drawing],dimension:{width:600, hight:200}});
+				ScratchPad.init("#scratchPad1",{menus:[ScratchPad.menuChucks.text, ScratchPad.menuChucks.basic, ScratchPad.menuChucks.shapes]});
+//                ScratchPad.init("#scratchPad2",{menus:[ScratchPad.menuChucks.text, ScratchPad.menuChucks.basic]});
 			});
 		</script>
         
@@ -28,14 +31,33 @@
                 padding: 5px;
                 margin: 1px;
             }
-            .sp-wrapper .fa:hover:not(.active):not(.fa-th-large){
+            .sp-menu .hover:hover:not(.active):not(.fa-th-large){
                 border-radius: 2px;
 /*                background-color: lightgray;*/
                 box-shadow: 1px 1px 1px;
                 cursor: pointer;
             }
-            
-            .sp-wrapper .fa.active{
+			.sp-wrapper li a {
+				padding: 3px 15px;
+			}
+			
+			.shape-menu {
+				width: 25px;
+				height: 25px;
+				margin: 2px;
+				padding: 3px;
+				cursor: pointer;
+				text-align: center;
+			}
+			.shape-menu .fa:hover{
+				
+			}
+			.sp-menu .shape-menu:hover{
+				border-radius: 2px;
+/*                background-color: lightgray;*/
+                box-shadow: 1px 1px 1px;
+			}
+            .sp-wrapper .active{
                 border-bottom: 1px solid #eae8e8;
                 border-right: 1px solid #eae8e8;
                 border-top: 1px solid #a9a7a7;
@@ -53,6 +75,77 @@
                 border-right:1px dotted lightgrey;
                 margin: 0px 2px;
             }
+			
+			.sp-eq-triangle {
+				display:inline-block;
+				width: 0;
+				height: 0;
+				border-left: 7px solid transparent;
+				border-right: 7px solid transparent;
+				border-bottom: 15px solid black;
+			}
+			.sp-scelene {
+				display:inline-block;
+				width: 0;
+				height: 0;
+				border-left: 10px solid transparent;
+				border-right: 4px solid transparent;
+				border-bottom: 15px solid black;
+			}
+			.sp-right-triangle {
+				display:inline-block;
+				width: 0;
+				height: 0;
+				border-right: 7px solid transparent;
+				border-bottom: 15px solid black;
+			}
+			
+			.sp-eq-trapezoid {
+				margin: 3px;
+				display: inline-block;
+				border-bottom: 8px solid black;
+				border-left: 5px solid transparent;
+				border-right: 5px solid transparent;
+				height: 0;
+				width: 15px;
+			}
+			.sp-trapezoid {
+				margin: 3px;
+				display: inline-block;
+				border-bottom: 8px solid black;
+				border-left: 5px solid transparent;
+/*				border-right: 7px solid transparent;*/
+				height: 0;
+				width: 10px;
+			}
+			.sp-parallelogram {
+				margin: 3px;
+				display: inline-block;
+				width: 15px;
+				height: 10px;
+				-webkit-transform: skew(20deg);
+				   -moz-transform: skew(20deg);
+					 -o-transform: skew(20deg);
+				background: black;
+			}
+			div.pentagon {
+				position: relative;
+				width: 10px;
+				border-width: 6px 2px 0;
+				border-style: solid;
+				border-color: green transparent;
+			}
+			div.pentagon:before {
+				content: "";
+				position: absolute;
+				height: 0;
+				width: 0;
+				top: -10px;
+				left: -2px;
+				border-width: 0 5px 4px;
+				border-style: solid;
+				border-color: transparent transparent green;
+			}
         
         </style>
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
@@ -62,7 +155,20 @@
 	<body>
 		<div id='scratchPad1'>
 		</div>
+<!--
         <div id="scratchPad2">
         </div>
+-->
+		<div><div class='scelene_triangle'></div></div>
+		
+		<div>&nbsp;</div>
+			<div class='parallelogram'></div>
+		<div>&nbsp;</div>
+			<div class='trapezoid1'></div>
+		<div>&nbsp;</div>
+		<div class='trapezoid'></div>
+		<div>&nbsp;</div>
+		<div class='pentagon'></div>
+		<div>Test tes</div>
 	</body>
 </html>

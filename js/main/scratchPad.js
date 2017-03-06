@@ -46,7 +46,7 @@ var ScratchPad = {
 		var $menu = $(instance.wrapper).find(".sp-menu");
 		$menu.append("<i class='sp fa fa-th-large' data-toggle='tooltip' title='Scratchpad'></i>");
 		if(instance.menu.indexOf(ScratchPad.menuItem.drawing) !== -1 ) {
-			$menu.append("<i class='sp-drawing fa fa-pencil active hover' data-toggle='tooltip' title='Drawing'></i>");
+			$menu.append("<i class='sp-drawing fa fa-pencil active hover' data-toggle='tooltip' title='Pencil'></i>");
 		}        
 
 		if(instance.menu.indexOf(ScratchPad.menuItem.eraser) !== -1){
@@ -63,10 +63,10 @@ var ScratchPad = {
 		if(instance.menus){
 			instance.menus.forEach(function(menu){
 				var type = menu.type;
-				
+				var title = menu.title;
 				if(type && type ==='dropdown'){
-					$menu.append("<div class='btn-group'><a class='btn dropdown-toggle' data-toggle='dropdown' href='#'>"
-								+"<i class='fa fa-eraser fa-caret-down'></i></a>"
+					$menu.append("<div class='btn-group'><a class='btn dropdown-toggle' title='"+title+"' data-toggle='dropdown' href='#'>"
+								+"<i class='shapes-icon'></i></a>"
 								+"<ul class='dropdown-menu'></ul></div>");
 					for (var menuItems in menu){
 						var menuItem = menu[menuItems];
@@ -147,15 +147,15 @@ var ScratchPad = {
 		shapes: {
 			menu1:{
 				line:{
-					class: 'sp-line fa fa-minus',
+					class: 'sp-line',
 					title:'Line'
 				},
 				ray: {
-					class: 'sp-ray fa fa-long-arrow-right ',
+					class: 'sp-ray',
 					title: 'Ray'
 				},
 				circle: {
-					class: 'sp-circle fa fa-circle',
+					class: 'sp-circle',
 					title: 'Circle'
 				}
 			},
@@ -175,7 +175,7 @@ var ScratchPad = {
 			},
 			menu3:{
 				rectangle:{
-					class:'sp-rectangle fa fa-square',
+					class:'sp-rectangle',
 					title: 'Rectangle'
 				},
 				parallelogram:{
@@ -192,7 +192,26 @@ var ScratchPad = {
 				}
 				
 			},
-			type:'dropdown'
+			menu4: {
+				pentagon: {
+					class: 'sp-pentagon',
+					title: 'Pentagon'
+				},
+				hexagon: {
+					class: 'sp-hexagon',
+					title: 'Hexagon'
+				},
+				octagon: {
+					class: 'sp-octagon',
+					title: 'Octagon'
+				},
+				decagon: {
+					class: 'sp-decagon',
+					title: 'Decagon'
+				}
+			},
+			type:'dropdown',
+			title: 'Shapes'
 		}
 	},
 	menuMode: {
@@ -287,7 +306,7 @@ var ScratchPad = {
 				instance.currentTool='';
 			}
 		})
-		$('.shape-menu .sp-eq-triangle').parent().on('click','', function(){
+		$(instance.wrapper).find('.shape-menu .sp-eq-triangle').parent().on('click','', function(){
 			var current = this;
 			instance.canvas.isDrawingMode = false;
 			ScratchPad.toggleActiveMenu(instance, current);
@@ -297,7 +316,7 @@ var ScratchPad = {
 				instance.currentTool='';
 			}
 		});
-		$('.shape-menu .sp-right-triangle').parent().on('click', function(){
+		$(instance.wrapper).find('.shape-menu .sp-right-triangle').parent().on('click', function(){
 			var current = this;
 			instance.canvas.isDrawingMode = false;
 			ScratchPad.toggleActiveMenu(instance, current);
@@ -307,7 +326,7 @@ var ScratchPad = {
 				instance.currentTool='';
 			}
 		});
-		$('.shape-menu .sp-scelene').parent().on('click', function(){
+		$(instance.wrapper).find('.shape-menu .sp-scelene').parent().on('click', function(){
 			var current = this;
 			instance.canvas.isDrawingMode = false;
 			ScratchPad.toggleActiveMenu(instance, current);
@@ -317,7 +336,7 @@ var ScratchPad = {
 				instance.currentTool='';
 			}
 		});
-		$('.shape-menu .sp-line').parent().on('click', function(){
+		$(instance.wrapper).find('.shape-menu .sp-line').parent().on('click', function(){
 			var current = this;
 			instance.canvas.isDrawingMode = false;
 			ScratchPad.toggleActiveMenu(instance, current);
@@ -327,7 +346,7 @@ var ScratchPad = {
 				instance.currentTool='';
 			}
 		});
-		$('.shape-menu .sp-ray').parent().on('click', function(){
+		$(instance.wrapper).find('.shape-menu .sp-ray').parent().on('click', function(){
 			var current = this;
 			instance.canvas.isDrawingMode = false;
 			ScratchPad.toggleActiveMenu(instance, current);
@@ -337,7 +356,7 @@ var ScratchPad = {
 				instance.currentTool='';
 			}
 		});
-		$('.shape-menu .sp-circle').parent().on('click', function(){
+		$(instance.wrapper).find('.shape-menu .sp-circle').parent().on('click', function(){
 			var current = this;
 			instance.canvas.isDrawingMode = false;
 			ScratchPad.toggleActiveMenu(instance, current);
@@ -346,7 +365,87 @@ var ScratchPad = {
 			}else{
 				instance.currentTool='';
 			}
-		})
+		});
+		$(instance.wrapper).find('.shape-menu .sp-rectangle').parent().on('click', function(){
+			var current = this;
+			instance.canvas.isDrawingMode = false;
+			ScratchPad.toggleActiveMenu(instance, current);
+			if($(current).hasClass('active')){
+				instance.currentTool='rectangle';
+			}else{
+				instance.currentTool='';
+			}
+		});
+		$(instance.wrapper).find('.shape-menu .sp-parallelogram').parent().on('click', function(){
+			var current = this;
+			instance.canvas.isDrawingMode = false;
+			ScratchPad.toggleActiveMenu(instance, current);
+			if($(current).hasClass('active')){
+				instance.currentTool='parallelogram';
+			}else{
+				instance.currentTool='';
+			}
+		});
+		$(instance.wrapper).find('.shape-menu .sp-eq-trapezoid').parent().on('click', function(){
+			var current = this;
+			instance.canvas.isDrawingMode = false;
+			ScratchPad.toggleActiveMenu(instance, current);
+			if($(current).hasClass('active')){
+				instance.currentTool='eq-trapezoid';
+			}else{
+				instance.currentTool='';
+			}
+		});
+		$(instance.wrapper).find('.shape-menu .sp-trapezoid').parent().on('click', function(){
+			var current = this;
+			instance.canvas.isDrawingMode = false;
+			ScratchPad.toggleActiveMenu(instance, current);
+			if($(current).hasClass('active')){
+				instance.currentTool='trapezoid';
+			}else{
+				instance.currentTool='';
+			}
+		});
+		$(instance.wrapper).find('.shape-menu .sp-hexagon').parent().on('click', function(){
+			var current = this;
+			instance.canvas.isDrawingMode = false;
+			ScratchPad.toggleActiveMenu(instance, current);
+			if($(current).hasClass('active')){
+				instance.currentTool='hexagon';
+			}else{
+				instance.currentTool='';
+			}
+		});
+		$(instance.wrapper).find('.shape-menu .sp-pentagon').parent().on('click', function(){
+			var current = this;
+			instance.canvas.isDrawingMode = false;
+			ScratchPad.toggleActiveMenu(instance, current);
+			if($(current).hasClass('active')){
+				instance.currentTool='pentagon';
+			}else{
+				instance.currentTool='';
+			}
+		});
+		$(instance.wrapper).find('.shape-menu .sp-octagon').parent().on('click', function(){
+			var current = this;
+			instance.canvas.isDrawingMode = false;
+			ScratchPad.toggleActiveMenu(instance, current);
+			if($(current).hasClass('active')){
+				instance.currentTool='octagon';
+			}else{
+				instance.currentTool='';
+			}
+		});
+		$(instance.wrapper).find('.shape-menu .sp-decagon').parent().on('click', function(){
+			var current = this;
+			instance.canvas.isDrawingMode = false;
+			ScratchPad.toggleActiveMenu(instance, current);
+			if($(current).hasClass('active')){
+				instance.currentTool='decagon';
+			}else{
+				instance.currentTool='';
+			}
+		});
 
 	},
 	bindTextPlaceHandler: function(canvas, event){
@@ -386,8 +485,10 @@ var ScratchPad = {
 		if(event.target){
 			return;
 		}
-		var _left = event.e.offsetX;
-		var _top = event.e.offsetY;
+		
+		var pointer = canvas.getPointer(event.e);
+		var _left = pointer.x;
+		var _top = pointer.y;
 		var triangle = new fabric.Triangle({height:100, width:100});
 		if(type ==='right-triangle'){	
 			triangle = new fabric.Polygon([{x:0,y:0}, {x:0, y:100},{x:100, y:100}]);
@@ -414,6 +515,34 @@ var ScratchPad = {
 	},
 	bindShapeTools: function(canvas, event, type){
 		
+		if(event.target){
+			return;
+		}
+		var obj;
+		var pointer = canvas.getPointer(event.e);
+		if(type==='circle'){
+			obj = new fabric.Circle({radius:100, fill:'black'});
+		}else if(type==='parallelogram'){
+			obj = new fabric.Rect({width:200, height:100, fill:'black',skewX:320});
+		} else if(type==='rectangle'){
+			obj = new fabric.Rect({width:200, height:100, fill:'black'});
+		}else if(type==='eq-trapezoid'){
+			obj = new fabric.Polygon([{x:60, y:100}, {x:140, y:100}, {x:200, y: 200}, {x:0, y:200}],{fill:'black'});
+		}else if(type==='trapezoid'){
+			obj = new fabric.Polygon([{x:60,y:100}, {x:200, y: 100}, {x:200, y: 200}, {x:0, y:200}],{fill:'black'});
+		}else if(type === 'hexagon'){
+			obj = ScratchPadTools.createPolygon({sides:6,centerX:pointer.x,centerY:pointer.y,size: 60});
+		}else if(type === 'pentagon'){
+			obj = ScratchPadTools.createPolygon({sides:5,centerX:pointer.x,centerY:pointer.y,size: 60});
+		}else if(type === 'octagon'){
+			obj = ScratchPadTools.createPolygon({sides:8,centerX:pointer.x,centerY:pointer.y,size: 60});
+		}else if(type === 'decagon'){
+			obj = ScratchPadTools.createPolygon({sides:10,centerX:pointer.x,centerY:pointer.y,size: 60});
+		}
+		if(obj){
+			obj.set({left:pointer.x,top:pointer.y})
+			canvas.add(obj)
+		}
 	},
 	bindEventsToMouseDown(instance){
 		instance.canvas.on('mouse:down', function(e){
@@ -444,6 +573,30 @@ var ScratchPad = {
 					ScratchPad.bindLineTools(this,e,instance.currentTool);
 				}
 				if(instance.currentTool === 'circle'){
+					ScratchPad.bindShapeTools(this,e,instance.currentTool);
+				}
+				if(instance.currentTool === 'rectangle'){
+					ScratchPad.bindShapeTools(this,e,instance.currentTool);
+				}
+				if(instance.currentTool === 'parallelogram'){
+					ScratchPad.bindShapeTools(this,e,instance.currentTool);
+				}
+				if(instance.currentTool === 'eq-trapezoid'){
+					ScratchPad.bindShapeTools(this,e,instance.currentTool);
+				}
+				if(instance.currentTool === 'trapezoid'){
+					ScratchPad.bindShapeTools(this,e,instance.currentTool);
+				}
+				if(instance.currentTool === 'decagon'){
+					ScratchPad.bindShapeTools(this,e,instance.currentTool);
+				}
+				if(instance.currentTool === 'octagon'){
+					ScratchPad.bindShapeTools(this,e,instance.currentTool);
+				}
+				if(instance.currentTool === 'pentagon'){
+					ScratchPad.bindShapeTools(this,e,instance.currentTool);
+				}
+				if(instance.currentTool === 'hexagon'){
 					ScratchPad.bindShapeTools(this,e,instance.currentTool);
 				}
 				

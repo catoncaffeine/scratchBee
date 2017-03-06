@@ -24,128 +24,10 @@
 //                ScratchPad.init("#scratchPad2",{menus:[ScratchPad.menuChucks.text, ScratchPad.menuChucks.basic]});
 			});
 		</script>
-        
+        <link rel="stylesheet" href="scratchpad.css">
         <!-- Styles will need to be extracted! -->
         <style> 
-            .sp-wrapper .fa {
-                padding: 5px;
-                margin: 1px;
-            }
-            .sp-menu .hover:hover:not(.active):not(.fa-th-large){
-                border-radius: 2px;
-/*                background-color: lightgray;*/
-                box-shadow: 1px 1px 1px;
-                cursor: pointer;
-            }
-			.sp-wrapper li a {
-				padding: 3px 15px;
-			}
-			
-			.shape-menu {
-				width: 25px;
-				height: 25px;
-				margin: 2px;
-				padding: 3px;
-				cursor: pointer;
-				text-align: center;
-			}
-			.shape-menu .fa:hover{
-				
-			}
-			.sp-menu .shape-menu:hover{
-				border-radius: 2px;
-/*                background-color: lightgray;*/
-                box-shadow: 1px 1px 1px;
-			}
-            .sp-wrapper .active{
-                border-bottom: 1px solid #eae8e8;
-                border-right: 1px solid #eae8e8;
-                border-top: 1px solid #a9a7a7;
-                border-left: 1px solid #a9a7a7;
-                border-radius: 2px;
-            }
-            .sp-wrapper .panel-body{
-                padding: 0px;
-            }
-            .sp-wrapper .canvas-container{
-                width: 100%;
-                height: 100%;
-            }
-            .sp-menu .vertical-divider{
-                border-right:1px dotted lightgrey;
-                margin: 0px 2px;
-            }
-			
-			.sp-eq-triangle {
-				display:inline-block;
-				width: 0;
-				height: 0;
-				border-left: 7px solid transparent;
-				border-right: 7px solid transparent;
-				border-bottom: 15px solid black;
-			}
-			.sp-scelene {
-				display:inline-block;
-				width: 0;
-				height: 0;
-				border-left: 10px solid transparent;
-				border-right: 4px solid transparent;
-				border-bottom: 15px solid black;
-			}
-			.sp-right-triangle {
-				display:inline-block;
-				width: 0;
-				height: 0;
-				border-right: 7px solid transparent;
-				border-bottom: 15px solid black;
-			}
-			
-			.sp-eq-trapezoid {
-				margin: 3px;
-				display: inline-block;
-				border-bottom: 8px solid black;
-				border-left: 5px solid transparent;
-				border-right: 5px solid transparent;
-				height: 0;
-				width: 15px;
-			}
-			.sp-trapezoid {
-				margin: 3px;
-				display: inline-block;
-				border-bottom: 8px solid black;
-				border-left: 5px solid transparent;
-/*				border-right: 7px solid transparent;*/
-				height: 0;
-				width: 10px;
-			}
-			.sp-parallelogram {
-				margin: 3px;
-				display: inline-block;
-				width: 15px;
-				height: 10px;
-				-webkit-transform: skew(20deg);
-				   -moz-transform: skew(20deg);
-					 -o-transform: skew(20deg);
-				background: black;
-			}
-			div.pentagon {
-				position: relative;
-				width: 10px;
-				border-width: 6px 2px 0;
-				border-style: solid;
-				border-color: green transparent;
-			}
-			div.pentagon:before {
-				content: "";
-				position: absolute;
-				height: 0;
-				width: 0;
-				top: -10px;
-				left: -2px;
-				border-width: 0 5px 4px;
-				border-style: solid;
-				border-color: transparent transparent green;
-			}
+            
         
         </style>
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
@@ -164,11 +46,13 @@
 		<div>&nbsp;</div>
 			<div class='parallelogram'></div>
 		<div>&nbsp;</div>
-			<div class='trapezoid1'></div>
+			<div class='shape-menu'><i class="sp-line"></i><i class="sp-rectangle"></i></div>
+			<div class='shape-menu'><i class="sp-line"></i><i class="sp-parallelogram"></i></div>
 		<div>&nbsp;</div>
 		<div class='trapezoid'></div>
 		<div>&nbsp;</div>
-		<div class='pentagon'></div>
+		<div class='shape-menu'><i class="sp-pentagon">&nbsp;&nbsp;&nbsp;&nbsp;</i></div>
+		<div class='shape-menu'><div class="sp-pentagon"></div></div>
 		<div>Test tes</div>
 	</body>
 </html>

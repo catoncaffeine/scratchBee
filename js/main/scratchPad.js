@@ -397,10 +397,11 @@ var ScratchPad = {
 		if(event.target){
 			return;
 		}
+		var pointer = instance.canvas.getPointer(event.e);
 		ScratchPad.addToCanvas(instance, new fabric.Textbox('Click to add text',{
 			fontSize: 20, 
-			left:event.e.pageX,
-			top:event.e.offsetY,
+			left:pointer.x,
+			top:pointer.y,
 			width:150})
 		);
 		
@@ -459,7 +460,7 @@ var ScratchPad = {
 		if(instance.currentTool === 'sp-ray'){
 			tool = ScratchPadTools.buildRay({length:100, width:4,startX:_x, startY:_y });
 		}else if(instance.currentTool === 'sp-double-ray'){
-			tool = ScratchPadTools.buildRay({length:100, width:4,startX:_x, startY:_y, doubleHeaded:true });
+			tool = ScratchPadTools.buildRay({length:100, width:4,startX:_x+15, startY:_y, doubleHeaded:true });
 		}
 		ScratchPad.addToCanvas(instance,tool);
 	},
@@ -497,11 +498,14 @@ var ScratchPad = {
 	},
 	addToCanvas: function(instance, object){
 		instance.canvas.add(object);
-//		$(instance.wrapper).find('i.sp-undo').removeClass('disabled');
-//		if(!instance.undo){
-//			instance.undo = [];
-//		}
-//		instance.undo.push(object);
+		ScratchPad.pushToUndoBuffer(instance,object);
+	},
+	pushToUndoBuffer: function(instance,object){
+		$(instance.wrapper).find('i.sp-undo').removeClass('disabled');
+		if(!instance.undo){
+			instance.undo = [];
+		}
+		instance.undo.push(object);
 	},
 	bindEventsToMouseDown(instance){
 		instance.canvas.on('mouse:down', function(e){
@@ -511,11 +515,9 @@ var ScratchPad = {
 					ScratchPad.bindTextPlaceHandler(instance,e);
 					ScratchPad.toggleActiveMenu(instance, $('.sp-text'));
 					instance.currentTool = '';
-					
 				}
 				if(instance.currentTool === 'Delete'){
 					ScratchPad.bindDeletionHandler(this,e);
-//					MenuEvents.DeleteEvent.bind(instance,e);
 				}
 				if(instance.currentTool === 'sp-eq-triangle'){
 					ScratchPad.bindTriangleHandler(instance,e);

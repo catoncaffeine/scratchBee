@@ -278,41 +278,36 @@ var ScratchPad = {
 
 		if(instance.menu.indexOf(ScratchPad.menuItem.eraser) !== -1){
 			$(instance.wrapper).on('click', '.sp-eraser', function(){
-				return;
+//				return;
 				var current = this;
 				ScratchPad.toggleActiveMenu (instance,current);
 				instance.canvas.isDrawingMode = $(current).hasClass('active');
 				instance.canvas.freeDrawingBrush.color = '#FFFFFF';
 				instance.currentTool = '';
-//
-//				                instance.canvas.on("path:created", function(e){
-//				                   if($(current).hasClass('sp-eraser') && $(current).hasClass('active')){
-//				                       e.path.selectable = false;
-//									   console.log(e);
-//									   var group;
-//				                       instance.canvas.forEachObject(function(obj){
-//										   console.log(obj)
-//										   if(e.path && e.path.intersectsWithObject(obj) && e.path != obj){
-//											   
-//											   if(!group){
-//												   group = new fabric.Group();
-//											   }
-//											   if(group){
-//												   group.add(obj.clone());
-//												   group.add(e.path.clone());
-//											   }
-//				                           		instance.canvas.remove(obj);
-//											   instance.canvas.remove(e.path);	
-//											   
-//				                           }
-//				                       });
-//									   
-//									   if(group){
-//										   canvas.setActiveGroup(group);
-//										   instance.canvas.add(group);
-//									   }
-//				                   } 
-//				                });
+				instance.canvas.on('path:created', function(event){
+					//do not allow eraser to be selected
+					var path = event.path;
+					path.selectable = false;
+					var groupArray = [];
+					instance.canvas.forEachObject(function(object){
+						
+						if(path && path!= object && path.intersectsWithObject(object)){
+							
+							groupArray.push(object);
+						}
+					});
+					if(groupArray.length !== 0){
+						groupArray.push(path);
+						var group = new fabric.Group();
+						groupArray.forEach(function(obj){
+							
+							group.addWithUpdate(obj);
+							instance.canvas.remove(obj);
+						});
+						instance.canvas.add(group);
+					};
+				});
+
 			});  
 		}
 
@@ -320,7 +315,7 @@ var ScratchPad = {
 			$(instance.wrapper).on('click', '.sp-selector', function(){
 				instance.currentTool = ''
 				instance.canvas.isDrawingMode = false;
-				$(instance.wrapper).find(".active").removeClass('active');
+				ScratchPad.toggleActiveMenu(instance, this);
 			});
 
 		}
@@ -456,7 +451,7 @@ var ScratchPad = {
 		var pointer = instance.canvas.getPointer(event.e)
 		var _x = pointer.x;
 		var _y = pointer.y;
-		var tool = new fabric.Line([_x,_y,_x+100,_y],{left:_x, top:_y,stroke:'black'});
+		var tool = new fabric.Line([_x,_y,_x+100,_y],{left:_x, top:_y,stroke:'black',strokeWidth:2});
 		if(instance.currentTool === 'sp-ray'){
 			tool = ScratchPadTools.buildRay({length:100, width:4,startX:_x, startY:_y });
 		}else if(instance.currentTool === 'sp-double-ray'){
@@ -472,24 +467,36 @@ var ScratchPad = {
 		var type = instance.currentTool;
 		var obj;
 		var pointer = instance.canvas.getPointer(event.e);
-		if(type==='sp-circle'){
-			obj = new fabric.Circle({radius:50, fill:'black'});
-		}else if(type==='sp-parallelogram'){
-			obj = new fabric.Rect({width:100, height:50, fill:'black',skewX:320});
-		} else if(type==='sp-rectangle'){
-			obj = new fabric.Rect({width:100, height:100, fill:'black'});
-		}else if(type==='sp-eq-trapezoid'){
-			obj = new fabric.Polygon([{x:30, y:150}, {x:120, y:150}, {x:150, y: 225}, {x:0, y:225}],{fill:'black'});
-		}else if(type==='sp-trapezoid'){
-			obj = new fabric.Polygon([{x:60,y:150}, {x:150, y: 150}, {x:150, y: 225}, {x:0, y:225}],{fill:'black'});
-		}else if(type === 'sp-hexagon'){
-			obj = ScratchPadTools.createPolygon({sides:6,centerX:pointer.x,centerY:pointer.y,size: 60});
-		}else if(type === 'sp-pentagon'){
-			obj = ScratchPadTools.createPolygon({sides:5,centerX:pointer.x,centerY:pointer.y,size: 60});
-		}else if(type === 'sp-octagon'){
-			obj = ScratchPadTools.createPolygon({sides:8,centerX:pointer.x,centerY:pointer.y,size: 60});
-		}else if(type === 'sp-decagon'){
-			obj = ScratchPadTools.createPolygon({sides:10,centerX:pointer.x,centerY:pointer.y,size: 60});
+		
+		switch (type){
+			case 'sp-circle':
+				obj = new fabric.Circle({radius:50, fill:'black'});
+				break;
+			case 'sp-parallelogram':
+				obj = new fabric.Rect({width:100, height:50, fill:'black',skewX:320});
+				break;
+			case 'sp-rectangle':
+				obj = new fabric.Rect({width:100, height:100, fill:'black'});
+				break;
+			case 'sp-eq-trapezoid':
+				obj = new fabric.Polygon([{x:30, y:150}, {x:120, y:150}, {x:150, y: 225}, {x:0, y:225}],{fill:'black'});
+				break;
+			case 'sp-trapezoid':
+				obj = new fabric.Polygon([{x:60,y:150}, {x:150, y: 150}, {x:150, y: 225}, {x:0, y:225}],{fill:'black'});
+				break;
+			case 'sp-hexagon':
+				obj = ScratchPadTools.createPolygon({sides:6,centerX:pointer.x,centerY:pointer.y,size: 60});
+				break;
+			case 'sp-pentagon':
+				obj = ScratchPadTools.createPolygon({sides:5,centerX:pointer.x,centerY:pointer.y,size: 60});
+				break;
+			case 'sp-octagon':
+				obj = ScratchPadTools.createPolygon({sides:8,centerX:pointer.x,centerY:pointer.y,size: 60});
+				break;
+			case 'sp-decagon':
+				obj = ScratchPadTools.createPolygon({sides:10,centerX:pointer.x,centerY:pointer.y,size: 60});
+				break;
+			
 		}
 		if(obj){
 			obj.set({left:pointer.x,top:pointer.y})
@@ -511,60 +518,37 @@ var ScratchPad = {
 		instance.canvas.on('mouse:down', function(e){
 			
 			if(instance.currentTool){
-				if(instance.currentTool === 'Text'){
-					ScratchPad.bindTextPlaceHandler(instance,e);
-					ScratchPad.toggleActiveMenu(instance, $('.sp-text'));
-					instance.currentTool = '';
+				switch(instance.currentTool){	
+					case 'Text':
+						ScratchPad.bindTextPlaceHandler(instance,e);
+						ScratchPad.toggleActiveMenu(instance, $('.sp-text'));
+						instance.currentTool = '';
+						break;
+					case 'Delete':
+						ScratchPad.bindDeletionHandler(this,e);
+						break;
+					case 'sp-eq-triangle':		
+					case 'sp-right-triangle':
+					case 'sp-scelene':
+						ScratchPad.bindTriangleHandler(instance,e);
+						break;
+					case 'sp-line':
+					case 'sp-ray':
+					case 'sp-double-ray':
+						ScratchPad.bindLineTools(instance,e);
+						break;
+					case 'sp-circle':
+					case 'sp-rectangle':
+					case 'sp-parallelogram':
+					case 'sp-eq-trapezoid':
+					case 'sp-trapezoid':
+					case 'sp-decagon':
+					case 'sp-octagon':
+					case 'sp-pentagon':
+					case 'sp-hexagon':
+						ScratchPad.bindShapeTools(instance,e);
+						break;
 				}
-				if(instance.currentTool === 'Delete'){
-					ScratchPad.bindDeletionHandler(this,e);
-				}
-				if(instance.currentTool === 'sp-eq-triangle'){
-					ScratchPad.bindTriangleHandler(instance,e);
-				}
-				if(instance.currentTool === 'sp-right-triangle'){
-					ScratchPad.bindTriangleHandler(instance,e);
-				}
-				if(instance.currentTool === 'sp-scelene'){
-					ScratchPad.bindTriangleHandler(instance,e);
-				}
-				if(instance.currentTool === 'sp-line'){
-					ScratchPad.bindLineTools(instance,e);
-				}
-				if(instance.currentTool === 'sp-ray'){
-					ScratchPad.bindLineTools(instance,e);
-				}
-				if(instance.currentTool === 'sp-double-ray'){
-					ScratchPad.bindLineTools(instance,e);
-				}
-				if(instance.currentTool === 'sp-circle'){
-					ScratchPad.bindShapeTools(instance,e);
-				}
-				if(instance.currentTool === 'sp-rectangle'){
-					ScratchPad.bindShapeTools(instance,e);
-				}
-				if(instance.currentTool === 'sp-parallelogram'){
-					ScratchPad.bindShapeTools(instance,e);
-				}
-				if(instance.currentTool === 'sp-eq-trapezoid'){
-					ScratchPad.bindShapeTools(instance,e);
-				}
-				if(instance.currentTool === 'sp-trapezoid'){
-					ScratchPad.bindShapeTools(instance,e);
-				}
-				if(instance.currentTool === 'sp-decagon'){
-					ScratchPad.bindShapeTools(instance,e);
-				}
-				if(instance.currentTool === 'sp-octagon'){
-					ScratchPad.bindShapeTools(instance,e);
-				}
-				if(instance.currentTool === 'sp-pentagon'){
-					ScratchPad.bindShapeTools(instance,e);
-				}
-				if(instance.currentTool === 'sp-hexagon'){
-					ScratchPad.bindShapeTools(instance,e);
-				}
-				
 			}
 		})
 	}

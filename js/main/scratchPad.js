@@ -11,7 +11,6 @@ var ScratchPad = {
 		return instance;
 	},
 	getDefaultMenu: function() {
-		//        return ScratchPad.menuMode.default.slice();
 		return [ScratchPad.menuItem.selector,ScratchPad.menuItem.drawing,ScratchPad.menuItem.eraser, ScratchPad.menuItem.delete];
 	},
 	getDefaultDimension: function() {
@@ -37,14 +36,16 @@ var ScratchPad = {
 		if(config !== undefined || config.menus !== undefined){
 			instance.menus = config.menus;
 		}
-		instance.wrapper = $("<div class='sp-wrapper panel panel-default' data-sp-id='"+instance.id+"' style='width:"+instance.dimension.width+";height:"+instance.dimension.height+"'></div>");
+		instance.wrapper = $(""
+                        +"<div class='sp-wrapper panel panel-default' data-sp-id='"+instance.id+"'"
+                        +   "style='display:inline-block'>"+
+                        +"</div>");
 		return instance;
 	},
 
 	buildMenu: function(instance) {
 		$(instance.wrapper).append("<div class='sp-menu panel-heading'></div>");
 		var $menu = $(instance.wrapper).find(".sp-menu");
-//		$menu.append("<i class='sp fa fa-th-large' data-toggle='tooltip' title='Scratchpad'></i>");
 		if(instance.menu.indexOf(ScratchPad.menuItem.selector) !== -1 ) {
 			$menu.append("<i class='sp-selector fa fa-arrows-alt hover' data-toggle='tooltip' title='Select'></i>");
 		}  
@@ -80,9 +81,8 @@ var ScratchPad = {
 								}
 								$(instance.wrapper).find('ul.dropdown-menu').append('<li class="divider"></li>');
 							}
-//						}
 					}
-				}else{
+				} else {
 					for(var menuElements in menu ){
 						var menuElement = menu[menuElements];
 						$menu.append("<i class='"+menuElement.class+"' data-toggle='tooltip' title='"+menuElement.title+"'></i>");
@@ -93,22 +93,18 @@ var ScratchPad = {
 			$menu.find('i.sp-undo').addClass('disabled');
 			$menu.find('i.sp-redo').addClass('disabled');
 		}
-
-
 	},
 
 	buildPad: function(instance){
 		var width = instance.dimension.width, height = instance.dimension.height;
-		$(instance.wrapper).find(".sp-menu").after(""
-												   + "<div class='sp-canvas-wrapper panel-body'>"
-												   +    "<canvas class='sp-canvas' id='"+instance.id+"' width='"+width+"' height='"+height+"'></canvas>"
-												   + "</div>");
+		$(instance.wrapper).find(".sp-menu")
+                           .after(""
+                               + "<div class='sp-canvas-wrapper panel-body'>"
+                               +    "<canvas class='sp-canvas' id='"+instance.id+"' width='"+width+"' height='"+height+"'></canvas>"
+                               + "</div>");
 	},
 
 	convertToFabric: function(instance) {
-		var headerHeight = +($(instance.wrapper).find('.sp-menu').css('height').slice(0,-2));
-		var height = instance.dimension.height - headerHeight;
-		$(instance.wrapper).find('#'+instance.id).attr('height',height);
 		instance.canvas = new fabric.Canvas(instance.id, {isDrawingMode: true});
 		instance.canvas.freeDrawingBrush = new fabric.PencilBrush(instance.canvas);
 		instance.canvas.freeDrawingBrush.width = 2;
@@ -261,7 +257,6 @@ var ScratchPad = {
 		if(instance.menu.indexOf(ScratchPad.menuItem.delete)!==-1){
 			
 			$(instance.wrapper).on('click','.sp-trash',function(){
-//				MenuEvents.DeleteEvent.init(instance, this);
 				var current = this;
 				instance.canvas.isDrawingMode = false;
 				ScratchPad.toggleActiveMenu(instance, current);
@@ -276,9 +271,8 @@ var ScratchPad = {
 			});
 		}
 
-		if(instance.menu.indexOf(ScratchPad.menuItem.eraser) !== -1){
-			$(instance.wrapper).on('click', '.sp-eraser', function(){
-//				return;
+		if(instance.menu.indexOf(ScratchPad.menuItem.eraser) !== -1) {
+			$(instance.wrapper).on('click', '.sp-eraser', function() {
 				var current = this;
 				ScratchPad.toggleActiveMenu (instance,current);
 				instance.canvas.isDrawingMode = $(current).hasClass('active');

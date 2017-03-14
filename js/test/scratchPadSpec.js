@@ -4,47 +4,37 @@ describe('Test ScratchPad',function(){
     });
     afterEach(function(){
         $('#test').remove();
+        ScratchPad.instances = {};
     });
     it('tests buildMenu ', function(){
-        var instance = {};
-        instance.id=1;
-        instance.wrapper =  $('#test');
-        instance.menu = ScratchPad.getDefaultMenu();
-        ScratchPad.buildMenu(instance);
-        var $menu = $(instance.wrapper).find(".sp-menu");
+        ScratchPad.init("#test");
+        var $menu = $("#test").find(".sp-menu");
         expect($menu.html().indexOf('sp-drawing')).not.toBe(-1);
     });
     it('tests buildMenu with unknown items', function(){
-        var instance = {};
-        instance.id=1;
-        instance.wrapper =  $('#test');
-        instance.menu =["menu1","menu2",ScratchPad.menuItem.eraser];
-        ScratchPad.buildMenu(instance);
-        var $menu = $(instance.wrapper).find(".sp-menu");
+        ScratchPad.init("#test");
+        var $menu = $("#test").find(".sp-menu");
         expect($menu.html().indexOf("sp-eraser")).not.toBe(-1);
     });
     it('tests init', function(){
-        var instance = {id:1, canvas:{}};
-        spyOn(ScratchPad,'buildInstance').andCallFake(function(){
-            return instance;
-        })
-        spyOn(ScratchPad,'buildMenu').andCallFake(function(){});
-        spyOn(ScratchPad,'buildPad').andCallFake(function(){ return {};});
-
-        spyOn(ScratchPad,'bindEvents').andCallFake(function(){});
-
-        spyOn(ScratchPad,'convertToFabric').andCallFake(function(){ return {};});
-		spyOn(ScratchPad,'bindEventsToMouseDown').andCallFake(function(){ return {};});
-        ScratchPad.init('#test',{});
-        expect(ScratchPad.buildInstance).toHaveBeenCalledWith('#test',{});
-        expect(ScratchPad.buildMenu).toHaveBeenCalledWith(instance);
-        expect(ScratchPad.buildPad).toHaveBeenCalledWith(instance);
-        expect(ScratchPad.bindEvents).toHaveBeenCalledWith(instance);
-        expect(ScratchPad.instances[1]).toBe(instance);
+        spyOn(ScratchPadBuilder.prototype,'buildInstance').andCallThrough();
+        spyOn(ScratchPadBuilder.prototype,'buildMenu').andCallThrough();
+        spyOn(ScratchPadBuilder.prototype,'buildPad').andCallThrough();
+        spyOn(ScratchPadBuilder.prototype,'bindEvents').andCallThrough();
+        spyOn(ScratchPadBuilder.prototype,'convertToFabric').andCallThrough();
+		spyOn(ScratchPadBuilder.prototype,'bindEventsToMouseDown').andCallThrough();
+        
+        ScratchPad.init('#test');
+        var instance = Object.values(ScratchPad.instances)[0];
+        expect(ScratchPadBuilder.prototype.buildInstance).toHaveBeenCalledWith('#test', undefined);
+        expect(ScratchPadBuilder.prototype.buildMenu).toHaveBeenCalledWith(instance);
+        expect(ScratchPadBuilder.prototype.buildPad).toHaveBeenCalledWith(instance);
+        expect(ScratchPadBuilder.prototype.bindEvents).toHaveBeenCalledWith(instance);
     });
     
     it('tests buildInstance', function(){
-       var instance = ScratchPad.buildInstance('#test',{});
+        ScratchPad.init('#test');
+        var instance = Object.values(ScratchPad.instances)[0];
         expect(instance.id).not.toBeNull();
         expect(instance.menu).toEqual(ScratchPad.getDefaultMenu());
         expect(instance.dimension).toEqual(ScratchPad.getDefaultDimension());
@@ -53,26 +43,28 @@ describe('Test ScratchPad',function(){
     it('tests buildInstance with a config', function(){
         var dimension = {width:10, height:20};
         var menu = ["menu1",  "menu2"];
-        var config = {menu:menu, dimension:dimension};
-        var instance = ScratchPad.buildInstance('test', config);
+        ScratchPad.init('#test', {
+            dimension : dimension,
+            menu : menu,
+        });
+        var instance = Object.values(ScratchPad.instances)[0];
         expect(instance.id).not.toBeNull();
         expect(instance.menu).toBe(menu);
         expect(instance.dimension).toBe(dimension);
     });
     it('tests buildPad adds html canvas to scratch pad', function(){
-        var instance = {id: "1", wrapper:$('#test'), dimension:{width:200,height:200}};
-        $('#test').append('<div class="sp-menu"></div>');
-        ScratchPad.buildPad(instance);
-        expect($("#test canvas").length).toBe(1);
-        expect($("#test .sp-canvas-wrapper .sp-canvas#1").length).toBe(1);
-        expect($("#test .sp-canvas-wrapper .sp-canvas#1").attr("width")).toBe("200");
-        expect($("#test .sp-canvas-wrapper .sp-canvas#1").attr("height")).toBe("200");
+        ScratchPad.init('#test');
+        var instance = Object.values(ScratchPad.instances)[0];
+        expect($("#test canvas").length).toBe(2);
+        expect($("#test .sp-canvas-wrapper .sp-canvas#"+instance.id).length).toBe(1);
     });
     it('tests convert to Fabric calls FabricJS', function(){
-        spyOn(fabric,'Canvas');
+        spyOn(fabric,'Canvas').andReturn({
+            on: jasmine.createSpy("on")
+        });
         var config = {dimension:{width:200,height:200}};
-		spyOn(ScratchPad, 'bindEventsToMouseDown').andCallFake(function(){});
-        var instance = ScratchPad.init("#test", config);
+        ScratchPad.init("#test", config);
+        var instance = Object.values(ScratchPad.instances)[0];
         expect(fabric.Canvas).toHaveBeenCalledWith(instance.id,{isDrawingMode:true});
         expect($('#'+instance.id).attr('width')).toBe('200');
     });
@@ -197,6 +189,9 @@ describe('tests build shape tools',function(){
 		});
 		
 	});
+    afterEach(function(){
+        ScratchPad.instances = {};
+    });
 	it('tests circle', function(){
 		
 		spyOn(ScratchPad, 'addToCanvas').andCallFake(function(){});
@@ -289,31 +284,36 @@ describe('tests build shape tools',function(){
 	});	
 });
 describe('tests mouse down event firing',function(){
-	var instance ;
+	var instance, spyEvents = {};
 	beforeEach(function(){
-		instance = {
-			 canvas : {
-				getPointer : function(obj){
-					return {x:2,y:3};
-				},
-				 on: function(event, callback){
-					callback();
-				}
-			},
-			
-		};
-		spyOn(ScratchPad,'bindTextPlaceHandler').andCallFake(function(i,e){});
-		spyOn(ScratchPad,'toggleActiveMenu').andCallFake(function(i,e){});
-		spyOn(ScratchPad,'bindLineTools').andCallFake(function(i,e){});
-		spyOn(ScratchPad,'bindShapeTools').andCallFake(function(i,e){});
-		spyOn(ScratchPad,'bindTriangleHandler').andCallFake(function(i,e){});
-		spyOn(ScratchPad,'bindDeletionHandler').andCallFake(function(i,e){});
+        $("<div id='test'></div>").appendTo('body');
+		spyOn(ScratchPad,'bindTextPlaceHandler');
+		spyOn(ScratchPad,'toggleActiveMenu');
+		spyOn(ScratchPad,'bindLineTools');
+		spyOn(ScratchPad,'bindShapeTools');
+		spyOn(ScratchPad,'bindTriangleHandler');
+		spyOn(ScratchPad,'bindDeletionHandler');
+        spyOn(ScratchPadBuilder.prototype, "convertToFabric").andCallFake(function(spyInstance){
+            spyInstance.canvas = {
+                getPointer : function(obj){return {x:2,y:3};},
+                on: function(event, callback){
+                    spyEvents[event] = callback
+                },
+                trigger: function(event) {
+                    spyEvents[event]();
+                }
+            };
+        });
+        ScratchPad.init("#test");
+        instance = Object.values(ScratchPad.instances)[0];
 	});
+    afterEach(function(){
+        $('#test').remove();
+        ScratchPad.instances = {};
+    });
 	it('tests Text event firing', function(){
-		
 		instance.currentTool = 'Text';
-		ScratchPad.bindEventsToMouseDown(instance);
-		instance.canvas.on('mouse:down', function(){});
+		instance.canvas.trigger('mouse:down');
 		expect(ScratchPad.bindTextPlaceHandler).toHaveBeenCalled();
 		expect(ScratchPad.toggleActiveMenu).toHaveBeenCalled();
 		expect(ScratchPad.bindDeletionHandler).not.toHaveBeenCalled();
@@ -322,10 +322,8 @@ describe('tests mouse down event firing',function(){
 		expect(ScratchPad.bindShapeTools).not.toHaveBeenCalled();
 	});
 	it('tests Delete event firing', function(){
-		
 		instance.currentTool = 'Delete';
-		ScratchPad.bindEventsToMouseDown(instance);
-		instance.canvas.on('mouse:down', function(){});
+        instance.canvas.trigger('mouse:down');
 		expect(ScratchPad.bindTextPlaceHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindDeletionHandler).toHaveBeenCalled();
 		expect(ScratchPad.bindLineTools).not.toHaveBeenCalled();
@@ -333,10 +331,8 @@ describe('tests mouse down event firing',function(){
 		expect(ScratchPad.bindShapeTools).not.toHaveBeenCalled();
 	});
 	it('tests equilateral triangle event firing', function(){
-		
 		instance.currentTool = 'sp-eq-triangle';
-		ScratchPad.bindEventsToMouseDown(instance);
-		instance.canvas.on('mouse:down', function(){});
+		instance.canvas.trigger('mouse:down');
 		expect(ScratchPad.bindTextPlaceHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindDeletionHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindLineTools).not.toHaveBeenCalled();
@@ -344,10 +340,8 @@ describe('tests mouse down event firing',function(){
 		expect(ScratchPad.bindShapeTools).not.toHaveBeenCalled();
 	});
 	it('tests right angled triangle event firing', function(){
-		
 		instance.currentTool = 'sp-right-triangle';
-		ScratchPad.bindEventsToMouseDown(instance);
-		instance.canvas.on('mouse:down', function(){});
+		instance.canvas.trigger('mouse:down');
 		expect(ScratchPad.bindTextPlaceHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindDeletionHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindLineTools).not.toHaveBeenCalled();
@@ -355,10 +349,8 @@ describe('tests mouse down event firing',function(){
 		expect(ScratchPad.bindShapeTools).not.toHaveBeenCalled();
 	});
 	it('tests scelene triangle event firing', function(){
-		
 		instance.currentTool = 'sp-right-triangle';
-		ScratchPad.bindEventsToMouseDown(instance);
-		instance.canvas.on('mouse:down', function(){});
+		instance.canvas.trigger('mouse:down');
 		expect(ScratchPad.bindTextPlaceHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindDeletionHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindLineTools).not.toHaveBeenCalled();
@@ -366,10 +358,8 @@ describe('tests mouse down event firing',function(){
 		expect(ScratchPad.bindShapeTools).not.toHaveBeenCalled();
 	});
 	it('tests line event firing', function(){
-		
 		instance.currentTool = 'sp-line';
-		ScratchPad.bindEventsToMouseDown(instance);
-		instance.canvas.on('mouse:down', function(){});
+		instance.canvas.trigger('mouse:down');
 		expect(ScratchPad.bindTextPlaceHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindDeletionHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindLineTools).toHaveBeenCalled();
@@ -377,10 +367,8 @@ describe('tests mouse down event firing',function(){
 		expect(ScratchPad.bindShapeTools).not.toHaveBeenCalled();
 	});
 	it('tests ray event firing', function(){
-		
 		instance.currentTool = 'sp-ray';
-		ScratchPad.bindEventsToMouseDown(instance);
-		instance.canvas.on('mouse:down', function(){});
+		instance.canvas.trigger('mouse:down');
 		expect(ScratchPad.bindTextPlaceHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindDeletionHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindLineTools).toHaveBeenCalled();
@@ -388,10 +376,8 @@ describe('tests mouse down event firing',function(){
 		expect(ScratchPad.bindShapeTools).not.toHaveBeenCalled();
 	});
 	it('tests double ray event firing', function(){
-		
 		instance.currentTool = 'sp-double-ray';
-		ScratchPad.bindEventsToMouseDown(instance);
-		instance.canvas.on('mouse:down', function(){});
+		instance.canvas.trigger('mouse:down');
 		expect(ScratchPad.bindTextPlaceHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindDeletionHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindLineTools).toHaveBeenCalled();
@@ -399,10 +385,8 @@ describe('tests mouse down event firing',function(){
 		expect(ScratchPad.bindShapeTools).not.toHaveBeenCalled();
 	});
 	it('tests circle event firing', function(){
-		
 		instance.currentTool = 'sp-circle';
-		ScratchPad.bindEventsToMouseDown(instance);
-		instance.canvas.on('mouse:down', function(){});
+		instance.canvas.trigger('mouse:down');
 		expect(ScratchPad.bindTextPlaceHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindDeletionHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindLineTools).not.toHaveBeenCalled();
@@ -410,10 +394,8 @@ describe('tests mouse down event firing',function(){
 		expect(ScratchPad.bindShapeTools).toHaveBeenCalled();
 	});
 	it('tests rectangle event firing', function(){
-		
 		instance.currentTool = 'sp-rectangle';
-		ScratchPad.bindEventsToMouseDown(instance);
-		instance.canvas.on('mouse:down', function(){});
+		instance.canvas.trigger('mouse:down');
 		expect(ScratchPad.bindTextPlaceHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindDeletionHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindLineTools).not.toHaveBeenCalled();
@@ -421,10 +403,8 @@ describe('tests mouse down event firing',function(){
 		expect(ScratchPad.bindShapeTools).toHaveBeenCalled();
 	});
 	it('tests parallelogram event firing', function(){
-		
 		instance.currentTool = 'sp-parallelogram';
-		ScratchPad.bindEventsToMouseDown(instance);
-		instance.canvas.on('mouse:down', function(){});
+		instance.canvas.trigger('mouse:down');
 		expect(ScratchPad.bindTextPlaceHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindDeletionHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindLineTools).not.toHaveBeenCalled();
@@ -432,10 +412,8 @@ describe('tests mouse down event firing',function(){
 		expect(ScratchPad.bindShapeTools).toHaveBeenCalled();
 	});
 	it('tests eq trapezoid event firing', function(){
-		
 		instance.currentTool = 'sp-eq-trapezoid';
-		ScratchPad.bindEventsToMouseDown(instance);
-		instance.canvas.on('mouse:down', function(){});
+		instance.canvas.trigger('mouse:down');
 		expect(ScratchPad.bindTextPlaceHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindDeletionHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindLineTools).not.toHaveBeenCalled();
@@ -443,10 +421,8 @@ describe('tests mouse down event firing',function(){
 		expect(ScratchPad.bindShapeTools).toHaveBeenCalled();
 	});
 	it('tests trapezoid event firing', function(){
-		
 		instance.currentTool = 'sp-trapezoid';
-		ScratchPad.bindEventsToMouseDown(instance);
-		instance.canvas.on('mouse:down', function(){});
+		instance.canvas.trigger('mouse:down');
 		expect(ScratchPad.bindTextPlaceHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindDeletionHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindLineTools).not.toHaveBeenCalled();
@@ -454,10 +430,8 @@ describe('tests mouse down event firing',function(){
 		expect(ScratchPad.bindShapeTools).toHaveBeenCalled();
 	});
 	it('tests decagon event firing', function(){
-		
 		instance.currentTool = 'sp-decagon';
-		ScratchPad.bindEventsToMouseDown(instance);
-		instance.canvas.on('mouse:down', function(){});
+		instance.canvas.trigger('mouse:down');
 		expect(ScratchPad.bindTextPlaceHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindDeletionHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindLineTools).not.toHaveBeenCalled();
@@ -465,21 +439,17 @@ describe('tests mouse down event firing',function(){
 		expect(ScratchPad.bindShapeTools).toHaveBeenCalled();
 	});
 	it('tests pentagon event firing', function(){
-		
 		instance.currentTool = 'sp-pentagon';
-		ScratchPad.bindEventsToMouseDown(instance);
-		instance.canvas.on('mouse:down', function(){});
-		expect(ScratchPad.bindTextPlaceHandler).not.toHaveBeenCalled();
+		instance.canvas.trigger('mouse:down');
+        expect(ScratchPad.bindTextPlaceHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindDeletionHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindLineTools).not.toHaveBeenCalled();
 		expect(ScratchPad.bindTriangleHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindShapeTools).toHaveBeenCalled();
 	});
 	it('tests hexagon event firing', function(){
-		
 		instance.currentTool = 'sp-hexagon';
-		ScratchPad.bindEventsToMouseDown(instance);
-		instance.canvas.on('mouse:down', function(){});
+		instance.canvas.trigger('mouse:down');
 		expect(ScratchPad.bindTextPlaceHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindDeletionHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindLineTools).not.toHaveBeenCalled();
@@ -487,15 +457,13 @@ describe('tests mouse down event firing',function(){
 		expect(ScratchPad.bindShapeTools).toHaveBeenCalled();
 	});
 	it('tests octagon event firing', function(){
-		
 		instance.currentTool = 'sp-octagon';
-		ScratchPad.bindEventsToMouseDown(instance);
-		instance.canvas.on('mouse:down', function(){});
+		instance.canvas.trigger('mouse:down');
 		expect(ScratchPad.bindTextPlaceHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindDeletionHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindLineTools).not.toHaveBeenCalled();
 		expect(ScratchPad.bindTriangleHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindShapeTools).toHaveBeenCalled();
 	});
-	
+
 });

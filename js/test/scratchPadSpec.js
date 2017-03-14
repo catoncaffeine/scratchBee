@@ -16,21 +16,6 @@ describe('Test ScratchPad',function(){
         var $menu = $("#test").find(".sp-menu");
         expect($menu.html().indexOf("sp-eraser")).not.toBe(-1);
     });
-    it('tests init', function(){
-        spyOn(ScratchPadBuilder.prototype,'buildInstance').andCallThrough();
-        spyOn(ScratchPadBuilder.prototype,'buildMenu').andCallThrough();
-        spyOn(ScratchPadBuilder.prototype,'buildPad').andCallThrough();
-        spyOn(ScratchPadBuilder.prototype,'bindEvents').andCallThrough();
-        spyOn(ScratchPadBuilder.prototype,'convertToFabric').andCallThrough();
-		spyOn(ScratchPadBuilder.prototype,'bindEventsToMouseDown').andCallThrough();
-        
-        ScratchPad.init('#test');
-        var instance = Object.values(ScratchPad.instances)[0];
-        expect(ScratchPadBuilder.prototype.buildInstance).toHaveBeenCalledWith('#test', undefined);
-        expect(ScratchPadBuilder.prototype.buildMenu).toHaveBeenCalledWith(instance);
-        expect(ScratchPadBuilder.prototype.buildPad).toHaveBeenCalledWith(instance);
-        expect(ScratchPadBuilder.prototype.bindEvents).toHaveBeenCalledWith(instance);
-    });
     
     it('tests buildInstance', function(){
         ScratchPad.init('#test');
@@ -293,17 +278,6 @@ describe('tests mouse down event firing',function(){
 		spyOn(ScratchPad,'bindShapeTools');
 		spyOn(ScratchPad,'bindTriangleHandler');
 		spyOn(ScratchPad,'bindDeletionHandler');
-        spyOn(ScratchPadBuilder.prototype, "convertToFabric").andCallFake(function(spyInstance){
-            spyInstance.canvas = {
-                getPointer : function(obj){return {x:2,y:3};},
-                on: function(event, callback){
-                    spyEvents[event] = callback
-                },
-                trigger: function(event) {
-                    spyEvents[event]();
-                }
-            };
-        });
         ScratchPad.init("#test");
         instance = Object.values(ScratchPad.instances)[0];
 	});
@@ -463,7 +437,7 @@ describe('tests mouse down event firing',function(){
 		expect(ScratchPad.bindDeletionHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindLineTools).not.toHaveBeenCalled();
 		expect(ScratchPad.bindTriangleHandler).not.toHaveBeenCalled();
-		expect(ScratchPad.bindShapeTools).toHaveBeenCalled();
+		expect(ScratchPad.bindShapeTools).not.toHaveBeenCalled();
 	});
 
 });

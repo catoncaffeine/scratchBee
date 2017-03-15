@@ -10,13 +10,9 @@ describe('Test ScratchPad',function(){
         ScratchPad.init("#test");
         var $menu = $("#test").find(".sp-menu");
         expect($menu.html().indexOf('sp-drawing')).not.toBe(-1);
+        expect($menu.html().indexOf("sp-trash")).not.toBe(-1);
+        expect($menu.html().indexOf("sp-selector")).not.toBe(-1);
     });
-    it('tests buildMenu with unknown items', function(){
-        ScratchPad.init("#test");
-        var $menu = $("#test").find(".sp-menu");
-        expect($menu.html().indexOf("sp-eraser")).not.toBe(-1);
-    });
-    
     it('tests buildInstance', function(){
         ScratchPad.init('#test');
         var instance = Object.values(ScratchPad.instances)[0];
@@ -437,7 +433,7 @@ describe('tests mouse down event firing',function(){
 		expect(ScratchPad.bindDeletionHandler).not.toHaveBeenCalled();
 		expect(ScratchPad.bindLineTools).not.toHaveBeenCalled();
 		expect(ScratchPad.bindTriangleHandler).not.toHaveBeenCalled();
-		expect(ScratchPad.bindShapeTools).not.toHaveBeenCalled();
+		expect(ScratchPad.bindShapeTools).toHaveBeenCalled();
 	});
 
 });

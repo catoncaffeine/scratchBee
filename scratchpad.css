@@ -19,7 +19,7 @@
 	padding: 3px 15px;
 }
 
-.shape-menu {
+.sp-shape {
 	width: 25px;
 	height: 25px;
 	margin: 2px;
@@ -28,10 +28,10 @@
 	text-align: center;
 	display: inline-block;
 }
-.shape-menu .fa:hover{
+.sp-shape .fa:hover{
 
 }
-.sp-menu .shape-menu:hover{
+.sp-menu .sp-shape:hover{
 	border-left: 1px solid lightgray;
 	border-left: 1px solid lightgray;
 	border-radius: 2px;
@@ -63,7 +63,7 @@
 	margin: 0px 2px;
 }
 
-.shape-menu {
+.sp-shape {
 	text-align: center;
 	vertical-align: middle;
 }
@@ -76,7 +76,7 @@
 	width: 15px;
 }
 
-.shape-menu .sp-eq-trapezoid {
+.sp-shape .sp-eq-trapezoid {
 	display: inline-block;
 	background: url('img/trapezoid2.png') no-repeat;
 	
@@ -90,7 +90,7 @@
 	width: 15px;
 */
 }
-.shape-menu .sp-trapezoid {
+.sp-shape .sp-trapezoid {
 	display: inline-block;
 	background: url('img/trapezoid1.png') no-repeat;
 	
@@ -104,7 +104,7 @@
 	width: 15px;
 */
 }
-.shape-menu .sp-parallelogram {
+.sp-shape .sp-parallelogram {
 	display: inline-block;
 	background: url('img/parallelogram.png') no-repeat;
 	
@@ -119,7 +119,7 @@
 	background: black;
 */
 }
-.shape-menu .sp-rectangle {
+.sp-shape .sp-rectangle {
 	display: inline-block;
 	background: url('img/rectangle.png') no-repeat;
 	
@@ -132,12 +132,12 @@
 */
 }
 
-.shape-menu .sp-line {
+.sp-shape .sp-line {
 	display: inline-block;
 	background: url('img/line.png') no-repeat;
 	
 }
-.shape-menu .sp-circle {
+.sp-shape .sp-circle {
 	display: inline-block;
 	background: url('img/circle.png') no-repeat;
 	
@@ -152,7 +152,7 @@
 */
 
 }
-.shape-menu .sp-pentagon {
+.sp-shape .sp-pentagon {
 	display: inline-block;
 	background: url('img/pentagon.png') no-repeat;
 	
@@ -173,39 +173,39 @@
 	margin: 5px 0;
 }
 
-.shape-menu .sp-octagon {
+.sp-shape .sp-octagon {
 	display: inline-block;
 	background: url('img/octagon.png') no-repeat;
 	
 }
-.shape-menu .sp-hexagon {
+.sp-shape .sp-hexagon {
 	display: inline-block;
 	background: url('img/hexagon.png') no-repeat;
 	
 }
-.shape-menu .sp-decagon {
+.sp-shape .sp-decagon {
 	display: inline-block;
 	background: url('img/decagon.png') no-repeat;
 	
 }
-.shape-menu .sp-ray {
+.sp-shape .sp-ray {
 	display: inline-block;
 	background: url('img/arrow.png') no-repeat;
 	
 }
 
-.shape-menu .sp-double-ray {
+.sp-shape .sp-double-ray {
 	display: inline-block;
 	background: url('img/double-ray.png') no-repeat;
 	
 }
-.shape-menu .icon-size {
+.sp-shape .icon-size {
 	background-position: center;
 	background-size: 18px;
 	width: 18px;
 	height: 18px;
 }
-.shape-menu .sp-eq-triangle {
+.sp-shape .sp-eq-triangle {
 	display:inline-block;
 	width: 0;
 	height: 0;
@@ -213,7 +213,7 @@
 	border-right: 7px solid transparent;
 	border-bottom: 15px solid black;
 }
-.shape-menu .sp-scelene {
+.sp-shape .sp-scelene {
 	display:inline-block;
 	width: 0;
 	height: 0;
@@ -221,7 +221,7 @@
 	border-right: 4px solid transparent;
 	border-bottom: 13px solid black;
 }
-.shape-menu .sp-right-triangle {
+.sp-shape .sp-right-triangle {
 	display:inline-block;
 	width: 0;
 	height: 0;
@@ -229,7 +229,7 @@
 	border-bottom: 15px solid black;
 }
 /*
-.shape-menu .sp-pentagon::before {
+.sp-shape .sp-pentagon::before {
 	content: "";
 	position: absolute;
 	height: 0;

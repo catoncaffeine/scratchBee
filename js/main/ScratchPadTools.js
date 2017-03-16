@@ -22,7 +22,7 @@ var ScratchPadTools = {
 			_points.push({x: _startX -( 2* _arrowLength), y: _startY+ (_width/2)});
 			_points.push({x: _startX + _arrowLength, y: _startY - _arrowHeight});
 		}
-		console.log(_points);
+		
 		var ray = new fabric.Polygon(_points);
 		return ray;
 	},

@@ -1,6 +1,12 @@
+.sp-wrapper i {
+    display: inline-block;
+    cursor: pointer;
+}
 .sp-wrapper .fa {
-	padding: 5px;
-	margin: 1px;
+    width: 18px;
+    height: 18px;
+    background: 18px;
+    font-size: 18px;
 }
 
 .sp-wrapper .fa-arrow-left {
@@ -8,7 +14,6 @@
 }
 .sp-menu .hover:hover:not(.active):not(.fa-th-large):not(.disabled){
 	border-radius: 2px;
-	/*                background-color: lightgray;*/
 	box-shadow: 1px 1px 1px;
 	cursor: pointer;
 }
@@ -17,6 +22,12 @@
 }
 .sp-wrapper li a {
 	padding: 3px 15px;
+}
+
+.sp-menu-action {
+    display: inline-block;
+    padding: 5px;
+    vertical-align: middle;
 }
 
 .sp-shape {
@@ -28,28 +39,17 @@
 	text-align: center;
 	display: inline-block;
 }
-.sp-shape .fa:hover{
 
-}
 .sp-menu .sp-shape:hover{
 	border-left: 1px solid lightgray;
 	border-left: 1px solid lightgray;
 	border-radius: 2px;
-	/*                background-color: lightgray;*/
 	box-shadow: 1px 1px 1px;
 }
 .sp-wrapper .active{
 	background-color: darkgray;
 	color: white;
 	border-radius: 2px;
-	
-/*
-	border-bottom: 1px solid #eae8e8;
-	border-right: 1px solid #eae8e8;
-	border-top: 1px solid #a9a7a7;
-	border-left: 1px solid #a9a7a7;
-	border-radius: 2px;
-*/
 }
 .sp-wrapper .panel-body{
 	padding: 0px;
@@ -58,9 +58,10 @@
 	width: 100%;
 	height: 100%;
 }
-.sp-menu .vertical-divider{
+.sp-menu .vertical-divider {
+    display: inline;
 	border-right:1px dotted lightgrey;
-	margin: 0px 2px;
+	margin: 0px 3px;
 }
 
 .sp-shape {
@@ -68,7 +69,6 @@
 	vertical-align: middle;
 }
 .shapes-icon {
-	display: inline-block;
 	background: url('img/shapes.png') no-repeat;
 	background-position: center;
 	background-size: 15px;
@@ -76,93 +76,25 @@
 	width: 15px;
 }
 
-.sp-shape .sp-eq-trapezoid {
-	display: inline-block;
+.sp-eq-trapezoid {
 	background: url('img/trapezoid2.png') no-repeat;
-	
-/*
-	margin: 3px;
-	display: inline-block;
-	border-bottom: 10px solid black;
-	border-left: 5px solid transparent;
-	border-right: 5px solid transparent;
-	height: 0;
-	width: 15px;
-*/
 }
-.sp-shape .sp-trapezoid {
-	display: inline-block;
+.sp-trapezoid {
 	background: url('img/trapezoid1.png') no-repeat;
-	
-/*
-	margin: 3px;
-	display: inline-block;
-	border-bottom: 10px solid black;
-	border-left: 5px solid transparent;
-					border-right: 7px solid transparent;
-	height: 0;
-	width: 15px;
-*/
 }
-.sp-shape .sp-parallelogram {
-	display: inline-block;
+.sp-parallelogram {
 	background: url('img/parallelogram.png') no-repeat;
-	
-/*
-	margin: 3px;
-	display: inline-block;
-	width: 15px;
-	height: 10px;
-	-webkit-transform: skew(20deg);
-	-moz-transform: skew(20deg);
-	-o-transform: skew(20deg);
-	background: black;
-*/
 }
-.sp-shape .sp-rectangle {
-	display: inline-block;
+.sp-rectangle {
 	background: url('img/rectangle.png') no-repeat;
-	
-/*
-	margin: 3px;
-	height: 10px;
-	width: 15px;
-	display: inline-block;
-	background-color: black;
-*/
 }
 
-.sp-shape .sp-line {
-	display: inline-block;
+.sp-line {
 	background: url('img/line.png') no-repeat;
 	
 }
-.sp-shape .sp-circle {
-	display: inline-block;
-	background: url('img/circle.png') no-repeat;
-	
-/*
-	display: inline-block;
-	width: 15px;
-	height: 15px;
-	background: black;
-	-moz-border-radius: 50px;
-	-webkit-border-radius: 50px;
-	border-radius: 50px;
-*/
-
-}
-.sp-shape .sp-pentagon {
-	display: inline-block;
+.sp-pentagon {
 	background: url('img/pentagon.png') no-repeat;
-	
-/*
-	position: relative;
-	width: 15px;
-	border-width: 6px 2px 0;
-	border-style: solid;
-	border-color: green transparent;
-*/
 }
 
 .dropdown-menu.min-dropdown-width{
@@ -173,70 +105,42 @@
 	margin: 5px 0;
 }
 
-.sp-shape .sp-octagon {
-	display: inline-block;
+.sp-octagon {
 	background: url('img/octagon.png') no-repeat;
 	
 }
-.sp-shape .sp-hexagon {
-	display: inline-block;
+.sp-hexagon {
 	background: url('img/hexagon.png') no-repeat;
 	
 }
-.sp-shape .sp-decagon {
-	display: inline-block;
+.sp-decagon {
 	background: url('img/decagon.png') no-repeat;
 	
 }
-.sp-shape .sp-ray {
-	display: inline-block;
-	background: url('img/arrow.png') no-repeat;
-	
-}
 
-.sp-shape .sp-double-ray {
-	display: inline-block;
-	background: url('img/double-ray.png') no-repeat;
-	
-}
-.sp-shape .icon-size {
+.sp-icon {
 	background-position: center;
 	background-size: 18px;
 	width: 18px;
 	height: 18px;
 }
-.sp-shape .sp-eq-triangle {
-	display:inline-block;
+.sp-eq-triangle {
 	width: 0;
 	height: 0;
 	border-left: 7px solid transparent;
 	border-right: 7px solid transparent;
 	border-bottom: 15px solid black;
 }
-.sp-shape .sp-scelene {
-	display:inline-block;
+.sp-scelene {
 	width: 0;
 	height: 0;
 	border-left: 10px solid transparent;
 	border-right: 4px solid transparent;
 	border-bottom: 13px solid black;
 }
-.sp-shape .sp-right-triangle {
-	display:inline-block;
+.sp-right-triangle {
 	width: 0;
 	height: 0;
 	border-right: 7px solid transparent;
 	border-bottom: 15px solid black;
 }
-/*
-.sp-shape .sp-pentagon::before {
-	content: "";
-	position: absolute;
-	height: 0;
-	width: 0;
-	top: 0px;
-	left: -8px;
-	border-width: 0 8px 6px;
-	border-style: solid;
-	border-color: transparent transparent red;
-}*/

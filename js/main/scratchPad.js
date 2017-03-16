@@ -50,145 +50,174 @@ function ScratchPadBuilder() {
     var menuItems = {
             // can we use arrays here
             selector: {
+                action: "selector",
                 class: "sp-selector",
                 title: "Select",
                 icon: "fa fa-arrows-alt",
                 menuActionType: 1
             },
             drawing: {
+                action: "drawing",
                 class: "sp-drawing",
                 title: "Pencil",
                 icon: "fa fa-pencil",
                 menuActionType: 1
             },
             trash: {
+                action: "trash",
                 class: "sp-trash",
                 title: "Delete",
                 icon: "fa fa-trash",
                 menuActionType: 2
             },
             undo: {
+                action: "undo",
                 class:'sp-undo disabled',
                 title: 'Undo',
                 icon: "fa fa-undo",
                 menuActionType: 0
             },
             redo: {
+                action: "redo",
                 class: 'sp-redo disabled',
                 title: 'Redo',
                 icon: "fa fa-repeat",
                 menuActionType: 0
             },
             text: {
+                action: "text",
                 class:'sp-text',
                 title:'Add Text',
                 icon: "fa fa-font",
                 menuActionType: 1
             },
             line:{
-                class: 'sp-line',
-                icon: "sp-icon sp-line",
+                action: "line",
+                class: 'sp-draw sp-line',
+                icon: "sp-icon sp-line-i",
                 title:'Line',
                 menuActionType: 1,
+                sides: 1,
                 group: 0
             },
             ray: {
-                class: 'sp-ray',
+                action: "ray",
+                class: 'sp-draw sp-line',
                 icon: 'fa fa-long-arrow-right',
                 title: 'Ray',
                 menuActionType: 1,
                 group: 0
             },
             doubleray: {
-                class: 'sp-double-ray',
+                action: "doubleray",
+                class: 'sp-draw sp-line',
                 icon: 'fa fa-arrows-h',
                 title: 'Double Headed Ray',
                 menuActionType: 1,
                 group: 0
             },
             circle: {
-                class: 'sp-circle',
+                action: "circle",
+                class: 'sp-draw sp-shape',
                 icon: 'fa fa-circle',
                 title: 'Circle',
                 menuActionType: 1,
+                sides: 0,
                 group: 0
             },
             eq_triangle :{
-                class: 'sp-eq-triangle',
+                action: "eq_triangle",
+                class: 'sp-draw sp-shape',
                 icon:'sp-icon sp-eq-triangle',
                 title: 'Equilateral Triangle',
                 menuActionType: 1,
+                sides: 3,
                 group: 1
             },
             right_triangle: {
-                class: 'sp-right-triangle',
+                action: "right_triangle",
+                class: 'sp-draw sp-shape',
                 icon:'sp-icon sp-right-triangle',
                 title:'Right Angled Triangle',
                 menuActionType: 1,
                 group: 1
             },
             scelene_triangle: {
-                class: 'sp-scelene',
+                action: "scelene_triangle",
+                class: 'sp-draw sp-shape',
                 icon: 'sp-icon sp-scelene',
                 title: 'Scelene Triangle',
                 menuActionType: 1,
                 group: 1
             },
-            rectangle:{
-                class: 'sp-rectangle',
+            square:{
+                action: "square",
+                class: 'sp-draw sp-shape',
                 icon:'sp-icon sp-rectangle',
-                title: 'Rectangle',
+                title: 'Square',
                 menuActionType: 1,
+                sides: 4,
                 group: 2
             },
             parallelogram:{
-                class: 'sp-parallelogram',
+                action: "parallelogram",
+                class: 'sp-draw sp-shape',
                 icon: 'sp-icon sp-parallelogram',
                 title: 'Parallelogram',
                 menuActionType: 1,
                 group: 2
             },
-            trapezoid_1: {
-                class: 'sp-eq-trapezoid',
+            eq_trapezoid: {
+                action: "eq_trapezoid",
+                class: 'sp-draw sp-shape',
                 icon: 'sp-icon sp-eq-trapezoid',
                 title: 'Equilateral Trapezoid',
                 menuActionType: 1,
                 group: 2
             },
-            trapezoid_2: {
-                class: 'sp-trapezoid',
+            trapezoid: {
+                action: "trapezoid",
+                class: 'sp-draw sp-shape',
                 icon:'sp-icon sp-trapezoid',
                 title: 'Trapezoid',
                 menuActionType: 1,
                 group: 2
             },
             pentagon: {
-                class: 'sp-pentagon',
+                action: "pentagon",
+                class: 'sp-draw sp-shape',
                 icon: 'sp-icon sp-pentagon',
                 title: 'Pentagon',
                 menuActionType: 1,
+                sides: 5,
                 group: 3
             },
             hexagon: {
-                class: 'sp-hexagon',
+                action: "hexagon",
+                class: 'sp-draw sp-shape',
                 icon: 'sp-icon sp-hexagon',
                 title: 'Hexagon',
                 menuActionType: 1,
+                sides: 6,
                 group: 3
             },
             octagon: {
-                class: 'sp-octagon',
+                action: "octagon",
+                class: 'sp-draw sp-shape',
                 icon: 'sp-icon sp-octagon',
                 title: 'Octagon',
+                sides: 8,
                 group: 3
             },
             decagon: {
-            class: 'sp-decagon',
-            icon: 'sp-icon sp-decagon',
-            title: 'Decagon',
-            menuActionType: 1,
-            group: 3
-        }
+                action: "decagon",
+                class: 'sp-draw sp-shape',
+                icon: 'sp-icon sp-decagon',
+                title: 'Decagon',
+                menuActionType: 1,
+                sides: 10,
+                group: 3
+            }
         },
         menuChunks = {
             basic: {
@@ -211,7 +240,7 @@ function ScratchPadBuilder() {
                 items:[
                     menuItems.line, menuItems.ray, menuItems.doubleray, menuItems.circle, 
                     menuItems.eq_triangle, menuItems.right_triangle, menuItems.scelene_triangle,
-                    menuItems.rectangle, menuItems.parallelogram, menuItems.trapezoid_1, menuItems.trapezoid_2,
+                    menuItems.square, menuItems.parallelogram, menuItems.eq_trapezoid, menuItems.trapezoid,
                     menuItems.pentagon, menuItems.hexagon, menuItems.octagon, menuItems.decagon
                 ], 
                 type: "dropdown",
@@ -227,23 +256,11 @@ function ScratchPadBuilder() {
         buildInstance = function(wrapper, config) {
             var identifier = new Date().getTime();
             var instance = {id: "sp_" + identifier};
+            var config = config || {};
             instance.domElement = $(wrapper)[0];
-
-            if(config === undefined || config.menu === undefined) {
-                instance.menu = getDefaultMenu();
-            } else {
-                instance.menu = config.menu;
-            }
-
-            if(config === undefined || config.dimension === undefined) {
-                instance.dimension = getDefaultDimension();
-            } else {
-                instance.dimension = config.dimension;
-            }
-
-            if(config !== undefined && config.menus !== undefined){
-                instance.menus = config.menus;
-            }
+            instance.menu = config.menu || getDefaultMenu();
+            instance.dimension = config.dimension || getDefaultDimension();
+            instance.defaultAction = config.defaultAction || getDefaultAction();
             instance.wrapper = $(""
                             +"<div class='sp-wrapper panel panel-default' data-sp-id='"+instance.id+"'"
                             +   "style='display:inline-block'>"+
@@ -267,7 +284,7 @@ function ScratchPadBuilder() {
                 }
             });
             //make this user defined//
-            $menu.find("[data-action='sp-drawing']").addClass("active");
+            $menu.find("[data-action='drawing']").addClass("active");
         },
         buildMenuChunk = function(chunk) {
             var $chunk = $("<span class='sp-menu-chunk "+chunk.class+"'></span>");
@@ -305,9 +322,8 @@ function ScratchPadBuilder() {
         },
         buildMenuButton = function(menuItem) {
             return ""
-                +"<div class='sp-menu-action' "
-                    +"data-action='"+menuItem.class+"' "
-                    +"data-action-type='"+menuItem.menuActionType+"'"
+                +"<div class='sp-menu-action "+menuItem.class+"' "
+                    +"data-action='"+menuItem.action+"' "
                     +"data-toggle='tooltip' "
                     +"title='"+menuItem.title+"'"
                 +">"
@@ -315,10 +331,14 @@ function ScratchPadBuilder() {
                 +"</div>";
         },
         getDefaultMenu = function() {
+            //extract this//
             return [menuItems.selector, menuItems.drawing, menuItems.trash];
         },
         getDefaultDimension = function() {
             return {width: 500, height: 500};
+        },
+        getDefaultAction = function() {
+            return menuItems.selector.action;
         },
         buildPad = function(instance){
             var width = instance.dimension.width, height = instance.dimension.height;
@@ -336,7 +356,7 @@ function ScratchPadBuilder() {
             instance.canvas = new fabric.Canvas(instance.id, {isDrawingMode: true});
             instance.canvas.freeDrawingBrush = new fabric.PencilBrush(instance.canvas);
             instance.canvas.freeDrawingBrush.width = 2;
-            drawer.bindMouseDownEvents(instance);
+            drawer.bindMouseDownEvents(instance, menuItems);
         },
         
         toggleActiveMenu =  function(instance, clickedElement){
@@ -348,7 +368,8 @@ function ScratchPadBuilder() {
                     $dropdown.find(".sp-menu-blank").show();
                     $dropdown.find(".sp-menu-selected").attr("class", ".sp-menu-selected").hide();
                 }
-                return $(instance.wrapper).find("[data-action='sp-selector']").addClass("active");
+                $(instance.wrapper).find("[data-action='"+instance.defaultAction+"']").addClass("active");
+                changeCurrentTool(instance, instance.defaultAction);
             } else {
                 $(instance.wrapper).find(".sp-menu .active").removeClass("active");
                 $(clickedElement).addClass('active');
@@ -357,21 +378,28 @@ function ScratchPadBuilder() {
                     $dropdown.find(".sp-menu-blank").hide();
                     $dropdown.find(".sp-menu-selected").attr("class", "sp-menu-selected " + icon).show();
                 }
-                return $(clickedElement);
+                changeCurrentTool(instance, $(clickedElement).data("action"));
+            }
+        },
+        changeCurrentTool = function(instance, action) {
+            instance.currentTool = action;
+            if(action === "drawing") {
+                instance.canvas.isDrawingMode = true;
+            } else {
+                instance.canvas.isDrawingMode = false;
             }
         },
         
         bindMenuEvents = function(instance, drawer) {
             $(instance.wrapper).on("click", ".sp-menu-action", function() {
-                var actionType = $(this).data("action-type");
+                var action = $(this).data("action");
+                var actionType = menuItems[action].menuActionType;
                 if(actionType == menuActionType.immediate) {
-                    drawer.takeMenuAction(instance, $(this));
+                    drawer.takeAction(null, instance, action);
                 } else {
-                    var $currentTool = toggleActiveMenu(instance, this);
-                    drawer.changeCurrentTool(instance, $currentTool);
+                    toggleActiveMenu(instance, this);
                     if(actionType == menuActionType.both){
-
-                        drawer.takeMenuAction(instance, $currentTool);
+                        drawer.takeAction(null, instance, instance.currentTool);
                     }
                 }
             });
@@ -422,67 +450,139 @@ function ScratchPadBuilder() {
     return {
         build: build,
         getDefaultMenu: getDefaultMenu,
-        getDefaultDimension: getDefaultDimension
+        getDefaultDimension: getDefaultDimension,
+        getDefaultAction: getDefaultAction
     };
 };
 
 function ScratchPadDrawer() {
-    var bindMouseDownEvents = function(instance, drawer){
+    var bindMouseDownEvents = function(instance, menuItems){
+        var drawer = this;
             instance.canvas.on('mouse:down', function(e){
-                var action = $(instance.currentTool).data("action");
-                if(instance.currentTool){
-                    switch(action){	
-                        case 'sp-text':
-                            bindTextPlaceHandler(instance,e);
-                            instance.currentTool = '';
-                            break;
-                        case 'sp-trash':
-                            bindDeletionHandler(instance, e);
-                            break;
-                        case 'sp-eq-triangle':		
-                        case 'sp-right-triangle':
-                        case 'sp-scelene':
-                            bindTriangleHandler(instance,e);
-                            break;
-                        case 'sp-line':
-                        case 'sp-ray':
-                        case 'sp-double-ray':
-                            bindLineTools(instance,e);
-                            break;
-                        case 'sp-circle':
-                        case 'sp-rectangle':
-                        case 'sp-parallelogram':
-                        case 'sp-eq-trapezoid':
-                        case 'sp-trapezoid':
-                        case 'sp-decagon':
-                        case 'sp-octagon':
-                        case 'sp-pentagon':
-                        case 'sp-hexagon':
-                            bindShapeTools(instance,e);
-                            break;
+                if(instance.currentTool) {
+                    var menuItem = menuItems[instance.currentTool];
+                    if(menuItem.class.indexOf("sp-draw") !== -1) {
+                        drawer.draw(e, instance, menuItem);
+                    } else {
+                        drawer.takeAction(e, instance, menuItem.action);
                     }
                 }
             })
         },
-        changeCurrentTool = function(instance, tool) {
-            var action = $(tool).data("action");
-            instance.currentTool = tool;
-            if(action === "sp-drawing") {
-                instance.canvas.isDrawingMode = true;
+        draw = function(event, instance, menuItem) {
+            var obj, pointer = instance.canvas.getPointer(event.e);
+            if(event && event.target){
+                return;
+            }
+            if(menuItem.class.indexOf("sp-line") !== -1) {
+                obj = makeLine(instance, menuItem.action);
+            } else if(menuItem.sides !== undefined) {
+                obj = makeRegularShape(menuItem.sides);
             } else {
-                instance.canvas.isDrawingMode = false;
+                obj = makeIrregularShape(instance.currentTool);
+            }
+            if(obj){
+                obj.set({left:pointer.x,top:pointer.y})
+                addToCanvas(instance, obj);
             }
         },
-        takeMenuAction = function(instance, tool) {
-            var action = $(tool).data("action");
-            if(action === "sp-trash") {
-                var current = this;
-                instance.canvas.isDrawingMode = false;
-                bindDeletionHandler(instance);
+        makeLine = function(instance, event) {
+            var pointer = instance.canvas.getPointer(event.e)
+            var _x = pointer.x;
+            var _y = pointer.y;
+            var tool = new fabric.Line([_x,_y,_x+100,_y],{left:_x, top:_y,stroke:'black',strokeWidth:2});
+            if(instance.currentTool === 'ray'){
+                tool = makeRay({length:100, width:4,startX:_x, startY:_y });
+            } else if(instance.currentTool === 'doubleray'){
+                tool = makeRay({length:100, width:4,startX:_x+15, startY:_y, doubleHeaded:true });
+            }
+            return tool;
+        },
+        makeRay = function(config) {
+            var _length = (config.length || config.length<50)? config.length:50;
+            var	_startX = config.startX ? config.startX: 100;
+            var _startY = config.startY ? config.startY: 100;
+            var _width = config.width? config.width: 2;
+            var _doubleHeaded = config.doubleHeaded;
+
+            var _arrowLength = _length*.07;
+            var _arrowHeight = _length * .07;
+            var _points = [];
+            _points.push({x:_startX,y:_startY});
+            _points.push({x:_startX+_length,y:_startY});
+            _points.push({x: (_startX + _length) - _arrowLength, y: _startY-_arrowHeight});
+            _points.push({x: (_startX + _length) +(2*_arrowLength),y: _startY +(_width/2)});
+            _points.push({x: (_startX + _length) - _arrowLength, y: _startY+ (_width) +_arrowHeight});
+            _points.push({x: _startX+ _length, y: _startY + _width});
+            _points.push({x: _startX,y: _startY + _width});
+
+            if(_doubleHeaded){
+                _points.push({x: _startX + _arrowLength, y: _startY+_width + _arrowHeight});
+                _points.push({x: _startX -( 2* _arrowLength), y: _startY+ (_width/2)});
+                _points.push({x: _startX + _arrowLength, y: _startY - _arrowHeight});
+            }
+
+            var ray = new fabric.Polygon(_points);
+            return ray;
+        },
+        makeRegularShape = function(sides) {
+            if(sides === 0) {
+                return new fabric.Circle({radius:50, fill:'black'});
+            } else if(sides === 3) {
+                return  new fabric.Triangle({height:100, width:100});
+            } else if(sides === 4) {
+                return  new fabric.Rect({width:100, height:100, fill:'black'});
+            } else {
+                return makeEqualSidedShapes(sides);
             }
         },
-        bindTextPlaceHandler = function(instance, event){
-            if(event.target){
+        makeEqualSidedShapes = function(sides, config) {
+            var _sides = sides || 4, //just in case
+                _stroke = "black", //future feature
+                _fill = 'black', //future feature
+                _size = 60, //future feature
+                _centerX = 100,
+                _centerY = 100;
+            var x = _centerX + _size * Math.cos(0),
+                y = _centerY + _size * Math.sin(0),
+                coords = [{x:x,y:y}];
+
+            for(var i =1; i<= _sides; i++) {
+                var x = +(_centerX+ _size * Math.cos(i*2*Math.PI/_sides)).toFixed(2), 
+                    y = +(_centerY+ _size * Math.sin(i*2*Math.PI/_sides)).toFixed(2);
+                coords.push({x:x,y:y});
+            }
+
+            var pol = new fabric.Polygon(coords,{
+                stroke:_stroke,fill:_fill
+            });
+            return pol;
+        },
+        makeIrregularShape = function(shape) {
+            switch (shape) { 
+                case "right_triangle":
+                    return new fabric.Polygon([{x:0,y:0}, {x:0, y:100},{x:100, y:100}]);
+                case "scelene_triangle":
+                    return new fabric.Polygon([{x:100,y:100},{x:200,y:35},{x:160,y:100}]);
+                case 'parallelogram':
+                    return new fabric.Rect({width:100, height:50, fill:'black',skewX:320});
+                case 'eq_trapezoid':
+                    return new fabric.Polygon([{x:30, y:150}, {x:120, y:150}, {x:150, y: 225}, {x:0, y:225}],{fill:'black'});
+                case 'trapezoid':
+                    return new fabric.Polygon([{x:60,y:150}, {x:150, y: 150}, {x:150, y: 225}, {x:0, y:225}],{fill:'black'});
+                default: 
+                    return;
+            }
+        },
+        takeAction = function(event, instance, action) {
+            //text, trash, redo, undo
+            //both from menu and mouse down
+            if(typeof this[action] === 'function') {
+                this[action](instance, event);    
+            }
+        },
+        text = function(instance, event){
+            if(event && event.target){
                 return;
             }
             var pointer = instance.canvas.getPointer(event.e);
@@ -492,20 +592,19 @@ function ScratchPadDrawer() {
                 top:pointer.y,
                 width:150})
             );
-
         },
-        bindDeletionHandler = function(instance,event){
+        trash = function(instance, event){
             var canvas = instance.canvas;
+            instance.canvas.isDrawingMode = false;
             var activeGroup = canvas.getActiveGroup();
             var activeObject = canvas.getActiveObject();
-            if(activeGroup){
+            if(activeGroup) {
                 var objects = activeGroup.getObjects();
                 canvas.discardActiveGroup(); 
                 objects.forEach(function(object){
                     canvas.remove(object);
                 })
-            }else if(activeObject){
-
+            } else if(activeObject){
                 /*
                  * I-Text objects bubble the mousedown event.
                  * Since it is being deleted, canvas object from iText is removed
@@ -515,90 +614,6 @@ function ScratchPadDrawer() {
                     activeObject.off('mousedown');
                 }
                 canvas.remove(activeObject);
-            }
-
-        },
-        bindTriangleHandler = function(instance, event){
-            if(event.target){
-                return;
-            }
-
-            var pointer = instance.canvas.getPointer(event.e);
-            var _left = pointer.x;
-            var _top = pointer.y;
-            var triangle;
-            var action = $(instance.currentTool).data("action");
-            
-            if(action ==='sp-right-triangle') {	
-                triangle = new fabric.Polygon([{x:0,y:0}, {x:0, y:100},{x:100, y:100}]);
-            }else if(action === 'sp-scelene' ) {
-                triangle = new fabric.Polygon([
-                    {x:100,y:100},{x:200,y:35},{x:160,y:100}
-                ])
-            } else { //default to eq-triangle
-                triangle = new fabric.Triangle({height:100, width:100});
-            }
-            triangle.set({left:_left,top:_top})
-            addToCanvas(instance, triangle);
-        },
-        bindLineTools = function(instance, event){
-            if(event.target){
-                return;
-            }
-            var pointer = instance.canvas.getPointer(event.e)
-            var _x = pointer.x;
-            var _y = pointer.y;
-            var tool = new fabric.Line([_x,_y,_x+100,_y],{left:_x, top:_y,stroke:'black',strokeWidth:2});
-            var action = $(instance.currentTool).data("action");
-            if(action === 'sp-ray'){
-                tool = ScratchPadTools.buildRay({length:100, width:4,startX:_x, startY:_y });
-            }else if(action === 'sp-double-ray'){
-                tool = ScratchPadTools.buildRay({length:100, width:4,startX:_x+15, startY:_y, doubleHeaded:true });
-            }
-            addToCanvas(instance,tool);
-        },
-        bindShapeTools = function(instance, event){
-            if(event.target){
-                return;
-            }
-            var action = $(instance.currentTool).data("action");
-            var obj;
-            var pointer = instance.canvas.getPointer(event.e);
-
-            switch (action){
-                case 'sp-circle':
-                    obj = new fabric.Circle({radius:50, fill:'black'});
-                    break;
-                case 'sp-parallelogram':
-                    obj = new fabric.Rect({width:100, height:50, fill:'black',skewX:320});
-                    break;
-                case 'sp-rectangle':
-                    obj = new fabric.Rect({width:100, height:100, fill:'black'});
-                    break;
-                case 'sp-eq-trapezoid':
-                    obj = new fabric.Polygon([{x:30, y:150}, {x:120, y:150}, {x:150, y: 225}, {x:0, y:225}],{fill:'black'});
-                    break;
-                case 'sp-trapezoid':
-                    obj = new fabric.Polygon([{x:60,y:150}, {x:150, y: 150}, {x:150, y: 225}, {x:0, y:225}],{fill:'black'});
-                    break;
-                case 'sp-hexagon':
-                    obj = ScratchPadTools.createPolygon({sides:6,centerX:pointer.x,centerY:pointer.y,size: 60});
-                    break;
-                case 'sp-pentagon':
-                    obj = ScratchPadTools.createPolygon({sides:5,centerX:pointer.x,centerY:pointer.y,size: 60});
-                    break;
-                case 'sp-octagon':
-                    obj = ScratchPadTools.createPolygon({sides:8,centerX:pointer.x,centerY:pointer.y,size: 60});
-                    break;
-                case 'sp-decagon':
-                    obj = ScratchPadTools.createPolygon({sides:10,centerX:pointer.x,centerY:pointer.y,size: 60});
-                    break;
-
-            }
-            
-            if(obj){
-                obj.set({left:pointer.x,top:pointer.y})
-                addToCanvas(instance, obj);
             }
         },
         pushToUndoBuffer = function(instance,object){
@@ -614,7 +629,9 @@ function ScratchPadDrawer() {
         };
     return {
         bindMouseDownEvents: bindMouseDownEvents,
-        changeCurrentTool: changeCurrentTool,
-        takeMenuAction: takeMenuAction
+        takeAction: takeAction,
+        trash: trash,
+        text: text,
+        draw: draw
     }
 };

@@ -25,22 +25,20 @@ var ScratchPad = { // allows the client to create, manipulate, and destroy scrat
 		return ScratchPad.instances[id] ?  ScratchPad.instances[id].canvas.toDataURL() : "";
 	},
 	destroyAll:  function(){
-		Object.keys(ScratchPad.instances).forEach(function(ele){ 
-			var instance = ScratchPad.instances[ele]; 
-			ScratchPad.destroyInstance(instance);
+		Object.keys(ScratchPad.instances).forEach(function(id){
+			ScratchPad.destroyInstanceById(id);
 		}); 
 	},
 	destroyInstance: function(instance){
-		if(instance !== undefined && ScratchPad.instances[instance.id]){
-			instance.canvas.dispose();
-
-			$(instance.domElement).empty();
-			delete ScratchPad.instances[instance.id];
+		if(instance && instance.id){
+            ScratchPad.destroyInstanceById(instance.id);
 		}
 	},
 	destroyInstanceById: function(id){
-		if(ScratchPad.instances[id]){
-			ScratchPad.destroyInstance(ScratchPad.instances[id]);
+		if(ScratchPad.instances[id]) {         
+            ScratchPad.instances[id].canvas.dispose();
+            $(ScratchPad.instances[id].domElement).empty();
+            delete ScratchPad.instances[id];
 		}
 	}
 }
@@ -54,9 +52,9 @@ function ScratchPadBuilder() {
                 icon: "fa fa-arrows-alt",
                 menuActionType: 1
             },
-            drawing: {
-                action: "drawing",
-                class: "sp-drawing",
+            pencil: {
+                action: "pencil",
+                class: "sp-pencil",
                 title: "Pencil",
                 icon: "fa fa-pencil",
                 menuActionType: 1
@@ -220,7 +218,7 @@ function ScratchPadBuilder() {
         menuChunks = {
             basic: {
                 class: "sp-menu-basic",
-                items: [menuItems.selector, menuItems.drawing, menuItems.trash],
+                items: [menuItems.selector, menuItems.pencil, menuItems.trash],
                 type: "group"
             },
             undo: {
@@ -282,7 +280,7 @@ function ScratchPadBuilder() {
                 }
             });
             //make this user defined//
-            $menu.find("[data-action='drawing']").addClass("active");
+            $menu.find("[data-action='pencil']").addClass("active");
         },
         buildMenuChunk = function(chunk) {
             var $chunk = $("<span class='sp-menu-chunk "+chunk.class+"'></span>");
@@ -303,7 +301,7 @@ function ScratchPadBuilder() {
                 
                 $ul = $chunk.find("ul");
             
-            chunk.items.forEach(function(menuItem){
+            chunk.items.forEach(function(menuItem) {
                 var group = menuItem.group || 0;
                 var $li = $chunk.find("ul li[data-group='"+group+"']");
                 if(!$li.length) {
@@ -330,13 +328,13 @@ function ScratchPadBuilder() {
         },
         getDefaultMenu = function() {
             //extract this//
-            return [menuItems.selector, menuItems.drawing, menuItems.trash];
+            return [menuItems.selector, menuItems.pencil, menuItems.trash];
         },
         getDefaultDimension = function() {
             return {width: 500, height: 500};
         },
         getDefaultAction = function() {
-            return menuItems.selector.action;
+            return menuItems.pencil.action;
         },
         buildPad = function(instance){
             var width = instance.dimension.width, height = instance.dimension.height;
@@ -381,7 +379,7 @@ function ScratchPadBuilder() {
         },
         changeCurrentTool = function(instance, action) {
             instance.currentTool = action;
-            if(action === "drawing") {
+            if(action === "pencil") {
                 instance.canvas.isDrawingMode = true;
             } else {
                 instance.canvas.isDrawingMode = false;
@@ -589,7 +587,7 @@ function ScratchPadDrawer() {
                 top:pointer.y,
                 width:150})
             );
-            $(instance.wrapper).find("[data-action='"+instance.defaultAction+"']").click();
+            $(instance.wrapper).find("[data-action='selector']").click();
         },
         trash = function(instance, event){
             var canvas = instance.canvas;

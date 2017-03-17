@@ -3,13 +3,13 @@ describe('Test ScratchPad',function(){
         $("<div id='test'></div>").appendTo('body');
     });
     afterEach(function(){
+        ScratchPad.destroyAll();
         $('#test').remove();
-        ScratchPad.instances = {};
     });
     it('tests buildMenu ', function(){
         ScratchPad.init("#test");
         var $menu = $("#test").find(".sp-menu");
-        expect($menu.html().indexOf('sp-drawing')).not.toBe(-1);
+        expect($menu.html().indexOf('sp-pencil')).not.toBe(-1);
         expect($menu.html().indexOf("sp-trash")).not.toBe(-1);
         expect($menu.html().indexOf("selector")).not.toBe(-1);
     });
@@ -41,10 +41,10 @@ describe('Test ScratchPad',function(){
     });
     it('tests convert to Fabric calls FabricJS', function(){
         spyOn(fabric,'Canvas').andReturn({
-            on: jasmine.createSpy("on")
+            on: jasmine.createSpy("on"),
+            dispose: jasmine.createSpy("dispose")
         });
-        var config = {dimension:{width:200,height:200}};
-        ScratchPad.init("#test", config);
+        ScratchPad.init("#test", {dimension: {width:200,height:200}});
         var instance = Object.values(ScratchPad.instances)[0];
         expect(fabric.Canvas).toHaveBeenCalledWith(instance.id,{isDrawingMode:true});
         expect($('#'+instance.id).attr('width')).toBe('200');
@@ -114,7 +114,7 @@ describe('test scratchpad destroy methods', function(){
         expect(ScratchPad.instances['1']).toBeDefined();
     });
 });
-describe('tests events on scratchpad menu', function(){
+describe('Scrath Pad Menu - ', function(){
     var instance;
     beforeEach(function(){
         $("<div id='test'></div>").appendTo('body');
@@ -122,26 +122,27 @@ describe('tests events on scratchpad menu', function(){
         instance = Object.values(ScratchPad.instances)[0];
     });
     afterEach(function(){
+        ScratchPad.destroyAll();
         $('#test').remove();
-        ScratchPad.instances = {};
     });
-    it("sets drawing as default menu", function(){
-        expect($("#test [data-action='drawing']").hasClass("active")).toBe(true);
+    it("sets pencil as default menu", function(){
+        console.log($("#test .active")[0]);
+        expect($("#test .active").data("action")).toBe("pencil");
     });
-    it("sets clicked item as active, and turns back to selector if unselected", function(){
+    it("sets clicked item as active, and turns back to pencil if unselected", function(){
         $("#test [data-action='trash']").click();
-        expect($("#test [data-action='drawing']").hasClass("active")).toBe(false);
+        expect($("#test [data-action='pencil']").hasClass("active")).toBe(false);
         expect($("#test [data-action='trash']").hasClass("active")).toBe(true);
         
         $("#test [data-action='trash']").click();
         expect($("#test [data-action='trash']").hasClass("active")).toBe(false);
-        expect($("#test [data-action='selector']").hasClass("active")).toBe(true);
+        expect($("#test [data-action='pencil']").hasClass("active")).toBe(true);
     });
-    it("turns drawing mode on and off", function(){
+    it("turns pencil mode on and off", function(){
         expect(instance.canvas.isDrawingMode).toBe(true);
         $("#test [data-action='selector']").click();
         expect(instance.canvas.isDrawingMode).toBe(false);
-        $("#test [data-action='drawing']").click();
+        $("#test [data-action='pencil']").click();
         expect(instance.canvas.isDrawingMode).toBe(true);
     });
     it("does not set current tool if action is immediate", function(){
@@ -158,7 +159,7 @@ describe('tests events on scratchpad menu', function(){
     });
 });
 
-describe('tests text',function(){
+describe('Text - ',function(){
     var instance, setSpy, textSpy;
     beforeEach(function(){
         $("body").append("<div id='test'></div>");
@@ -173,10 +174,10 @@ describe('tests text',function(){
         fabric.Textbox = textSpy;
     });
     afterEach(function(){
+        ScratchPad.destroyAll();
         $('#test').remove();
-        ScratchPad.instances = {};
     });
-	it('tests add text', function(){ 
+	it('adds text just one time', function(){ 
 		$("#test [data-action='text']").click();
         expect(instance.currentTool).toBe("text");
         instance.canvas.trigger('mouse:down');
@@ -187,10 +188,11 @@ describe('tests text',function(){
                 top: 3,
                 width: 150
         });
+        expect(instance.currentTool).toBe("selector");
 	});
 });
 
-describe("Trash Can", function(){
+describe("Trash Can -", function(){
     var instance;
     beforeEach(function(){
         $("body").append("<div id='test'></div>");
@@ -200,8 +202,8 @@ describe("Trash Can", function(){
         spyOn(instance.canvas, "discardActiveGroup");
     });
     afterEach(function(){
-        $('#test').remove();
         ScratchPad.instances = {};
+        $('#test').remove();
     });
     it('deletes selected object', function(){
         spyOn(instance.canvas, "remove").andCallThrough();
@@ -217,7 +219,7 @@ describe("Trash Can", function(){
         expect(instance.canvas._objects.length).toBe(0);
         expect(instance.canvas.remove).toHaveBeenCalledWith(object);
     });
-    it("delete object groups", function(){
+    it("deletes object groups", function(){
         spyOn(instance.canvas, "remove");
         expect((instance.canvas._objects).length).toBe(0);
         $("#test [data-action='line']").click();
@@ -233,7 +235,7 @@ describe("Trash Can", function(){
     });
 });
 
-describe('build lines', function(){
+describe('Build Lines - ', function(){
     var instance, setSpy, lineSpy, polygonSpy;
     beforeEach(function(){
         $("body").append("<div id='test'></div>");
@@ -253,9 +255,9 @@ describe('build lines', function(){
     });
     afterEach(function(){
         $('#test').remove();
-        ScratchPad.instances = {};
+        ScratchPad.destroyAll();
     });
-    it('tests line', function(){
+    it('builds line', function(){
         $("#test [data-action='line']").click();
         expect(instance.currentTool).toBe("line");
         instance.canvas.trigger('mouse:down');
@@ -263,7 +265,7 @@ describe('build lines', function(){
         expect(lineSpy).toHaveBeenCalledWith([ 2, 3, 102, 3 ], { left : 2, top : 3, stroke : 'black', strokeWidth : 2 });
         expect(polygonSpy).not.toHaveBeenCalled();
 	});
-	it('tests ray', function(){
+	it('builds ray', function(){
         $("#test [data-action='ray']").click();
         expect(instance.currentTool).toBe("ray");
         instance.canvas.trigger('mouse:down');
@@ -271,7 +273,7 @@ describe('build lines', function(){
         expect(lineSpy).toHaveBeenCalledWith([ 2, 3, 102, 3 ], { left : 2, top : 3, stroke : 'black', strokeWidth : 2 });
         expect(polygonSpy).toHaveBeenCalledWith([ { x : 2, y : 3 }, { x : 102, y : 3 }, { x : 95, y : -4.000000000000001 }, { x : 116, y : 5 }, { x : 95, y : 14 }, { x : 102, y : 7 }, { x : 2, y : 7 } ]);
 	});
-	it('tests double ray', function(){
+	it('builds double ray', function(){
 		$("#test [data-action='doubleray']").click();
         expect(instance.currentTool).toBe("doubleray");
         instance.canvas.trigger('mouse:down');
@@ -281,7 +283,7 @@ describe('build lines', function(){
 	});
 });
 
-describe('build shapes',function(){
+describe('Build Shapes - ',function(){
 	var instance, setSpy, circleSpy, triangleSpy, rectSpy, polygonSpy;
 	beforeEach(function(){
         $("body").append("<div id='test'></div>");
@@ -303,10 +305,10 @@ describe('build shapes',function(){
         fabric.Polygon = polygonSpy;
 	});
     afterEach(function(){
+        ScratchPad.destroyAll();
         $('#test').remove();
-        ScratchPad.instances = {};
     });
-	it('tests circle', function(){        
+	it('builds circle', function(){        
         $("#test [data-action='circle']").click();
         expect(instance.currentTool).toBe("circle");
         instance.canvas.trigger('mouse:down');
@@ -317,7 +319,7 @@ describe('build shapes',function(){
 		expect(polygonSpy).not.toHaveBeenCalled();
 		
 	});	
-    it('tests equilateral triangle', function(){ 
+    it('builds equilateral triangle', function(){ 
 		$("#test [data-action='eq_triangle']").click();
         expect(instance.currentTool).toBe("eq_triangle");
         instance.canvas.trigger('mouse:down');
@@ -328,7 +330,7 @@ describe('build shapes',function(){
 		expect(polygonSpy).not.toHaveBeenCalledWith();
 		
 	});
-	it('tests right angled triangle', function(){
+	it('builds right angled triangle', function(){
 		$("#test [data-action='right_triangle']").click();
         expect(instance.currentTool).toBe("right_triangle");
         instance.canvas.trigger('mouse:down');
@@ -339,7 +341,7 @@ describe('build shapes',function(){
 		expect(polygonSpy).toHaveBeenCalledWith([{x:0,y:0}, {x:0, y:100},{x:100, y:100}]);
 		
 	});
-	it('tests scelene triangle', function(){
+	it('builds scelene triangle', function(){
 		$("#test [data-action='scelene_triangle']").click();
         expect(instance.currentTool).toBe("scelene_triangle");
         instance.canvas.trigger('mouse:down');
@@ -350,7 +352,7 @@ describe('build shapes',function(){
 		expect(polygonSpy).toHaveBeenCalledWith([{x:100,y:100},{x:200,y:35},{x:160,y:100}]);
 		
 	});
-    it("test parallelogram", function(){
+    it("builds parallelogram", function(){
         $("#test [data-action='parallelogram']").click();
         expect(instance.currentTool).toBe("parallelogram");
         instance.canvas.trigger('mouse:down');
@@ -361,7 +363,7 @@ describe('build shapes',function(){
 		expect(polygonSpy).not.toHaveBeenCalled();
 		
     });
-	it('tests square', function(){
+	it('builds square', function(){
         $("#test [data-action='square']").click();
         expect(instance.currentTool).toBe("square");
         instance.canvas.trigger('mouse:down');
@@ -372,7 +374,7 @@ describe('build shapes',function(){
 		expect(polygonSpy).not.toHaveBeenCalled();
 		
 	});	
-	it('tests eq trapezoid', function(){
+	it('builds eq trapezoid', function(){
         $("#test [data-action='eq_trapezoid']").click();
         expect(instance.currentTool).toBe("eq_trapezoid");
         instance.canvas.trigger('mouse:down');
@@ -382,7 +384,7 @@ describe('build shapes',function(){
 		expect(rectSpy).not.toHaveBeenCalled();
 		expect(polygonSpy).toHaveBeenCalledWith([{x:30, y:150}, {x:120, y:150}, {x:150, y: 225}, {x:0, y:225}],{fill:'black'});
 	});	
-	it('tests trapezoid', function(){
+	it('builds trapezoid', function(){
 		$("#test [data-action='trapezoid']").click();
         expect(instance.currentTool).toBe("trapezoid");
         instance.canvas.trigger('mouse:down');
@@ -392,7 +394,7 @@ describe('build shapes',function(){
 		expect(rectSpy).not.toHaveBeenCalled();
 		expect(polygonSpy).toHaveBeenCalledWith([{x:60,y:150}, {x:150, y: 150}, {x:150, y: 225}, {x:0, y:225}],{fill:'black'});
 	});	
-	it('tests hexagon', function(){
+	it('builds hexagon', function(){
         $("#test [data-action='hexagon']").click();
         expect(instance.currentTool).toBe("hexagon");
         instance.canvas.trigger('mouse:down');
@@ -402,7 +404,7 @@ describe('build shapes',function(){
 		expect(rectSpy).not.toHaveBeenCalled();
 		expect(polygonSpy).toHaveBeenCalledWith([ { x : 160, y : 100 }, { x : 130, y : 151.96 }, { x : 70, y : 151.96 }, { x : 40, y : 100 }, { x : 70, y : 48.04 }, { x : 130, y : 48.04 }, { x : 160, y : 100 } ], { stroke : 'black', fill : 'black' });
 	});	
-	it('tests pentagon', function(){
+	it('builds pentagon', function(){
         $("#test [data-action='pentagon']").click();
         expect(instance.currentTool).toBe("pentagon");
         instance.canvas.trigger('mouse:down');
@@ -412,7 +414,7 @@ describe('build shapes',function(){
 		expect(rectSpy).not.toHaveBeenCalled();
 		expect(polygonSpy).toHaveBeenCalledWith([ { x : 160, y : 100 }, { x : 118.54, y : 157.06 }, { x : 51.46, y : 135.27 }, { x : 51.46, y : 64.73 }, { x : 118.54, y : 42.94 }, { x : 160, y : 100 } ], { stroke : 'black', fill : 'black' });
 	});	
-	it('tests octagon', function(){
+	it('builds octagon', function(){
 		$("#test [data-action='octagon']").click();
         expect(instance.currentTool).toBe("octagon");
         instance.canvas.trigger('mouse:down');
@@ -423,7 +425,7 @@ describe('build shapes',function(){
 		expect(polygonSpy).toHaveBeenCalledWith([ { x : 160, y : 100 }, { x : 142.43, y : 142.43 }, { x : 100, y : 160 }, { x : 57.57, y : 142.43 }, { x : 40, y : 100 }, { x : 57.57, y : 57.57 }, { x : 100, y : 40 }, { x : 142.43, y : 57.57 }, { x : 160, y : 100 } ], { stroke : 'black', fill : 'black' });
 	
 	});	
-	it('tests decagon', function(){
+	it('builds decagon', function(){
 		$("#test [data-action='decagon']").click();
         expect(instance.currentTool).toBe("decagon");
         instance.canvas.trigger('mouse:down');

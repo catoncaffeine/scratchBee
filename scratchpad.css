@@ -40,7 +40,7 @@
 	display: inline-block;
 }
 
-.sp-menu .sp-shape:hover{
+.sp-menu .sp-shape:hover, .sp-menu .sp-line:hover{
 	border-left: 1px solid lightgray;
 	border-left: 1px solid lightgray;
 	border-radius: 2px;
@@ -48,7 +48,7 @@
 }
 .sp-wrapper .active{
 	background-color: darkgray;
-	color: white;
+/*	color: white;*/
 	border-radius: 2px;
 }
 .sp-wrapper .panel-body{
@@ -95,6 +95,10 @@
 }
 .sp-pentagon {
 	background: url('img/pentagon.png') no-repeat;
+}
+
+.sp-dropdown > .btn {
+    padding: 4px 4px;
 }
 
 .dropdown-menu.min-dropdown-width{

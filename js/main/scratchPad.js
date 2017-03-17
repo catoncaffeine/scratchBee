@@ -292,10 +292,10 @@ function ScratchPadBuilder() {
         buildMenuDropDown = function(chunk) {
             var $chunk = $(""
                 +"<div class='btn-group sp-dropdown "+chunk.class+"'>"
-                +   "<a class='btn dropdown-toggle' title='"+chunk.title+"' data-toggle='dropdown' href='#'>"
+                +   "<div class='btn dropdown-toggle' title='"+chunk.title+"' data-toggle='dropdown'>"
                 +       "<i class='sp-menu-blank "+chunk.icon+"'></i>"
                 +       "<i class='sp-menu-selected hidden'></i>"
-                +   "</a>"
+                +   "</div>"
                 +   "<ul class='min-dropdown-width dropdown-menu'></ul>"
                 +"</div>"),
                 
@@ -356,21 +356,29 @@ function ScratchPadBuilder() {
         },
         
         toggleActiveMenu =  function(instance, clickedElement){
-            var $dropdown = $(clickedElement).closest(".sp-dropdown"),
+            var $menu = $(instance.wrapper).find(".sp-menu"),
+                $dropdowns = $menu.find(".sp-dropdown"),
+                $dropdown = $(clickedElement).closest(".sp-dropdown"),
                 icon = $(clickedElement).find("i").attr("class");
+            
+            //reset all icons in dropdown sub menus
+            if($dropdowns.length) {
+                $dropdowns.find(".dropdown-toggle").removeClass("active");
+                $dropdowns.find(".sp-menu-blank").show();
+                $dropdowns.find(".sp-menu-selected").attr("class", "sp-menu-selected").hide();
+            }
+            
             if($(clickedElement).hasClass('active')) {
                 $(clickedElement).removeClass('active');
-                if($dropdown) {
-                    $dropdown.find(".sp-menu-blank").show();
-                    $dropdown.find(".sp-menu-selected").attr("class", ".sp-menu-selected").hide();
-                }
                 $(instance.wrapper).find("[data-action='"+instance.defaultAction+"']").addClass("active");
                 changeCurrentTool(instance, instance.defaultAction);
             } else {
                 $(instance.wrapper).find(".sp-menu .active").removeClass("active");
                 $(clickedElement).addClass('active');
+                
+                //change icon for this particular drop down
                 if($dropdown) {
-                    // highlight dropdown icon
+                    $dropdown.find(".dropdown-toggle").addClass("active");
                     $dropdown.find(".sp-menu-blank").hide();
                     $dropdown.find(".sp-menu-selected").attr("class", "sp-menu-selected " + icon).show();
                 }

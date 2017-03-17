@@ -29,7 +29,6 @@ var ScratchPad = { // allows the client to create, manipulate, and destroy scrat
 			var instance = ScratchPad.instances[ele]; 
 			ScratchPad.destroyInstance(instance);
 		}); 
-		ScratchPad=null
 	},
 	destroyInstance: function(instance){
 		if(instance !== undefined && ScratchPad.instances[instance.id]){
@@ -48,7 +47,6 @@ var ScratchPad = { // allows the client to create, manipulate, and destroy scrat
 
 function ScratchPadBuilder() {
     var menuItems = {
-            // can we use arrays here
             selector: {
                 action: "selector",
                 class: "sp-selector",
@@ -576,10 +574,9 @@ function ScratchPadDrawer() {
         },
         takeAction = function(event, instance, action) {
             //text, trash, redo, undo
-            //both from menu and mouse down
-            if(typeof this[action] === 'function') {
-                this[action](instance, event);    
-            }
+            //both from menu and mouse down     
+            if(action === "text") text(instance, event);
+            if(action === "trash") trash(instance, event);
         },
         text = function(instance, event){
             if(event && event.target){
@@ -592,6 +589,7 @@ function ScratchPadDrawer() {
                 top:pointer.y,
                 width:150})
             );
+            $(instance.wrapper).find("[data-action='"+instance.defaultAction+"']").click();
         },
         trash = function(instance, event){
             var canvas = instance.canvas;
@@ -630,8 +628,6 @@ function ScratchPadDrawer() {
     return {
         bindMouseDownEvents: bindMouseDownEvents,
         takeAction: takeAction,
-        trash: trash,
-        text: text,
         draw: draw
     }
 };

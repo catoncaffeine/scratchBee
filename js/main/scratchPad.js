@@ -45,7 +45,8 @@ var ScratchPad = { // allows the client to create, manipulate, and destroy scrat
 };
 
 function ScratchPadBuilder() {
-    var menuItems = {
+    var drawer = null,
+        menuItems = {
             selector: {
                 action: "selector",
                 class: "sp-selector",
@@ -353,7 +354,7 @@ function ScratchPadBuilder() {
 			instance.canvas.setDimensions({width:instance.dimension.width, height:instance.dimension.height});
             instance.canvas.freeDrawingBrush = new fabric.PencilBrush(instance.canvas);
             instance.canvas.freeDrawingBrush.width = 2;
-            drawer.bindMouseDownEvents(instance, menuItems);
+            drawer.bindCanvasEvents(instance, menuItems);
         },
         
         toggleActiveMenu =  function(instance, clickedElement){
@@ -395,36 +396,20 @@ function ScratchPadBuilder() {
             }
         },
         bindMenuEvents = function(instance, drawer) {
-            $(instance.wrapper).on("click", ".sp-menu-action", function() {
+            $(instance.wrapper).on("click", ".sp-menu-action", function(event) {
                 var action = $(this).data("action");
                 var actionType = menuItems[action].menuActionType;
                 if(actionType == menuActionType.immediate) {
-                    drawer.takeAction(null, instance, action);
+                    drawer.takeAction(event, instance, action);
                 } else {
                     toggleActiveMenu(instance, this);
                     if(actionType == menuActionType.both){
-                        drawer.takeAction(null, instance, instance.currentTool);
+                        drawer.takeAction(event, instance, instance.currentTool);
                     }
                 }
             });
-
-            $(instance.wrapper).on('click', 'div .sp-undo', function(){
-				
-				var current = this;
-				if(!instance.redo){
-					instance.redo = [];
-				}
-				drawer.doUndoOrRedo(instance.undo,instance.redo, $(current),$('div .sp-redo'),instance);
-            });
-            $(instance.wrapper).on('click','div .sp-redo', function(){
-				var current = this;
-
-				drawer.doUndoOrRedo(instance.redo,instance.undo, $(current),$('div .sp-undo'),instance)
-            });
-        },
-        drawer = null;
-    
-    var build = function(wrapper, config, drawer){
+        };
+    var build = function(wrapper, config){
         if(!drawer) {
             drawer = new ScratchPadDrawer();
         }
@@ -434,7 +419,6 @@ function ScratchPadBuilder() {
 		buildPad(instance);
 		renderScratchPad(instance, drawer);
 		convertToFabric(instance, drawer);
-		drawer.listenEvents(instance);
         return instance;
     };
     return {
@@ -447,16 +431,39 @@ function ScratchPadBuilder() {
 
 function ScratchPadDrawer() {
 	var _add = 1, _delete = 2, _modify = 3;
-    var bindMouseDownEvents = function(instance, menuItems){
-        var drawer = this;
+    var bindCanvasEvents = function(instance, menuItems) {
+            bindMouseDownEvents(instance, menuItems);
+            bindObjectEvents(instance);
+        },
+        bindObjectEvents = function(instance){
+            instance.canvas.on('object:modified', function(e){
+                if(!instance.onUndoRedo  || instance.currentTool !=='trash'){
+                    console.log("modified!")
+                    debugger
+                    trackObjectHistory(instance,_modify);
+                }
+            });
+            instance.canvas.on('object:selected', function(e){
+                if(instance.currentTool !== 'trash'){
+                    captureSelectedObject(instance);
+                }
+            });
+
+            instance.canvas.on('object:added', function(e){
+                if(!instance.onUndoRedo){
+                    console.log("added!")
+                    trackObjectHistory(instance,_add);
+                }
+            });
+        },
+        bindMouseDownEvents = function(instance, menuItems){
             instance.canvas.on('mouse:down', function(e){
-			
                 if(instance.currentTool) {
                     var menuItem = menuItems[instance.currentTool];
                     if(menuItem.class.indexOf("sp-draw") !== -1) {
-                        drawer.draw(e, instance, menuItem);
+                        draw(e, instance, menuItem);
                     } else {
-                        drawer.takeAction(e, instance, menuItem.action);
+                        takeAction(e, instance, menuItem.action);
                     }
                 }
             })
@@ -575,10 +582,9 @@ function ScratchPadDrawer() {
                     return;
             }
         },
-        takeAction = function(event, instance, action) {
-            //trash, redo, undo
-            //both from menu and mouse down     
+        takeAction = function(event, instance, action) { 
             if(action === "trash") trash(instance, event);
+            if(action === "undo" || action === "redo") undoOrRedo(instance, event);
         },
         trash = function(instance, event){
 			var canvas = instance.canvas;
@@ -591,7 +597,6 @@ function ScratchPadDrawer() {
 			 }
 			}
 
-			//instance.redo = [];
 			if(itemNums.length>0){
 				instance.undo.push({
 				   "action" : _delete,
@@ -611,26 +616,6 @@ function ScratchPadDrawer() {
         addToCanvas = function(instance, object){
             instance.canvas.add(object);
         },
-		listenEvents = function(instance){
-			instance.canvas.on('object:modified', function(e){
-				if(!instance.onUndoRedo  || instance.currentTool !=='trash'){
-					trackObjectHistory(instance,_modify);
-				}
-
-			});
-			instance.canvas.on('object:selected', function(e){
-				if(instance.currentTool !== 'trash'){
-					captureSelectedObject(instance);
-				}
-			});
-
-			instance.canvas.on('object:added', function(e){
-				if(!instance.onUndoRedo){
-
-					trackObjectHistory(instance,_add);
-				}
-			});
-		},
 		trackObjectHistory = function(instance, action){
 			$(instance.wrapper).find('div .sp-undo').removeClass('disabled');
 			var itemProperties = '';
@@ -672,11 +657,18 @@ function ScratchPadDrawer() {
 				instance.undo.push({"action": action,"itemIndex": [objects.length - 1],"itemType":"Object"});
 			}
 		},
-		doUndoOrRedo = function(bufferToUse, bufferToPush, buttonOn, buttonOff, instance){
-			if(buttonOn.hasClass('disabled')){
-				return;
-			}
-			if(bufferToUse){
+		undoOrRedo = function(instance, event){
+            if(!instance.undo) instance.undo = [];
+            if(!instance.redo) instance.redo = [];
+            
+            var buttonOn = $(event.currentTarget),
+                action = buttonOn.data("action"),
+                antiAction = action === "undo" ?  "redo" : "undo",
+                buttonOff = $(instance.wrapper).find("[data-action='"+antiAction+"']"),
+                bufferToUse = action === "undo" ? instance.undo : instance.redo,
+                bufferToPush = action === "undo" ? instance.redo : instance.undo;
+            
+			if(bufferToUse.length) {
 				var itemNums = [];
 				var properties = '';
 				var state = bufferToUse.pop();
@@ -684,7 +676,7 @@ function ScratchPadDrawer() {
 				console.log(state);
 				var action = state.action;
 				var show = true;
-				var itemType = state.itemType;;
+				var itemType = state.itemType;
 				//turn on flag to prevent event firing
 				instance.onUndoRedo = true;
 				console.log(state);
@@ -738,7 +730,6 @@ function ScratchPadDrawer() {
 				instance.onUndoRedo = false;
 			}
 
-
 			if(bufferToUse.length === 0){
 				buttonOn.addClass('disabled');
 			}
@@ -748,8 +739,6 @@ function ScratchPadDrawer() {
 					bufferToPush.shift();
 				}
 			}
-
-
 		},
 		captureSelectedObject = function(instance,selectedObject){
 			instance.selectedObject = [];
@@ -769,9 +758,7 @@ function ScratchPadDrawer() {
 			
 		};
     return {
-		listenEvents: listenEvents,
-		doUndoOrRedo: doUndoOrRedo,
-        bindMouseDownEvents: bindMouseDownEvents,
+        bindCanvasEvents: bindCanvasEvents,
         takeAction: takeAction,
         draw: draw
     }

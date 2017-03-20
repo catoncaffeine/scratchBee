@@ -1,6 +1,5 @@
 .sp-wrapper i {
     display: inline-block;
-    cursor: pointer;
 }
 .sp-wrapper .fa {
     width: 18px;
@@ -12,21 +11,24 @@
 .sp-wrapper .fa-arrow-left {
 	transform: rotate(30deg);
 }
-.sp-menu .hover:hover:not(.active):not(.fa-th-large):not(.disabled){
-	border-radius: 2px;
-	box-shadow: 1px 1px 1px;
-	cursor: pointer;
-}
+
 .sp-menu .disabled {
 	color:lightgray;
+    cursor: default;
 }
+
 .sp-wrapper li a {
 	padding: 3px 15px;
+}
+
+.sp-menu-action, .sp-dropdown {
+    cursor: pointer;
 }
 
 .sp-menu-action {
     display: inline-block;
     padding: 5px;
+    text-align: center;
     vertical-align: middle;
 }
 
@@ -35,7 +37,6 @@
 	height: 25px;
 	margin: 2px;
 	padding: 3px;
-	cursor: pointer;
 	text-align: center;
 	display: inline-block;
 }
@@ -48,7 +49,6 @@
 }
 .sp-wrapper .active{
 	background-color: darkgray;
-/*	color: white;*/
 	border-radius: 2px;
 }
 .sp-wrapper .panel-body{

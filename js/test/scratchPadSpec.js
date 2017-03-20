@@ -184,8 +184,6 @@ describe('Text - ',function(){
         
 		expect(textSpy).toHaveBeenCalledWith('Click to add text',{
                 fontSize: 20, 
-                left: 2,
-                top: 3,
                 width: 150
         });
         expect(instance.currentTool).toBe("selector");
@@ -264,6 +262,7 @@ describe('Build Lines - ', function(){
 		
         expect(lineSpy).toHaveBeenCalledWith([ 2, 3, 102, 3 ], { left : 2, top : 3, stroke : 'black', strokeWidth : 2 });
         expect(polygonSpy).not.toHaveBeenCalled();
+        expect(instance.currentTool).toBe("selector");
 	});
 	it('builds ray', function(){
         $("#test [data-action='ray']").click();
@@ -272,6 +271,7 @@ describe('Build Lines - ', function(){
 		
         expect(lineSpy).toHaveBeenCalledWith([ 2, 3, 102, 3 ], { left : 2, top : 3, stroke : 'black', strokeWidth : 2 });
         expect(polygonSpy).toHaveBeenCalledWith([ { x : 2, y : 3 }, { x : 102, y : 3 }, { x : 95, y : -4.000000000000001 }, { x : 116, y : 5 }, { x : 95, y : 14 }, { x : 102, y : 7 }, { x : 2, y : 7 } ]);
+        expect(instance.currentTool).toBe("selector");
 	});
 	it('builds double ray', function(){
 		$("#test [data-action='doubleray']").click();
@@ -280,6 +280,7 @@ describe('Build Lines - ', function(){
 		
         expect(lineSpy).toHaveBeenCalledWith([ 2, 3, 102, 3 ], { left : 2, top : 3, stroke : 'black', strokeWidth : 2 });
         expect(polygonSpy).toHaveBeenCalledWith([ { x : 17, y : 3 }, { x : 117, y : 3 }, { x : 110, y : -4.000000000000001 }, { x : 131, y : 5 }, { x : 110, y : 14 }, { x : 117, y : 7 }, { x : 17, y : 7 }, { x : 24, y : 14 }, { x : 2.9999999999999982, y : 5 }, { x : 24, y : -4.000000000000001 } ]);
+        expect(instance.currentTool).toBe("selector");
 	});
 });
 
@@ -317,7 +318,7 @@ describe('Build Shapes - ',function(){
         expect(triangleSpy).not.toHaveBeenCalled();
 		expect(rectSpy).not.toHaveBeenCalled();
 		expect(polygonSpy).not.toHaveBeenCalled();
-		
+		expect(instance.currentTool).toBe("selector");
 	});	
     it('builds equilateral triangle', function(){ 
 		$("#test [data-action='eq_triangle']").click();
@@ -328,7 +329,7 @@ describe('Build Shapes - ',function(){
         expect(triangleSpy).toHaveBeenCalledWith({height:100, width:100});
 		expect(rectSpy).not.toHaveBeenCalled();
 		expect(polygonSpy).not.toHaveBeenCalledWith();
-		
+		expect(instance.currentTool).toBe("selector");
 	});
 	it('builds right angled triangle', function(){
 		$("#test [data-action='right_triangle']").click();
@@ -339,7 +340,7 @@ describe('Build Shapes - ',function(){
         expect(triangleSpy).not.toHaveBeenCalled();
 		expect(rectSpy).not.toHaveBeenCalled();
 		expect(polygonSpy).toHaveBeenCalledWith([{x:0,y:0}, {x:0, y:100},{x:100, y:100}]);
-		
+		expect(instance.currentTool).toBe("selector");
 	});
 	it('builds scelene triangle', function(){
 		$("#test [data-action='scelene_triangle']").click();
@@ -350,7 +351,7 @@ describe('Build Shapes - ',function(){
         expect(triangleSpy).not.toHaveBeenCalled();
 		expect(rectSpy).not.toHaveBeenCalled();
 		expect(polygonSpy).toHaveBeenCalledWith([{x:100,y:100},{x:200,y:35},{x:160,y:100}]);
-		
+		expect(instance.currentTool).toBe("selector");
 	});
     it("builds parallelogram", function(){
         $("#test [data-action='parallelogram']").click();
@@ -361,7 +362,7 @@ describe('Build Shapes - ',function(){
         expect(triangleSpy).not.toHaveBeenCalled();
 		expect(rectSpy).toHaveBeenCalledWith({width:100, height:50, fill:'black',skewX:320});
 		expect(polygonSpy).not.toHaveBeenCalled();
-		
+		expect(instance.currentTool).toBe("selector");
     });
 	it('builds square', function(){
         $("#test [data-action='square']").click();
@@ -372,7 +373,7 @@ describe('Build Shapes - ',function(){
         expect(triangleSpy).not.toHaveBeenCalled();
 		expect(rectSpy).toHaveBeenCalledWith({width:100, height:100, fill:'black'});
 		expect(polygonSpy).not.toHaveBeenCalled();
-		
+		expect(instance.currentTool).toBe("selector");
 	});	
 	it('builds eq trapezoid', function(){
         $("#test [data-action='eq_trapezoid']").click();
@@ -383,6 +384,7 @@ describe('Build Shapes - ',function(){
         expect(triangleSpy).not.toHaveBeenCalled();
 		expect(rectSpy).not.toHaveBeenCalled();
 		expect(polygonSpy).toHaveBeenCalledWith([{x:30, y:150}, {x:120, y:150}, {x:150, y: 225}, {x:0, y:225}],{fill:'black'});
+        expect(instance.currentTool).toBe("selector");
 	});	
 	it('builds trapezoid', function(){
 		$("#test [data-action='trapezoid']").click();
@@ -393,6 +395,7 @@ describe('Build Shapes - ',function(){
         expect(triangleSpy).not.toHaveBeenCalled();
 		expect(rectSpy).not.toHaveBeenCalled();
 		expect(polygonSpy).toHaveBeenCalledWith([{x:60,y:150}, {x:150, y: 150}, {x:150, y: 225}, {x:0, y:225}],{fill:'black'});
+        expect(instance.currentTool).toBe("selector");
 	});	
 	it('builds hexagon', function(){
         $("#test [data-action='hexagon']").click();
@@ -403,6 +406,7 @@ describe('Build Shapes - ',function(){
         expect(triangleSpy).not.toHaveBeenCalled();
 		expect(rectSpy).not.toHaveBeenCalled();
 		expect(polygonSpy).toHaveBeenCalledWith([ { x : 160, y : 100 }, { x : 130, y : 151.96 }, { x : 70, y : 151.96 }, { x : 40, y : 100 }, { x : 70, y : 48.04 }, { x : 130, y : 48.04 }, { x : 160, y : 100 } ], { stroke : 'black', fill : 'black' });
+        expect(instance.currentTool).toBe("selector");
 	});	
 	it('builds pentagon', function(){
         $("#test [data-action='pentagon']").click();
@@ -413,6 +417,7 @@ describe('Build Shapes - ',function(){
         expect(triangleSpy).not.toHaveBeenCalled();
 		expect(rectSpy).not.toHaveBeenCalled();
 		expect(polygonSpy).toHaveBeenCalledWith([ { x : 160, y : 100 }, { x : 118.54, y : 157.06 }, { x : 51.46, y : 135.27 }, { x : 51.46, y : 64.73 }, { x : 118.54, y : 42.94 }, { x : 160, y : 100 } ], { stroke : 'black', fill : 'black' });
+        expect(instance.currentTool).toBe("selector");
 	});	
 	it('builds octagon', function(){
 		$("#test [data-action='octagon']").click();
@@ -423,7 +428,7 @@ describe('Build Shapes - ',function(){
         expect(triangleSpy).not.toHaveBeenCalled();
 		expect(rectSpy).not.toHaveBeenCalled();
 		expect(polygonSpy).toHaveBeenCalledWith([ { x : 160, y : 100 }, { x : 142.43, y : 142.43 }, { x : 100, y : 160 }, { x : 57.57, y : 142.43 }, { x : 40, y : 100 }, { x : 57.57, y : 57.57 }, { x : 100, y : 40 }, { x : 142.43, y : 57.57 }, { x : 160, y : 100 } ], { stroke : 'black', fill : 'black' });
-	
+	   expect(instance.currentTool).toBe("selector");
 	});	
 	it('builds decagon', function(){
 		$("#test [data-action='decagon']").click();
@@ -434,5 +439,6 @@ describe('Build Shapes - ',function(){
         expect(triangleSpy).not.toHaveBeenCalled();
 		expect(rectSpy).not.toHaveBeenCalled();
 		expect(polygonSpy).toHaveBeenCalledWith( [ { x : 160, y : 100 }, { x : 148.54, y : 135.27 }, { x : 118.54, y : 157.06 }, { x : 81.46, y : 157.06 }, { x : 51.46, y : 135.27 }, { x : 40, y : 100 }, { x : 51.46, y : 64.73 }, { x : 81.46, y : 42.94 }, { x : 118.54, y : 42.94 }, { x : 148.54, y : 64.73 }, { x : 160, y : 100 } ], { stroke : 'black', fill : 'black' });
+        expect(instance.currentTool).toBe("selector");
 	});	
 });

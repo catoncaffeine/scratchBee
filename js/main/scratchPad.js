@@ -83,7 +83,7 @@ function ScratchPadBuilder() {
             },
             text: {
                 action: "text",
-                class:'sp-text',
+                class:'sp-draw sp-text',
                 title:'Add Text',
                 icon: "fa fa-font",
                 menuActionType: 1
@@ -480,10 +480,12 @@ function ScratchPadDrawer() {
         },
         draw = function(event, instance, menuItem) {
             var obj, pointer = instance.canvas.getPointer(event.e);
-            if(event && event.target){
+            if(!!event.target){
                 return;
             }
-            if(menuItem.class.indexOf("sp-line") !== -1) {
+            if(menuItem.class.indexOf("sp-text") !== -1) {
+                obj = makeTextBox();
+            } else if(menuItem.class.indexOf("sp-line") !== -1) {
                 obj = makeLine(instance, menuItem.action);
             } else if(menuItem.sides !== undefined) {
                 obj = makeRegularShape(menuItem.sides);
@@ -494,6 +496,13 @@ function ScratchPadDrawer() {
                 obj.set({left:pointer.x,top:pointer.y})
                 addToCanvas(instance, obj);
             }
+            
+            $(instance.wrapper).find("[data-action='selector']").click();
+        },
+        makeTextBox = function() {
+            return new fabric.Textbox('Click to add text',{
+                fontSize: 20, 
+                width:150});
         },
         makeLine = function(instance, event) {
             var pointer = instance.canvas.getPointer(event.e)
@@ -584,23 +593,9 @@ function ScratchPadDrawer() {
             }
         },
         takeAction = function(event, instance, action) {
-            //text, trash, redo, undo
+            //trash, redo, undo
             //both from menu and mouse down     
-            if(action === "text") text(instance, event);
             if(action === "trash") trash(instance, event);
-        },
-        text = function(instance, event){
-            if(event && event.target){
-                return;
-            }
-            var pointer = instance.canvas.getPointer(event.e);
-            addToCanvas(instance, new fabric.Textbox('Click to add text',{
-                fontSize: 20, 
-                left:pointer.x,
-                top:pointer.y,
-                width:150})
-            );
-            $(instance.wrapper).find("[data-action='selector']").click();
         },
         trash = function(instance, event){
             var canvas = instance.canvas;

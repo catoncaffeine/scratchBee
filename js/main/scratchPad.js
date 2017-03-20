@@ -408,19 +408,19 @@ function ScratchPadBuilder() {
                     }
                 }
             });
+        },
+        build = function(wrapper, config){
+            if(!drawer) {
+                drawer = new ScratchPadDrawer();
+            }
+
+            var instance = buildInstance(wrapper, config);
+            buildMenu(instance);
+            buildPad(instance);
+            renderScratchPad(instance, drawer);
+            convertToFabric(instance, drawer);
+            return instance;
         };
-    var build = function(wrapper, config){
-        if(!drawer) {
-            drawer = new ScratchPadDrawer();
-        }
-        
-        var instance = buildInstance(wrapper, config);
-        buildMenu(instance);
-		buildPad(instance);
-		renderScratchPad(instance, drawer);
-		convertToFabric(instance, drawer);
-        return instance;
-    };
     return {
         build: build,
         getDefaultMenu: getDefaultMenu,
@@ -430,16 +430,14 @@ function ScratchPadBuilder() {
 };
 
 function ScratchPadDrawer() {
-	var _add = 1, _delete = 2, _modify = 3;
-    var bindCanvasEvents = function(instance, menuItems) {
+	var _add = 1, _delete = 2, _modify = 3,
+        bindCanvasEvents = function(instance, menuItems) {
             bindMouseDownEvents(instance, menuItems);
             bindObjectEvents(instance);
         },
         bindObjectEvents = function(instance){
             instance.canvas.on('object:modified', function(e){
                 if(!instance.onUndoRedo  || instance.currentTool !=='trash'){
-                    console.log("modified!")
-                    debugger
                     trackObjectHistory(instance,_modify);
                 }
             });
@@ -451,7 +449,6 @@ function ScratchPadDrawer() {
 
             instance.canvas.on('object:added', function(e){
                 if(!instance.onUndoRedo){
-                    console.log("added!")
                     trackObjectHistory(instance,_add);
                 }
             });
@@ -607,7 +604,7 @@ function ScratchPadDrawer() {
 			}
         },
         pushToUndoBuffer = function(instance,object){
-            $(instance.wrapper).find('div .sp-undo').removeClass('disabled');
+            $(instance.wrapper).find('.sp-undo').removeClass('disabled');
             if(!instance.undo){
                 instance.undo = [];
             }
@@ -617,7 +614,7 @@ function ScratchPadDrawer() {
             instance.canvas.add(object);
         },
 		trackObjectHistory = function(instance, action){
-			$(instance.wrapper).find('div .sp-undo').removeClass('disabled');
+			$(instance.wrapper).find('.sp-undo').removeClass('disabled');
 			var itemProperties = '';
 			if(!instance.undo){
 				instance.undo = [];

@@ -441,6 +441,7 @@ function ScratchPadDrawer() {
     var bindMouseDownEvents = function(instance, menuItems){
         var drawer = this;
             instance.canvas.on('mouse:down', function(e){
+				debugger;
                 if(instance.currentTool) {
                     var menuItem = menuItems[instance.currentTool];
                     if(menuItem.class.indexOf("sp-draw") !== -1) {
@@ -608,13 +609,15 @@ function ScratchPadDrawer() {
         },
 		listenEvents = function(instance){
 			instance.canvas.on('object:modified', function(e){
-				if(!instance.onUndoRedo){
+				if(!instance.onUndoRedo  || instance.currentTool !=='trash'){
 					trackObjectHistory(instance,_modify);
 				}
 
 			});
 			instance.canvas.on('object:selected', function(e){
-				captureSelectedObject(instance);
+				if(instance.currentTool !== 'trash'){
+					captureSelectedObject(instance);
+				}
 			});
 
 			instance.canvas.on('object:added', function(e){
@@ -635,7 +638,7 @@ function ScratchPadDrawer() {
 			}
 			var objects = instance.canvas.getObjects();
 
-			if(action === _modify && instance.currentTool !== 'trash'){
+			if(action === _modify){
 				var activeObject = instance.canvas.getActiveObject();
 				var activeGroup = instance.canvas.getActiveGroup();
 				if(activeGroup){
@@ -645,8 +648,9 @@ function ScratchPadDrawer() {
 						captureSelectedObject(instance, activeGroup);
 					}
 				}else {
-					//iText instances are not an active object. Hence read any object changes when it selected.
+					//iText instances are not an active object. Hence read any object changes when it is selected.
 					var selectedObject = instance.selectedObject.pop();
+					
 					$.extend(selectedObject,{'action':action});
 					instance.undo.push(selectedObject);
 					if(activeObject){
@@ -690,6 +694,9 @@ function ScratchPadDrawer() {
 							selectable: show,
 							visible: show
 						});
+						console.log(instance.canvas.item(state.itemIndex[i]).selectable);
+						console.log(instance.canvas.item(state.itemIndex[i]).visible);
+						console.log(instance.canvas.item(state.itemIndex[i]));
 						itemNums.push(state.itemIndex[i]);
 						instance.canvas.item(state.itemIndex[i]).setCoords();
 					}
@@ -697,8 +704,8 @@ function ScratchPadDrawer() {
 				}else if(action ===_modify){
 
 					if(itemType === 'Group'){
-						//groups works differently in fabric. it has its own properties and 
-						//does not respect properties of the objects in the group.
+						//groups work differently in fabric. it has its own properties and 
+						//do not respect properties of the objects in the group.
 						properties = JSON.stringify(instance.canvas);
 						instance.canvas.clear();
 						instance.canvas.loadFromJSON(state.itemProperties, function(){

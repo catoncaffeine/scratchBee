@@ -450,7 +450,7 @@ function ScratchPadDrawer() {
     var bindMouseDownEvents = function(instance, menuItems){
         var drawer = this;
             instance.canvas.on('mouse:down', function(e){
-				debugger;
+			
                 if(instance.currentTool) {
                     var menuItem = menuItems[instance.currentTool];
                     if(menuItem.class.indexOf("sp-draw") !== -1) {
@@ -657,15 +657,18 @@ function ScratchPadDrawer() {
 						captureSelectedObject(instance, activeGroup);
 					}
 				}else {
-					//iText instances are not an active object. Hence read any object changes when it is selected.
-					var selectedObject = instance.selectedObject.pop();
 					
-					$.extend(selectedObject,{'action':action});
-					instance.undo.push(selectedObject);
-					if(activeObject){
-						activeObject.saveState();
-						//track further changes while still selected (anything other than text objects).
-						captureSelectedObject(instance, activeObject);
+					if(instance.selectedObject){
+						//iText instances are not an active object. Hence read any object changes when it is selected.
+						var selectedObject = instance.selectedObject.pop();
+
+						$.extend(selectedObject,{'action':action});
+						instance.undo.push(selectedObject);
+						if(activeObject){
+							activeObject.saveState();
+							//track further changes while still selected (anything other than text objects).
+							captureSelectedObject(instance, activeObject);
+						}
 					}
 				}
 
@@ -703,9 +706,7 @@ function ScratchPadDrawer() {
 							selectable: show,
 							visible: show
 						});
-						console.log(instance.canvas.item(state.itemIndex[i]).selectable);
-						console.log(instance.canvas.item(state.itemIndex[i]).visible);
-						console.log(instance.canvas.item(state.itemIndex[i]));
+						
 						itemNums.push(state.itemIndex[i]);
 						instance.canvas.item(state.itemIndex[i]).setCoords();
 					}

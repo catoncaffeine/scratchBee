@@ -12,49 +12,31 @@
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
         <!-- Font Awesome -->
         <script src="https://use.fontawesome.com/6746cf655f.js"></script>
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 		
 		
 
 		<!-- Scratch pad -->
 		<script src="js/main/scratchPad.js"></script>
 		<script src="js/main/scratchPadTools.js"></script>
-<!--		<script src="js/main/MenuEvents.js"></script>-->
+
 		<script type="text/javascript">
 			$(document).ready(function(){
-                //extract this//
-				ScratchPad.init("#scratchPad1", {menu:["undo", "text", "shapes"]});
-//                ScratchPad.init("#scratchPad2",{menus:[ScratchPad.menuChucks.text, ScratchPad.menuChucks.basic, ScratchPad.menuChucks.shapes]});
+				ScratchPad.init("#scratchPad1", {
+                    menu:[ 
+                        ScratchPad.menu.text, 
+                        ScratchPad.menu.undo, 
+                        ScratchPad.menu.shapes
+                    ]
+                });
 			});
 		</script>
-        <link rel="stylesheet" href="scratchpad.css">
         <!-- Styles will need to be extracted! -->
-        <style> 
-            
-        
-        </style>
-        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="scratchpad.css">
 	</head>
 
 	<body>
-		<div id='scratchPad1'>
-		</div>
-        <div id="scratchPad2">
-        </div>
-<!--
-		<div><div class='scelene_triangle'></div></div>
-		
-		<div>&nbsp;</div>
-			<div class='parallelogram'></div>
-		<div>&nbsp;</div>
-			<div class='shape-menu'><i class="sp-line"></i><i class="sp-rectangle"></i></div>
-			<div class='shape-menu'><i class="sp-line"></i><i class="sp-parallelogram"></i></div>
-		<div>&nbsp;</div>
-		<div class='trapezoid'></div>
-		<div>&nbsp;</div>
-		<div class='shape-menu'><i class="sp-pentagon">&nbsp;&nbsp;&nbsp;&nbsp;</i></div>
-		<div class='shape-menu'><div class="sp-pentagon"></div></div>
-		<div>Test tes</div>
--->
+		<div id='scratchPad1'></div>
+        <div id="scratchPad2"></div>
 	</body>
 </html>

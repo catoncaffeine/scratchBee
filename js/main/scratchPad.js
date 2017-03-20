@@ -349,7 +349,8 @@ function ScratchPadBuilder() {
             bindMenuEvents(instance, drawer);
         },
         convertToFabric = function(instance, drawer) {
-            instance.canvas = new fabric.Canvas(instance.id, {isDrawingMode: true});
+            instance.canvas = new fabric.Canvas(instance.id, {isDrawingMode: true,stateful:true});
+			instance.canvas.setDimensions({width:instance.dimension.width, height:instance.dimension.height});
             instance.canvas.freeDrawingBrush = new fabric.PencilBrush(instance.canvas);
             instance.canvas.freeDrawingBrush.width = 2;
             drawer.bindMouseDownEvents(instance, menuItems);
@@ -393,7 +394,6 @@ function ScratchPadBuilder() {
                 instance.canvas.isDrawingMode = false;
             }
         },
-        
         bindMenuEvents = function(instance, drawer) {
             $(instance.wrapper).on("click", ".sp-menu-action", function() {
                 var action = $(this).data("action");
@@ -408,38 +408,18 @@ function ScratchPadBuilder() {
                 }
             });
 
-            $(instance.wrapper).on('click', 'i.sp-undo', function(){
-
-                var current = this;
-                if($(current).hasClass('disabled')){
-                    return;
-                }
-                if(instance.undo){
-                    var obj = instance.undo.pop();
-                    instance.canvas.remove(obj);
-                    if(!instance.redo){
-                        instance.redo = [];
-                    }
-                    instance.redo.push(obj);
-                    $(instance.wrapper).find('i.sp-redo').removeClass('disabled');
-                }
-                if(instance.undo.length === 0){
-                    $(current).addClass('disabled');
-                }
+            $(instance.wrapper).on('click', 'div .sp-undo', function(){
+				
+				var current = this;
+				if(!instance.redo){
+					instance.redo = [];
+				}
+				drawer.doUndoOrRedo(instance.undo,instance.redo, $(current),$('div .sp-redo'),instance);
             });
-            $(instance.wrapper).on('click','i.sp-redo', function(){
+            $(instance.wrapper).on('click','div .sp-redo', function(){
+				var current = this;
 
-                var current = this;
-                if($(current).hasClass('disabled')){
-                    return;
-                }
-                if(instance.redo){
-                    var obj = instance.redo.pop();
-                    instance.canvas.add(obj);
-                }
-                if(instance.redo.length ===0){
-                    $(current).addClass('disabled');
-                }
+				drawer.doUndoOrRedo(instance.redo,instance.undo, $(current),$('div .sp-undo'),instance)
             });
         },
         drawer = null;
@@ -454,6 +434,7 @@ function ScratchPadBuilder() {
 		buildPad(instance);
 		renderScratchPad(instance, drawer);
 		convertToFabric(instance, drawer);
+		drawer.listenEvents(instance);
         return instance;
     };
     return {
@@ -465,9 +446,11 @@ function ScratchPadBuilder() {
 };
 
 function ScratchPadDrawer() {
+	var _add = 1, _delete = 2, _modify = 3;
     var bindMouseDownEvents = function(instance, menuItems){
         var drawer = this;
             instance.canvas.on('mouse:down', function(e){
+			
                 if(instance.currentTool) {
                     var menuItem = menuItems[instance.currentTool];
                     if(menuItem.class.indexOf("sp-draw") !== -1) {
@@ -598,30 +581,28 @@ function ScratchPadDrawer() {
             if(action === "trash") trash(instance, event);
         },
         trash = function(instance, event){
-            var canvas = instance.canvas;
-            instance.canvas.isDrawingMode = false;
-            var activeGroup = canvas.getActiveGroup();
-            var activeObject = canvas.getActiveObject();
-            if(activeGroup) {
-                var objects = activeGroup.getObjects();
-                canvas.discardActiveGroup(); 
-                objects.forEach(function(object){
-                    canvas.remove(object);
-                })
-            } else if(activeObject){
-                /*
-                 * I-Text objects bubble the mousedown event.
-                 * Since it is being deleted, canvas object from iText is removed
-                 * and mouse event fails with error. So removing the event from textbox
-                */
-                if(activeObject.type === 'textbox'){
-                    activeObject.off('mousedown');
-                }
-                canvas.remove(activeObject);
-            }
+			var canvas = instance.canvas;
+			var itemNums = []; // item numbers on the canvas
+
+			for (var i in canvas.getObjects()) {
+			 if (canvas.item(i).active === true ) {
+			   canvas.item(i).set({ selectable: false, visible: false });
+			   itemNums.push(i);
+			 }
+			}
+
+			//instance.redo = [];
+			if(itemNums.length>0){
+				instance.undo.push({
+				   "action" : _delete,
+				   "itemIndex": itemNums
+				});
+				canvas.deactivateAll();
+				canvas.renderAll();
+			}
         },
         pushToUndoBuffer = function(instance,object){
-            $(instance.wrapper).find('i.sp-undo').removeClass('disabled');
+            $(instance.wrapper).find('div .sp-undo').removeClass('disabled');
             if(!instance.undo){
                 instance.undo = [];
             }
@@ -629,9 +610,167 @@ function ScratchPadDrawer() {
         },
         addToCanvas = function(instance, object){
             instance.canvas.add(object);
-            pushToUndoBuffer(instance,object);
-        };
+        },
+		listenEvents = function(instance){
+			instance.canvas.on('object:modified', function(e){
+				if(!instance.onUndoRedo  || instance.currentTool !=='trash'){
+					trackObjectHistory(instance,_modify);
+				}
+
+			});
+			instance.canvas.on('object:selected', function(e){
+				if(instance.currentTool !== 'trash'){
+					captureSelectedObject(instance);
+				}
+			});
+
+			instance.canvas.on('object:added', function(e){
+				if(!instance.onUndoRedo){
+
+					trackObjectHistory(instance,_add);
+				}
+			});
+		},
+		trackObjectHistory = function(instance, action){
+			$(instance.wrapper).find('div .sp-undo').removeClass('disabled');
+			var itemProperties = '';
+			if(!instance.undo){
+				instance.undo = [];
+			}
+			if(instance.undo.length === 10){
+				instance.undo.shift();
+			}
+			var objects = instance.canvas.getObjects();
+
+			if(action === _modify){
+				var activeObject = instance.canvas.getActiveObject();
+				var activeGroup = instance.canvas.getActiveGroup();
+				if(activeGroup){
+					
+					instance.undo.push(instance.selectedObject.pop());
+					if(activeGroup){
+						captureSelectedObject(instance, activeGroup);
+					}
+				}else {
+					
+					if(instance.selectedObject){
+						//iText instances are not an active object. Hence read any object changes when it is selected.
+						var selectedObject = instance.selectedObject.pop();
+
+						$.extend(selectedObject,{'action':action});
+						instance.undo.push(selectedObject);
+						if(activeObject){
+							activeObject.saveState();
+							//track further changes while still selected (anything other than text objects).
+							captureSelectedObject(instance, activeObject);
+						}
+					}
+				}
+
+			}else{
+
+				instance.undo.push({"action": action,"itemIndex": [objects.length - 1],"itemType":"Object"});
+			}
+		},
+		doUndoOrRedo = function(bufferToUse, bufferToPush, buttonOn, buttonOff, instance){
+			if(buttonOn.hasClass('disabled')){
+				return;
+			}
+			if(bufferToUse){
+				var itemNums = [];
+				var properties = '';
+				var state = bufferToUse.pop();
+				console.log('state');
+				console.log(state);
+				var action = state.action;
+				var show = true;
+				var itemType = state.itemType;;
+				//turn on flag to prevent event firing
+				instance.onUndoRedo = true;
+				console.log(state);
+				if (action === _add || action === _delete) {
+					if(action === _add){
+						action = _delete;
+						show = false;
+					}else {
+						action = _add;
+					}
+					for (var i in state.itemIndex) {
+
+						instance.canvas.item(state.itemIndex[i]).set({
+							selectable: show,
+							visible: show
+						});
+						
+						itemNums.push(state.itemIndex[i]);
+						instance.canvas.item(state.itemIndex[i]).setCoords();
+					}
+					instance.canvas.deactivateAll();
+				}else if(action ===_modify){
+
+					if(itemType === 'Group'){
+						//groups work differently in fabric. it has its own properties and 
+						//do not respect properties of the objects in the group.
+						properties = JSON.stringify(instance.canvas);
+						instance.canvas.clear();
+						instance.canvas.loadFromJSON(state.itemProperties, function(){
+							//call as callback to make sure json is properly loaded.
+							instance.canvas.renderAll();
+						});
+					}else{
+						var item = instance.canvas.item(state.itemIndex[0]);
+						properties = JSON.stringify(item._stateProperties);
+						item.set(JSON.parse(state.itemProperties));
+						item.setCoords();
+						item.saveState();
+						itemNums.push(state.itemIndex[0]);
+					}
+
+				}
+
+				bufferToPush.push({
+					"action": action,
+					"itemIndex": itemNums,
+					"itemProperties": properties,
+					"itemType":itemType
+				});
+				instance.canvas.renderAll();
+				instance.onUndoRedo = false;
+			}
+
+
+			if(bufferToUse.length === 0){
+				buttonOn.addClass('disabled');
+			}
+			if(bufferToPush.length !== 0){
+				buttonOff.removeClass('disabled');
+				if(bufferToPush.length > 10){
+					bufferToPush.shift();
+				}
+			}
+
+
+		},
+		captureSelectedObject = function(instance,selectedObject){
+			instance.selectedObject = [];
+			var objects = instance.canvas.getObjects();
+			var activeGroup = instance.canvas.getActiveGroup();
+			if(activeGroup){
+
+				instance.selectedObject.push({"itemType":"Group", "itemProperties": JSON.stringify(instance.canvas), "action":_modify});
+			}else{
+				for (var i in objects){
+					if(instance.canvas.item(i).active === true){
+						instance.selectedObject.push({"itemIndex":i,"itemType":"Object", "itemProperties": JSON.stringify(instance.canvas.item(i)._stateProperties)});
+					}
+					console.log(instance.selectedObject);
+				}
+			}
+			
+		};
     return {
+		listenEvents: listenEvents,
+		doUndoOrRedo: doUndoOrRedo,
         bindMouseDownEvents: bindMouseDownEvents,
         takeAction: takeAction,
         draw: draw

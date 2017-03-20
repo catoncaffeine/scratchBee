@@ -672,14 +672,11 @@ function ScratchPadDrawer() {
 				var itemNums = [];
 				var properties = '';
 				var state = bufferToUse.pop();
-				console.log('state');
-				console.log(state);
 				var action = state.action;
 				var show = true;
 				var itemType = state.itemType;
 				//turn on flag to prevent event firing
 				instance.onUndoRedo = true;
-				console.log(state);
 				if (action === _add || action === _delete) {
 					if(action === _add){
 						action = _delete;
@@ -713,6 +710,7 @@ function ScratchPadDrawer() {
 						var item = instance.canvas.item(state.itemIndex[0]);
 						properties = JSON.stringify(item._stateProperties);
 						item.set(JSON.parse(state.itemProperties));
+						item.selectable = item.visible;
 						item.setCoords();
 						item.saveState();
 						itemNums.push(state.itemIndex[0]);
@@ -752,7 +750,6 @@ function ScratchPadDrawer() {
 					if(instance.canvas.item(i).active === true){
 						instance.selectedObject.push({"itemIndex":i,"itemType":"Object", "itemProperties": JSON.stringify(instance.canvas.item(i)._stateProperties)});
 					}
-					console.log(instance.selectedObject);
 				}
 			}
 			

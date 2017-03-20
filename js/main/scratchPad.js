@@ -1,15 +1,11 @@
 var ScratchPad = { // allows the client to create, manipulate, and destroy scratchpad instances
 	instances: {},
     builder: null,
-    drawer: null,
 	init: function(wrapper, config) {
         if(!ScratchPad.builder) {
             ScratchPad.builder = new ScratchPadBuilder();
         }
-        if(!ScratchPad.drawer) {
-            ScratchPad.drawer = new ScratchPadDrawer();
-        }
-		var instance = ScratchPad.builder.build(wrapper, config, ScratchPad.drawer);
+		var instance = ScratchPad.builder.build(wrapper, config);
 		ScratchPad.instances[instance.id]= instance;
 		return instance;
 	},
@@ -40,8 +36,13 @@ var ScratchPad = { // allows the client to create, manipulate, and destroy scrat
             $(ScratchPad.instances[id].domElement).empty();
             delete ScratchPad.instances[id];
 		}
-	}
-}
+	},
+    menu: {
+        undo: "undo",
+        text: "text",
+        shapes: "shapes"
+    }
+};
 
 function ScratchPadBuilder() {
     var menuItems = {
@@ -327,7 +328,6 @@ function ScratchPadBuilder() {
                 +"</div>";
         },
         getDefaultMenu = function() {
-            //extract this//
             return [menuItems.selector, menuItems.pencil, menuItems.trash];
         },
         getDefaultDimension = function() {
@@ -441,9 +441,14 @@ function ScratchPadBuilder() {
                     $(current).addClass('disabled');
                 }
             });
-        };
+        },
+        drawer = null;
     
     var build = function(wrapper, config, drawer){
+        if(!drawer) {
+            drawer = new ScratchPadDrawer();
+        }
+        
         var instance = buildInstance(wrapper, config);
         buildMenu(instance);
 		buildPad(instance);

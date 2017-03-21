@@ -352,7 +352,7 @@ function ScratchPadBuilder() {
         },
         convertToFabric = function(instance, drawer) {
             instance.canvas = new fabric.Canvas(instance.id, {isDrawingMode: true,stateful:true});
-			instance.canvas.setDimensions({width:instance.dimension.width, height:instance.dimension.height});
+//			instance.canvas.setDimensions({width:instance.dimension.width, height:instance.dimension.height});
             instance.canvas.freeDrawingBrush = new fabric.PencilBrush(instance.canvas);
             instance.canvas.freeDrawingBrush.width = 2;
             drawer.bindCanvasEvents(instance, menuItems);
@@ -611,6 +611,7 @@ function ScratchPadDrawer() {
 			}
 
 			if(itemNums.length>0){
+				
 				instance.undo.push({
 				   "action" : _delete,
 				   "itemIndex": itemNums

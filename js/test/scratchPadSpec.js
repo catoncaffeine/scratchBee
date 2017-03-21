@@ -46,7 +46,7 @@ describe('Test ScratchPad',function(){
         });
         ScratchPad.init("#test", {dimension: {width:200,height:200}});
         var instance = Object.values(ScratchPad.instances)[0];
-        expect(fabric.Canvas).toHaveBeenCalledWith(instance.id,{isDrawingMode:true});
+        expect(fabric.Canvas).toHaveBeenCalledWith(instance.id,{isDrawingMode:true,stateful:true});
         expect($('#'+instance.id).attr('width')).toBe('200');
     });
 });
@@ -197,7 +197,8 @@ describe("Trash Can -", function(){
         ScratchPad.init("#test", {menu:["text", "shapes"]});
         instance = Object.values(ScratchPad.instances)[0];
         instance.canvas.getPointer = function(obj) {return {x:2,y:3};};
-        spyOn(instance.canvas, "discardActiveGroup");
+        spyOn(instance.canvas, "deactivateAll");
+		 spyOn(instance.canvas, "renderAll");
     });
     afterEach(function(){
         ScratchPad.instances = {};
@@ -211,11 +212,13 @@ describe("Trash Can -", function(){
         expect(instance.canvas._objects.length).toBe(1);
         
         var object = instance.canvas._objects[0];
+		object.active = true;
         instance.canvas._activeObject = object;
         
         $("#test [data-action='trash']").click();
-        expect(instance.canvas._objects.length).toBe(0);
-        expect(instance.canvas.remove).toHaveBeenCalledWith(object);
+        expect(instance.canvas._objects.length).toBe(1);
+		expect(object.visible).toBeFalsy();
+        expect(instance.canvas.renderAll).toHaveBeenCalled();
     });
     it("deletes object groups", function(){
         spyOn(instance.canvas, "remove");
@@ -226,10 +229,14 @@ describe("Trash Can -", function(){
         instance.canvas.trigger("mouse:down");
         expect((instance.canvas._objects).length).toBe(2);
         var objects = instance.canvas._objects;
+		objects.forEach(function(obj){
+			obj.active = true;
+		});
         instance.canvas._activeGroup = {getObjects: function(){return objects}};
         $("#test [data-action='trash']").click();
-        expect(instance.canvas.remove.calls.length).toBe(2);
-        expect(instance.canvas.discardActiveGroup).toHaveBeenCalled();
+        expect(instance.canvas.renderAll.calls.length).toBe(3);
+        expect(instance.canvas.deactivateAll).toHaveBeenCalled();
+        expect(instance.canvas.renderAll).toHaveBeenCalled();
     });
 });
 

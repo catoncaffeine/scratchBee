@@ -282,7 +282,7 @@ function ScratchPadBuilder() {
                     $(divider).appendTo($menu);
                 }
             });
-            //make this user defined//
+            //make this user defined
             $menu.find("[data-action='pencil']").addClass("active");
         },
         buildMenuChunk = function(chunk) {
@@ -352,7 +352,6 @@ function ScratchPadBuilder() {
         },
         convertToFabric = function(instance, drawer) {
             instance.canvas = new fabric.Canvas(instance.id, {isDrawingMode: true,stateful:true});
-//			instance.canvas.setDimensions({width:instance.dimension.width, height:instance.dimension.height});
             instance.canvas.freeDrawingBrush = new fabric.PencilBrush(instance.canvas);
             instance.canvas.freeDrawingBrush.width = 2;
             drawer.bindCanvasEvents(instance, menuItems);
@@ -411,17 +410,16 @@ function ScratchPadBuilder() {
             });
         },
         importResource = function() {
-            //take precaution of nulls and user using other elements to include scratchPad.js
-            var $jsFile = $("[src*='scratchPad.js']"),
+            var $jsFile = $("script[src*='scratchPad.js']"),
                 jsPath = $jsFile.attr("src").toString(),
-                cssPath = jsPath.replace("js/main/scratchPad.js", "resource/scratchPad.css");
+                cssPath = jsPath.replace("js/main/scratchPad.js", "resource/scratchpad.css");
             
             var cssFile = document.createElement("link");
             cssFile.setAttribute("rel", "stylesheet");
             cssFile.setAttribute("href", cssPath);
             $jsFile.after($(cssFile));
             resourceImported = true;
-        }
+        },
         build = function(wrapper, config){
             if (!resourceImported) {
                 importResource()

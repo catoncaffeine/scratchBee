@@ -46,6 +46,7 @@ var ScratchPad = { // allows the client to create, manipulate, and destroy scrat
 
 function ScratchPadBuilder() {
     var drawer = null,
+        resourceImported = false,
         menuItems = {
             selector: {
                 action: "selector",
@@ -409,7 +410,22 @@ function ScratchPadBuilder() {
                 }
             });
         },
+        importResource = function() {
+            //take precaution of nulls and user using other elements to include scratchPad.js
+            var $jsFile = $("[src*='scratchPad.js']"),
+                jsPath = $jsFile.attr("src").toString(),
+                cssPath = jsPath.replace("js/main/scratchPad.js", "resource/scratchPad.css");
+            
+            var cssFile = document.createElement("link");
+            cssFile.setAttribute("rel", "stylesheet");
+            cssFile.setAttribute("href", cssPath);
+            $jsFile.after($(cssFile));
+            resourceImported = true;
+        }
         build = function(wrapper, config){
+            if (!resourceImported) {
+                importResource()
+            } 
             if(!drawer) {
                 drawer = new ScratchPadDrawer();
             }

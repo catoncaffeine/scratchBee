@@ -4,65 +4,37 @@
         <title>ScratchPad</title>
 		<!-- Fabric JS -->
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.3/fabric.min.js"></script>
-        
-        <!-- Font Awesome -->
-        <script src="https://use.fontawesome.com/6746cf655f.js"></script>
-		
 		<!-- jQuery -->
 		<script src="https://code.jquery.com/jquery-1.12.4.min.js" 
 				integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous">
 		</script>
+         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Font Awesome -->
+        <script src="https://use.fontawesome.com/6746cf655f.js"></script>
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+		
+		
 
 		<!-- Scratch pad -->
 		<script src="js/main/scratchPad.js"></script>
+		<script src="js/main/scratchPadTools.js"></script>
+
 		<script type="text/javascript">
 			$(document).ready(function(){
-				ScratchPad.init("#scratchPad1");
-                ScratchPad.init("#scratchPad2",{menu:[ScratchPad.menuItem.drawing],dimension:{width:600, hight:200}});
+				ScratchPad.init("#scratchPad1", {
+                    menu:[ 
+                        ScratchPad.menu.text, 
+                        ScratchPad.menu.undo, 
+                        ScratchPad.menu.shapes
+                    ]
+                });
 			});
 		</script>
-        
-        <!-- Styles will need to be extracted! -->
-        <style> 
-            .sp-wrapper .fa {
-                padding: 5px;
-                margin: 1px;
-            }
-            .sp-wrapper .fa:hover:not(.active):not(.fa-th-large){
-                border-radius: 2px;
-/*                background-color: lightgray;*/
-                box-shadow: 1px 1px 1px;
-                cursor: pointer;
-            }
-            
-            .sp-wrapper .fa.active{
-                border-bottom: 1px solid #eae8e8;
-                border-right: 1px solid #eae8e8;
-                border-top: 1px solid #a9a7a7;
-                border-left: 1px solid #a9a7a7;
-                border-radius: 2px;
-            }
-            .sp-wrapper .panel-body{
-                padding: 0px;
-            }
-            .sp-wrapper .canvas-container{
-                width: 100%;
-                height: 100%;
-            }
-            .sp-menu .vertical-divider{
-                border-right:1px dotted lightgrey;
-                margin: 0px 2px;
-            }
-        
-        </style>
-        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 	</head>
 
 	<body>
-		<div id='scratchPad1'>
-		</div>
-        <div id="scratchPad2">
-        </div>
+		<div id='scratchPad1'></div>
+        <div id="scratchPad2"></div>
 	</body>
 </html>

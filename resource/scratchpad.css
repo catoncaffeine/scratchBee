@@ -1,0 +1,150 @@
+.sp-wrapper i {
+    display: inline-block;
+}
+.sp-wrapper .fa {
+    width: 18px;
+    height: 18px;
+    background: 18px;
+    font-size: 18px;
+}
+
+.sp-wrapper .fa-arrow-left {
+	transform: rotate(30deg);
+}
+
+.sp-menu .disabled {
+	color:lightgray;
+    cursor: default;
+}
+
+.sp-wrapper li a {
+	padding: 3px 15px;
+}
+
+.sp-menu-action, .sp-dropdown {
+    cursor: pointer;
+}
+
+.sp-menu-action {
+    display: inline-block;
+    padding: 5px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.sp-shape {
+	width: 25px;
+	height: 25px;
+	margin: 2px;
+	padding: 3px;
+	text-align: center;
+	display: inline-block;
+}
+
+.sp-menu .sp-shape:hover, .sp-menu .sp-line:hover{
+	border-left: 1px solid lightgray;
+	border-left: 1px solid lightgray;
+	border-radius: 2px;
+	box-shadow: 1px 1px 1px;
+}
+.sp-wrapper .active{
+	background-color: darkgray;
+	border-radius: 2px;
+}
+.sp-wrapper .panel-body{
+	padding: 0px;
+}
+.sp-wrapper .canvas-container{
+	width: 100%;
+	height: 100%;
+}
+.sp-menu .vertical-divider {
+    display: inline;
+	border-right:1px dotted lightgrey;
+	margin: 0px 3px;
+}
+
+.sp-shape {
+	text-align: center;
+	vertical-align: middle;
+}
+.shapes-icon {
+	background: url('img/shapes.png') no-repeat;
+	background-position: center;
+	background-size: 15px;
+	height: 15px;
+	width: 15px;
+}
+
+.sp-eq-trapezoid {
+	background: url('img/trapezoid2.png') no-repeat;
+}
+.sp-trapezoid {
+	background: url('img/trapezoid1.png') no-repeat;
+}
+.sp-parallelogram {
+	background: url('img/parallelogram.png') no-repeat;
+}
+.sp-rectangle {
+	background: url('img/rectangle.png') no-repeat;
+}
+
+.sp-line-i {
+	background: url('img/line.png') no-repeat;
+	
+}
+.sp-pentagon {
+	background: url('img/pentagon.png') no-repeat;
+}
+
+.sp-dropdown > .btn {
+    padding: 4px 4px;
+}
+
+.dropdown-menu.min-dropdown-width{
+	min-width: 125px;
+}
+
+.min-dropdown-width .divider{
+	margin: 5px 0;
+}
+
+.sp-octagon {
+	background: url('img/octagon.png') no-repeat;
+	
+}
+.sp-hexagon {
+	background: url('img/hexagon.png') no-repeat;
+	
+}
+.sp-decagon {
+	background: url('img/decagon.png') no-repeat;
+	
+}
+
+.sp-icon {
+	background-position: center;
+	background-size: 18px;
+	width: 18px;
+	height: 18px;
+}
+.sp-eq-triangle {
+	width: 0;
+	height: 0;
+	border-left: 7px solid transparent;
+	border-right: 7px solid transparent;
+	border-bottom: 15px solid black;
+}
+.sp-scelene {
+	width: 0;
+	height: 0;
+	border-left: 10px solid transparent;
+	border-right: 4px solid transparent;
+	border-bottom: 13px solid black;
+}
+.sp-right-triangle {
+	width: 0;
+	height: 0;
+	border-right: 7px solid transparent;
+	border-bottom: 15px solid black;
+}

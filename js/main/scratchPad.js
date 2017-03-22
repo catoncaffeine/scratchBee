@@ -295,7 +295,7 @@ function ScratchPadBuilder() {
         buildMenuDropDown = function(chunk) {
             var $chunk = $(""
                 +"<div class='btn-group sp-dropdown "+chunk.class+"'>"
-                +   "<div class='btn dropdown-toggle' title='"+chunk.title+"' data-toggle='dropdown'>"
+                +   "<div class='dropdown-toggle' title='"+chunk.title+"' data-toggle='dropdown'>"
                 +       "<i class='sp-menu-blank "+chunk.icon+"'></i>"
                 +       "<i class='sp-menu-selected hidden'></i>"
                 +   "</div>"

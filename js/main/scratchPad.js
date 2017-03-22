@@ -152,7 +152,7 @@ function ScratchPadBuilder() {
             square:{
                 action: "square",
                 class: 'sp-draw sp-shape',
-                icon:'sp-icon sp-rectangle',
+                icon:'sp-icon sp-square',
                 title: 'Square',
                 menuActionType: 1,
                 sides: 4,

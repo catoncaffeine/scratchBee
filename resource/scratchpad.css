@@ -85,8 +85,8 @@
 .sp-parallelogram {
 	background: url('img/parallelogram.png') no-repeat;
 }
-.sp-rectangle {
-	background: url('img/rectangle.png') no-repeat;
+.sp-square {
+	background: url('img/square.png') no-repeat;
 }
 
 .sp-line-i {

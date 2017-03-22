@@ -249,7 +249,6 @@ describe('Build Lines - ', function(){
         
         instance.canvas.getPointer = function(obj) {return {x:2,y:3};};
         spyOn(instance.canvas, "add");
-        spyOn(ScratchPadTools, "buildRay").andCallThrough();
         
         setSpy = jasmine.createSpy("set");
         lineSpy = jasmine.createSpy("Line").andReturn({name: "line", set:setSpy});
@@ -448,4 +447,25 @@ describe('Build Shapes - ',function(){
 		expect(polygonSpy).toHaveBeenCalledWith( [ { x : 160, y : 100 }, { x : 148.54, y : 135.27 }, { x : 118.54, y : 157.06 }, { x : 81.46, y : 157.06 }, { x : 51.46, y : 135.27 }, { x : 40, y : 100 }, { x : 51.46, y : 64.73 }, { x : 81.46, y : 42.94 }, { x : 118.54, y : 42.94 }, { x : 148.54, y : 64.73 }, { x : 160, y : 100 } ], { stroke : 'black', fill : 'black' });
         expect(instance.currentTool).toBe("selector");
 	});	
+});
+describe("Scratch Pad Toggleable Setup - ", function(){
+    beforeEach(function(){
+        $("body").append("<div id='test'></div>");
+        ScratchPad.init("#test", {toggleable: true});
+    });
+    afterEach(function(){
+        ScratchPad.destroyAll();
+        $("#test").empty();
+    });
+    it("adds hide/show buttons if toggleable setup is enabled", function(){
+        expect($("#test .sp-hide").length).toBe(1);
+        expect($("#test .sp-show").length).toBe(1);
+    });
+    it("toggles the scratch pad", function(){
+        expect($("#test .sp-wrapper.sp-hidden").length).toBe(0);
+        $("#test .sp-hide").click();
+        expect($("#test .sp-wrapper.sp-hidden").length).toBe(1);
+        $("#test .sp-show").click();
+        expect($("#test .sp-wrapper.sp-hidden").length).toBe(0);
+    });
 });

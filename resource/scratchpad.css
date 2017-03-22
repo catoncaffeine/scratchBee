@@ -1,3 +1,51 @@
+.sp-wrapper {
+    display: inline-block;
+    position: relative;
+    transition: visibility 1s, opacity 0.5s;
+}
+
+.sp-toggle-btn {
+    position: absolute;
+    right: 2px;
+    top: 3px;
+    cursor: pointer;
+    padding: 3px;
+    border: 1px solid darkgray;
+    border-radius: 2px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    transition: visibility 1s, opacity 0.5s;
+}
+
+.sp-wrapper .sp-canvas-wrapper {
+    display: inline-block;
+}
+
+.sp-hidden .sp-canvas-wrapper{
+    display: none;
+}
+
+.sp-wrapper .sp-panel, .sp-wrapper .sp-hide {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sp-hidden .sp-panel, .sp-hidden .sp-hide {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.sp-wrapper .sp-show {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.sp-hidden .sp-show {
+      opacity: 1;
+      visibility: visible;
+}
+
 .sp-wrapper i {
     display: inline-block;
 }

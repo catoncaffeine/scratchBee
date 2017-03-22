@@ -260,14 +260,27 @@ function ScratchPadBuilder() {
             instance.menu = config.menu || getDefaultMenu();
             instance.dimension = config.dimension || getDefaultDimension();
             instance.defaultAction = config.defaultAction || getDefaultAction();
+            instance.toggleable = !!config.toggleable;
             instance.wrapper = $(""
-                            +"<div class='sp-wrapper panel panel-default' data-sp-id='"+instance.id+"'"
-                            +   "style='display:inline-block'>"+
+                            +"<div class='sp-wrapper' data-sp-id='"+instance.id+"'"
                             +"</div>")[0];
             return instance;
         },
+        buildToggleButton = function(instance) {
+            $(instance.wrapper).append(""
+                +"<div class='sp-toggle-btn sp-hide'>"
+                +"  <i class='fa fa-minus'></i>"
+                +"</div>"
+                +"<div class='sp-toggle-btn sp-show'>"
+                +"  <i class='fa fa-paint-brush'></i>"
+                +"</div>");
+        },
         buildMenu = function(instance) {
-            $(instance.wrapper).append("<div class='sp-menu panel-heading'></div>");
+            $(instance.wrapper).append(""
+                    +"<div class='sp-panel panel panel-default'>"
+                    +"  <div class='sp-menu panel-heading' style='min-width:"+instance.dimension.width+"px;'>"
+                    +"  </div>"
+                    +"</div>");
             var $menu = $(instance.wrapper).find(".sp-menu");
             var divider = "<span class='vertical-divider'></span>";        
             Object.keys(menuChunks).forEach(function(key) {
@@ -349,6 +362,9 @@ function ScratchPadBuilder() {
         renderScratchPad = function(instance, drawer){
             $(instance.wrapper).appendTo($(instance.domElement));
             bindMenuEvents(instance, drawer);
+            if(instance.toggleable) {
+                bindToggleEvents(instance);
+            }
         },
         convertToFabric = function(instance, drawer) {
             instance.canvas = new fabric.Canvas(instance.id, {isDrawingMode: true,stateful:true});
@@ -395,6 +411,11 @@ function ScratchPadBuilder() {
                 instance.canvas.isDrawingMode = false;
             }
         },
+        bindToggleEvents = function(instance) {
+            $(instance.wrapper).on("click", ".sp-toggle-btn", function(){
+                $(instance.wrapper).toggleClass("sp-hidden");
+            });
+        },
         bindMenuEvents = function(instance, drawer) {
             $(instance.wrapper).on("click", ".sp-menu-action", function(event) {
                 var action = $(this).data("action");
@@ -429,6 +450,9 @@ function ScratchPadBuilder() {
             }
 
             var instance = buildInstance(wrapper, config);
+            if(instance.toggleable) {
+                buildToggleButton(instance);
+            }
             buildMenu(instance);
             buildPad(instance);
             renderScratchPad(instance, drawer);

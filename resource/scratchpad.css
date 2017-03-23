@@ -27,7 +27,7 @@
 }
 
 .sp-wrapper .sp-panel, .sp-wrapper .sp-hide {
-    opacity: 1;
+    opacity: initial;
     visibility: visible;
 }
 
@@ -42,7 +42,7 @@
 }
 
 .sp-hidden .sp-show {
-      opacity: 1;
+      opacity: initial;
       visibility: visible;
 }
 
@@ -119,9 +119,9 @@
 .shapes-icon {
 	background: url('img/shapes.png') no-repeat;
 	background-position: center;
-	background-size: 15px;
-	height: 15px;
-	width: 15px;
+	background-size: 18px;
+	height: 18px;
+	width: 18px;
 }
 
 .sp-eq-trapezoid {

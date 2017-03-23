@@ -23,6 +23,7 @@
 		var canvas = Object.values(ScratchPad.instances)[index].canvas;
 		var image = '<img src="'+canvas.toDataURL()+'" style="border:2px dotted green;"/>';
 		//console.log(image)
+		$('#test').empty();
 		$('#test').append(image);
 		
 	}

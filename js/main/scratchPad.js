@@ -351,7 +351,7 @@ function ScratchPadBuilder() {
             bindMenuEvents(instance, drawer);
         },
         convertToFabric = function(instance, drawer) {
-            instance.canvas = new fabric.Canvas(instance.id, {isDrawingMode: true,stateful:true});
+            instance.canvas = new fabric.Canvas(instance.id, {isDrawingMode: true,stateful:true,enableRetinaScaling:false});
 //			instance.canvas.setDimensions({width:instance.dimension.width, height:instance.dimension.height});
             instance.canvas.freeDrawingBrush = new fabric.PencilBrush(instance.canvas);
             instance.canvas.freeDrawingBrush.width = 2;

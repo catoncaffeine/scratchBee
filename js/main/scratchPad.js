@@ -453,18 +453,21 @@ function ScratchPadDrawer() {
         },
         bindObjectEvents = function(instance){
             instance.canvas.on('object:modified', function(e){
-                if(!instance.onUndoRedo  || instance.currentTool !=='trash'){
+                if(!instance.onUndoRedo  && instance.currentTool !=='trash'){
+					console.log('object:modified '+instance.currentTool+' '+(!instance.onUndoRedo));
                     trackObjectHistory(instance,_modify);
                 }
             });
             instance.canvas.on('object:selected', function(e){
                 if(instance.currentTool !== 'trash'){
+					console.log('object:selected '+instance.currentTool);
                     captureSelectedObject(instance);
                 }
             });
 
             instance.canvas.on('object:added', function(e){
                 if(!instance.onUndoRedo){
+					console.log('object:added '+(!instance.onUndoRedo));
                     trackObjectHistory(instance,_add);
                 }
             });
@@ -603,30 +606,25 @@ function ScratchPadDrawer() {
 			var canvas = instance.canvas;
 			var itemNums = []; // item numbers on the canvas
 
-			for (var i in canvas.getObjects()) {
-			 if (canvas.item(i).active === true ) {
-			   canvas.item(i).set({ selectable: false, visible: false });
-			   itemNums.push(i);
+			$.each(canvas.getObjects(), function(index, item){
+			 if (item.active === true ) {
+			   item.set({ selectable: false, visible: false });
+			   itemNums.push(index);
 			 }
-			}
+			});
 
 			if(itemNums.length>0){
 				
 				instance.undo.push({
 				   "action" : _delete,
-				   "itemIndex": itemNums
+				   "itemIndex": itemNums,
+					"itemType":'Object'
 				});
 				canvas.deactivateAll();
 				canvas.renderAll();
 			}
         },
-        pushToUndoBuffer = function(instance,object){
-            $(instance.wrapper).find('.sp-undo').removeClass('disabled');
-            if(!instance.undo){
-                instance.undo = [];
-            }
-            instance.undo.push(object);
-        },
+        
         addToCanvas = function(instance, object){
             instance.canvas.add(object);
         },
@@ -698,16 +696,15 @@ function ScratchPadDrawer() {
 					}else {
 						action = _add;
 					}
-					for (var i in state.itemIndex) {
-
-						instance.canvas.item(state.itemIndex[i]).set({
+					state.itemIndex.forEach(function(itemIndex){
+						instance.canvas.item(itemIndex).set({
 							selectable: show,
 							visible: show
 						});
 						
-						itemNums.push(state.itemIndex[i]);
-						instance.canvas.item(state.itemIndex[i]).setCoords();
-					}
+						itemNums.push(itemIndex);
+						instance.canvas.item(itemIndex).setCoords();
+					});
 					instance.canvas.deactivateAll();
 				}else if(action ===_modify){
 
@@ -760,11 +757,11 @@ function ScratchPadDrawer() {
 
 				instance.selectedObject.push({"itemType":"Group", "itemProperties": JSON.stringify(instance.canvas), "action":_modify});
 			}else{
-				for (var i in objects){
-					if(instance.canvas.item(i).active === true){
-						instance.selectedObject.push({"itemIndex":i,"itemType":"Object", "itemProperties": JSON.stringify(instance.canvas.item(i)._stateProperties)});
+				$.each(instance.canvas.getObjects(), function(index, item){
+					if(item.active === true){
+						instance.selectedObject.push({"itemIndex":[index],"itemType":"Object", "itemProperties": JSON.stringify(item._stateProperties)});
 					}
-				}
+				})
 			}
 			
 		};

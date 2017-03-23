@@ -18,7 +18,8 @@
 
 		<!-- Scratch pad -->
 		<script src="js/main/scratchPad.js"></script>
-		<script src="js/main/scratchPadTools.js"></script>
+<!--		<link href="js/main/scratchPad.js">-->
+		<script src="js/main/scratchPadDebugTools.js"></script>
 
 		<script type="text/javascript">
 			$(document).ready(function(){
@@ -29,6 +30,13 @@
                         ScratchPad.menu.shapes
                     ]
                 });
+				ScratchPad.init("#scratchPad2", {
+                    menu:[ 
+                        ScratchPad.menu.text, 
+                        ScratchPad.menu.undo, 
+                        ScratchPad.menu.shapes
+                    ]
+                ,dimension:{width:700,height:100}});
 			});
 		</script>
 	</head>
@@ -36,5 +44,6 @@
 	<body>
 		<div id='scratchPad1'></div>
         <div id="scratchPad2"></div>
+		<div id="test" style="border:1px solid red"></div>
 	</body>
 </html>

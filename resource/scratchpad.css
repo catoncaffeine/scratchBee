@@ -22,11 +22,6 @@
     display: inline-block;
 }
 
-/*
-.sp-hidden .sp-canvas-wrapper {
-    display: none;
-}
-*/
 .sp-hidden .sp-panel {
     height: 30px;
     width: 30px;

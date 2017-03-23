@@ -486,20 +486,17 @@ function ScratchPadDrawer() {
         bindObjectEvents = function(instance){
             instance.canvas.on('object:modified', function(e){
                 if(!instance.onUndoRedo  && instance.currentTool !=='trash'){
-					console.log('object:modified '+instance.currentTool+' '+(!instance.onUndoRedo));
                     trackObjectHistory(instance,_modify);
                 }
             });
             instance.canvas.on('object:selected', function(e){
                 if(instance.currentTool !== 'trash'){
-					console.log('object:selected '+instance.currentTool);
                     captureSelectedObject(instance);
                 }
             });
 
             instance.canvas.on('object:added', function(e){
                 if(!instance.onUndoRedo){
-					console.log('object:added '+(!instance.onUndoRedo));
                     trackObjectHistory(instance,_add);
                 }
             });
@@ -662,7 +659,6 @@ function ScratchPadDrawer() {
         },
 		trackObjectHistory = function(instance, action){
 			$(instance.wrapper).find('.sp-undo').removeClass('disabled');
-			var itemProperties = '';
 			if(!instance.undo){
 				instance.undo = [];
 			}
@@ -781,9 +777,8 @@ function ScratchPadDrawer() {
 				}
 			}
 		},
-		captureSelectedObject = function(instance,selectedObject){
+		captureSelectedObject = function(instance){
 			instance.selectedObject = [];
-			var objects = instance.canvas.getObjects();
 			var activeGroup = instance.canvas.getActiveGroup();
 			if(activeGroup){
 

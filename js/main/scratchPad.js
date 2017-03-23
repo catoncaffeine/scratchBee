@@ -278,7 +278,7 @@ function ScratchPadBuilder() {
         buildMenu = function(instance) {
             $(instance.wrapper).append(""
                     +"<div class='sp-panel panel panel-default'>"
-                    +"  <div class='sp-menu panel-heading' style='min-width:"+instance.dimension.width+"px;'>"
+                    +"  <div class='sp-menu panel-heading'>"
                     +"  </div>"
                     +"</div>");
             var $menu = $(instance.wrapper).find(".sp-menu");
@@ -413,7 +413,13 @@ function ScratchPadBuilder() {
         },
         bindToggleEvents = function(instance) {
             $(instance.wrapper).on("click", ".sp-toggle-btn", function(){
+                var $wrapper = $(instance.wrapper),
+                    width = instance.dimension.width,
+                    left = $wrapper.hasClass("sp-hidden") ? "auto": (width-28) + "px";
+                
                 $(instance.wrapper).toggleClass("sp-hidden");
+                $(instance.wrapper).css({left: left});
+                
             });
         },
         bindMenuEvents = function(instance, drawer) {

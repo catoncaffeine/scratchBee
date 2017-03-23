@@ -6,7 +6,7 @@
 
 .sp-toggle-btn {
     position: absolute;
-    right: 2px;
+    right: 3px;
     top: 3px;
     cursor: pointer;
     padding: 3px;
@@ -22,12 +22,17 @@
     display: inline-block;
 }
 
-.sp-hidden .sp-canvas-wrapper{
+/*
+.sp-hidden .sp-canvas-wrapper {
     display: none;
 }
-
+*/
+.sp-hidden .sp-panel {
+    height: 30px;
+    width: 30px;
+    overflow: hidden;
+}
 .sp-wrapper .sp-panel, .sp-wrapper .sp-hide {
-    opacity: initial;
     visibility: visible;
 }
 
@@ -42,8 +47,12 @@
 }
 
 .sp-hidden .sp-show {
-      opacity: initial;
+      opacity: 1;
       visibility: visible;
+}
+
+.sp-toggle-btn i {
+    vertical-align: middle;
 }
 
 .sp-wrapper i {

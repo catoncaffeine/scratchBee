@@ -261,9 +261,7 @@ function ScratchPadBuilder() {
             instance.dimension = config.dimension || getDefaultDimension();
             instance.defaultAction = config.defaultAction || getDefaultAction();
             instance.toggleable = !!config.toggleable;
-            instance.wrapper = $(""
-                            +"<div class='sp-wrapper' data-sp-id='"+instance.id+"'"
-                            +"</div>")[0];
+            instance.wrapper = $("<div class='sp-wrapper' data-sp-id='"+instance.id+"'></div>")[0];
             return instance;
         },
         buildToggleButton = function(instance) {

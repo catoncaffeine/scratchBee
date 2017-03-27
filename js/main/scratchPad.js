@@ -296,6 +296,7 @@ function ScratchPadBuilder() {
             });
             //make this user defined
             $menu.find("[data-action='pencil']").addClass("active");
+            instance.currentTool = "pencil";
         },
         _buildMenuChunk = function(chunk) {
             var $chunk = $("<span class='sp-menu-chunk "+chunk.class+"'></span>");
@@ -480,6 +481,7 @@ function ScratchPadBuilder() {
 function ScratchPadDrawer() {
 	var _add = 1, _delete = 2, _modify = 3,
         _bindObjectEvents = function(instance){
+            var mouseOut = false;
             instance.canvas.on('object:modified', function(e){
                 if(!instance.onUndoRedo  && instance.currentTool !=='trash'){
                     _trackObjectHistory(instance,_modify);
@@ -495,6 +497,42 @@ function ScratchPadDrawer() {
                 if(!instance.onUndoRedo){
                     _trackObjectHistory(instance,_add);
                 }
+            });
+            instance.canvas.observe("object:moving", function(e) {
+                if(mouseOut) {
+                    var obj = e.target, 
+                        canvas = obj.canvas, 
+                        bound = obj.getBoundingRect();
+                    
+                    var canvasH = canvas.height,
+                        canvasW = canvas.width,
+                        boundT = bound.top,
+                        boundL = bound.left,
+                        boundH = bound.height,
+                        boundW = bound.width;
+                    
+                     // if object is too big ignore
+                    if(obj.currentHeight > canvasH || obj.currentWidth > canvasW){
+                        return;
+                    }        
+                    obj.setCoords();        
+                    // top-left  corner
+                    if(boundT < 0 || boundL < 0){
+                        obj.top = Math.max(obj.top, obj.top - boundT);
+                        obj.left = Math.max(obj.left, obj.left - boundL);
+                    }
+                    // bot-right corner
+                    if(boundT + boundH  > canvasH || boundL + boundW  > canvasW){
+                        obj.top = Math.min(obj.top, canvasH - boundH + obj.top - boundT);
+                        obj.left = Math.min(obj.left, canvasW - boundW + obj.left - boundL);
+                    }
+                }
+            });
+            instance.canvas.on("mouse:out", function(){
+                mouseOut = true;
+            });
+            instance.canvas.on("mouse:over", function() {
+                mouseOut = false;
             });
         },
         _bindMouseDownEvents = function(instance, menuItems){

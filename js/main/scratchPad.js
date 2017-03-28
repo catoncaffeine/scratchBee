@@ -526,7 +526,7 @@ function ScratchPadDrawer() {
             if(menuItem.class.indexOf("sp-text") !== -1) {
                 obj = makeTextBox(instance);
             } else if(menuItem.class.indexOf("sp-line") !== -1) {
-                obj = makeLine(instance, menuItem.action);
+                obj = makeLine(instance, pointer);
             } else if(menuItem.sides !== undefined) {
                 obj = makeRegularShape(menuItem.sides);
             } else {
@@ -558,8 +558,8 @@ function ScratchPadDrawer() {
 			})
 			return textbox;
         },
-        makeLine = function(instance, event) {
-            var pointer = instance.canvas.getPointer(event.e)
+        makeLine = function(instance, pointer) {
+            
             var _x = pointer.x;
             var _y = pointer.y;
             var tool = new fabric.Line([_x,_y,_x+100,_y],{left:_x, top:_y,stroke:'black',strokeWidth:2});

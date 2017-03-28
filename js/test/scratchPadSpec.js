@@ -126,7 +126,7 @@ describe('Scrath Pad Menu - ', function(){
         $('#test').remove();
     });
     it("sets pencil as default menu", function(){
-        console.log($("#test .active")[0]);
+        
         expect($("#test .active").data("action")).toBe("pencil");
     });
     it("sets clicked item as active, and turns back to pencil if unselected", function(){
@@ -284,7 +284,7 @@ describe('test undo / redo', function(){
 		instance.canvas.setActiveObject(instance.canvas.item(0));//.active=true;
 		$('#test [data-action="trash"]').click();
 		//instance.canvas.trigger('mouse:down');
-		console.log(instance.undo)
+		
 		expect(instance.undo.length).toBe(2);
 		var undo = instance.undo[0];
 		expect(undo.itemIndex[0]).toBe(0);

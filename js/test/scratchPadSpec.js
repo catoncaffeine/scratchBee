@@ -46,7 +46,7 @@ describe('Test ScratchPad',function(){
         });
         ScratchPad.init("#test", {dimension: {width:200,height:200}});
         var instance = Object.values(ScratchPad.instances)[0];
-        expect(fabric.Canvas).toHaveBeenCalledWith(instance.id,{isDrawingMode:true,stateful:true});
+        expect(fabric.Canvas).toHaveBeenCalledWith(instance.id,{isDrawingMode:true,stateful:true,enableRetinaScaling:false});
         expect($('#'+instance.id).attr('width')).toBe('200');
     });
 });
@@ -145,11 +145,11 @@ describe('Scrath Pad Menu - ', function(){
         $("#test [data-action='pencil']").click();
         expect(instance.canvas.isDrawingMode).toBe(true);
     });
-    it("does not set current tool if action is immediate", function(){
+    it("does current tool to selector if action is immediate", function(){
         $("#test [data-action='trash']").click();
         expect(instance.currentTool).toBe("trash");
         $("#test [data-action='undo']").click();
-        expect(instance.currentTool).toBe("trash");
+        expect(instance.currentTool).toBe("selector");
     });
     it("sets current tool if action is defered or both", function(){
         $("#test [data-action='selector']").click();
@@ -170,7 +170,8 @@ describe('Text - ',function(){
         spyOn(instance.canvas, "add");
         
         setSpy = jasmine.createSpy("set");
-        textSpy = jasmine.createSpy("Textbox").andReturn({name: "textbox", set:setSpy});
+		onSpy = jasmine.createSpy('on');
+        textSpy = jasmine.createSpy("Textbox").andReturn({name: "textbox", set:setSpy, on:onSpy});
         fabric.Textbox = textSpy;
     });
     afterEach(function(){
@@ -197,7 +198,6 @@ describe("Trash Can -", function(){
         ScratchPad.init("#test", {menu:["text", "shapes"]});
         instance = Object.values(ScratchPad.instances)[0];
         instance.canvas.getPointer = function(obj) {return {x:2,y:3};};
-        spyOn(instance.canvas, "deactivateAll");
 		 spyOn(instance.canvas, "renderAll");
     });
     afterEach(function(){
@@ -216,8 +216,7 @@ describe("Trash Can -", function(){
         instance.canvas._activeObject = object;
         
         $("#test [data-action='trash']").click();
-        expect(instance.canvas._objects.length).toBe(1);
-		expect(object.visible).toBeFalsy();
+        expect(instance.canvas._objects.length).toBe(0);
         expect(instance.canvas.renderAll).toHaveBeenCalled();
     });
     it("deletes object groups", function(){
@@ -232,11 +231,9 @@ describe("Trash Can -", function(){
 		objects.forEach(function(obj){
 			obj.active = true;
 		});
-        instance.canvas._activeGroup = {getObjects: function(){return objects}};
+//        instance.canvas._activeGroup = {getObjects: function(){return objects}};
         $("#test [data-action='trash']").click();
-        expect(instance.canvas.renderAll.calls.length).toBe(3);
-        expect(instance.canvas.deactivateAll).toHaveBeenCalled();
-        expect(instance.canvas.renderAll).toHaveBeenCalled();
+        expect(instance.canvas.renderAll.calls.length).toBe(2);
     });
 });
 describe('test undo / redo', function(){
@@ -271,6 +268,7 @@ describe('test undo / redo', function(){
 		instance.selectedObject = [];
 		instance.selectedObject[0]={itemIndex:[0],itemType:'Object', itemProperties:{}};
 		instance.canvas.trigger('object:modified');
+		
 		expect(instance.undo.length).toBe(2);
 		var undo = instance.undo[0];
 		expect(undo.itemIndex[0]).toBe(0);
@@ -285,9 +283,10 @@ describe('test undo / redo', function(){
 		$("#test [data-action='line']").click();
         instance.canvas.trigger('mouse:down');
 		
-		instance.canvas.item(0).active=true;
+		instance.canvas.setActiveObject(instance.canvas.item(0));//.active=true;
 		$('#test [data-action="trash"]').click();
-		instance.canvas.trigger('mouse:down');
+		//instance.canvas.trigger('mouse:down');
+		console.log(instance.undo)
 		expect(instance.undo.length).toBe(2);
 		var undo = instance.undo[0];
 		expect(undo.itemIndex[0]).toBe(0);
@@ -305,9 +304,14 @@ describe('test undo / redo', function(){
 		instance.canvas.trigger('mouse:down');
 		instance.currentTool='line';
 		instance.canvas.trigger('mouse:down');
-		instance.canvas.item(0).active=true;
-		instance.canvas.item(1).active=true;
-		instance.canvas.item(2).active=true;
+		var obj1 = instance.canvas.item(0);
+		var obj2 = instance.canvas.item(1);
+		var obj3 = instance.canvas.item(2);
+		var group = new fabric.Group();
+		group.addWithUpdate(obj1);
+		group.addWithUpdate(obj2);
+		group.addWithUpdate(obj3);
+		instance.canvas.setActiveGroup(group);
 		$('#test [data-action="trash"]').click();
 		instance.canvas.trigger('mouse:down');
 		expect(instance.undo.length).toBe(4);

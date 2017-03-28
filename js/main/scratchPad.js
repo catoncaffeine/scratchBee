@@ -152,7 +152,7 @@ function ScratchPadBuilder() {
             square:{
                 action: "square",
                 class: 'sp-draw sp-shape',
-                icon:'sp-icon sp-rectangle',
+                icon:'sp-icon sp-square',
                 title: 'Square',
                 menuActionType: 1,
                 sides: 4,
@@ -260,14 +260,27 @@ function ScratchPadBuilder() {
             instance.menu = config.menu || getDefaultMenu();
             instance.dimension = config.dimension || getDefaultDimension();
             instance.defaultAction = config.defaultAction || getDefaultAction();
+            instance.toggleable = !!config.toggleable;
             instance.wrapper = $(""
-                            +"<div class='sp-wrapper panel panel-default' data-sp-id='"+instance.id+"'"
-                            +   "style='display:inline-block'>"+
+                            +"<div class='sp-wrapper' data-sp-id='"+instance.id+"'"
                             +"</div>")[0];
             return instance;
         },
+        buildToggleButton = function(instance) {
+            $(instance.wrapper).append(""
+                +"<div class='sp-toggle-btn sp-hide'>"
+                +"  <i class='fa fa-minus'></i>"
+                +"</div>"
+                +"<div class='sp-toggle-btn sp-show'>"
+                +"  <i class='fa fa-paint-brush'></i>"
+                +"</div>");
+        },
         buildMenu = function(instance) {
-            $(instance.wrapper).append("<div class='sp-menu panel-heading'></div>");
+            $(instance.wrapper).append(""
+                    +"<div class='sp-panel panel panel-default'>"
+                    +"  <div class='sp-menu panel-heading'>"
+                    +"  </div>"
+                    +"</div>");
             var $menu = $(instance.wrapper).find(".sp-menu");
             var divider = "<span class='vertical-divider'></span>";        
             Object.keys(menuChunks).forEach(function(key) {
@@ -282,7 +295,7 @@ function ScratchPadBuilder() {
                     $(divider).appendTo($menu);
                 }
             });
-            //make this user defined//
+            //make this user defined
             $menu.find("[data-action='pencil']").addClass("active");
         },
         buildMenuChunk = function(chunk) {
@@ -295,7 +308,7 @@ function ScratchPadBuilder() {
         buildMenuDropDown = function(chunk) {
             var $chunk = $(""
                 +"<div class='btn-group sp-dropdown "+chunk.class+"'>"
-                +   "<div class='btn dropdown-toggle' title='"+chunk.title+"' data-toggle='dropdown'>"
+                +   "<div class='dropdown-toggle' title='"+chunk.title+"' data-toggle='dropdown'>"
                 +       "<i class='sp-menu-blank "+chunk.icon+"'></i>"
                 +       "<i class='sp-menu-selected hidden'></i>"
                 +   "</div>"
@@ -349,14 +362,19 @@ function ScratchPadBuilder() {
         renderScratchPad = function(instance, drawer){
             $(instance.wrapper).appendTo($(instance.domElement));
             bindMenuEvents(instance, drawer);
+            if(instance.toggleable) {
+                bindToggleEvents(instance);
+            }
         },
         convertToFabric = function(instance, drawer) {
+
 			var canvasInitOptions = {
 				isDrawingMode: true,
 				stateful: true,
 				enableRetinaScaling: false
 			}
             instance.canvas = new fabric.Canvas(instance.id, canvasInitOptions);
+
             instance.canvas.freeDrawingBrush = new fabric.PencilBrush(instance.canvas);
             instance.canvas.freeDrawingBrush.width = 2;
             drawer.bindCanvasEvents(instance, menuItems);
@@ -400,6 +418,17 @@ function ScratchPadBuilder() {
                 instance.canvas.isDrawingMode = false;
             }
         },
+        bindToggleEvents = function(instance) {
+            $(instance.wrapper).on("click", ".sp-toggle-btn", function(){
+                var $wrapper = $(instance.wrapper),
+                    width = instance.dimension.width,
+                    left = $wrapper.hasClass("sp-hidden") ? "auto": (width-28) + "px";
+                
+                $(instance.wrapper).toggleClass("sp-hidden");
+                $(instance.wrapper).css({left: left});
+                
+            });
+        },
         bindMenuEvents = function(instance, drawer) {
             $(instance.wrapper).on("click", ".sp-menu-action", function(event) {
                 var action = $(this).data("action");
@@ -415,17 +444,16 @@ function ScratchPadBuilder() {
             });
         },
         importResource = function() {
-            //take precaution of nulls and user using other elements to include scratchPad.js
-            var $jsFile = $("[src*='scratchPad.js']"),
+            var $jsFile = $("script[src*='scratchPad.js']"),
                 jsPath = $jsFile.attr("src").toString(),
-                cssPath = jsPath.replace("js/main/scratchPad.js", "resource/scratchPad.css");
+                cssPath = jsPath.replace("js/main/scratchPad.js", "resource/scratchpad.css");
             
             var cssFile = document.createElement("link");
             cssFile.setAttribute("rel", "stylesheet");
             cssFile.setAttribute("href", cssPath);
             $jsFile.after($(cssFile));
             resourceImported = true;
-        }
+        },
         build = function(wrapper, config){
             if (!resourceImported) {
                 importResource()
@@ -435,6 +463,9 @@ function ScratchPadBuilder() {
             }
 
             var instance = buildInstance(wrapper, config);
+            if(instance.toggleable) {
+                buildToggleButton(instance);
+            }
             buildMenu(instance);
             buildPad(instance);
             renderScratchPad(instance, drawer);
@@ -458,20 +489,17 @@ function ScratchPadDrawer() {
         bindObjectEvents = function(instance){
             instance.canvas.on('object:modified', function(e){
                 if(!instance.onUndoRedo  && instance.currentTool !=='trash'){
-					console.log('object:modified '+instance.currentTool+' '+(!instance.onUndoRedo));
                     trackObjectHistory(instance,_modify);
                 }
             });
             instance.canvas.on('object:selected', function(e){
                 if(instance.currentTool !== 'trash'){
-					console.log('object:selected '+instance.currentTool);
                     captureSelectedObject(instance);
                 }
             });
 
             instance.canvas.on('object:added', function(e){
                 if(!instance.onUndoRedo){
-					console.log('object:added '+(!instance.onUndoRedo));
 					var id = new Date().getTime();
 					e.target.set({id:e.target.type+'_'+id});
                     trackObjectHistory(instance,_add,e.target);
@@ -654,21 +682,7 @@ function ScratchPadDrawer() {
 				properties = $.extend({}, activeObject._stateProperties);
 			}
 			
-//			$.each(canvas.getObjects(), function(index, item){
-//				
-//				
-//				if(item.group){
-//					console.log(item.group);	
-//				}else if (item.active === true ) {
-//				 items.push(item);
-//				 if(item.type === 'textbox'){
-//				 	item.off('mousedown');
-//				 }
-//			   //item.set({ selectable: false, visible: false });
-//				 canvas.remove(item);
-//			   itemNums.push(index);
-//			 }
-//			});
+
 			items.forEach( function(element){
 				canvas.remove(element);
 			})
@@ -681,7 +695,6 @@ function ScratchPadDrawer() {
 					"items":items,
 					"itemId":itemId
 				});
-//				canvas.deactivateAll();
 				canvas.renderAll();
 			}
         },
@@ -691,7 +704,6 @@ function ScratchPadDrawer() {
         },
 		trackObjectHistory = function(instance, action, object){
 			$(instance.wrapper).find('.sp-undo').removeClass('disabled');
-			var itemProperties = '';
 			if(!instance.undo){
 				instance.undo = [];
 			}
@@ -776,8 +788,6 @@ function ScratchPadDrawer() {
 					if(itemType === 'Group'){
 						//groups work differently in fabric. it has its own properties and 
 						//do not respect properties of the objects in the group.
-						console.log(state.itemProperties);
-						console.log(Object.keys(state.itemProperties));
 						properties = instance.canvas.toJSON(['id']);
 						instance.canvas.clear();
 						instance.canvas.loadFromJSON(state.itemProperties, function(){
@@ -816,8 +826,8 @@ function ScratchPadDrawer() {
 				}
 			}
 		},
+
 		_findAndRemove = function(ids, canvas){
-			console.log(ids);
 			_foundObjects = []
 			if(ids){
 				canvas.getObjects().forEach(function(object){
@@ -829,9 +839,8 @@ function ScratchPadDrawer() {
 			}	
 			return _foundObjects;
 		},
-		captureSelectedObject = function(instance,selectedObject){
+		captureSelectedObject = function(instance){
 			instance.selectedObject = [];
-			var objects = instance.canvas.getObjects();
 			var activeGroup = instance.canvas.getActiveGroup();
 			if(activeGroup){
 

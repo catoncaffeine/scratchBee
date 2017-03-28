@@ -1,3 +1,55 @@
+.sp-wrapper {
+    display: inline-block;
+    position: relative;
+    transition: visibility 1s, opacity 0.5s;
+}
+
+.sp-toggle-btn {
+    position: absolute;
+    right: 3px;
+    top: 3px;
+    cursor: pointer;
+    padding: 3px;
+    border: 1px solid darkgray;
+    border-radius: 2px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    transition: visibility 1s, opacity 0.5s;
+}
+
+.sp-wrapper .sp-canvas-wrapper {
+    display: inline-block;
+}
+
+.sp-hidden .sp-panel {
+    height: 30px;
+    width: 30px;
+    overflow: hidden;
+}
+.sp-wrapper .sp-panel, .sp-wrapper .sp-hide {
+    visibility: visible;
+}
+
+.sp-hidden .sp-panel, .sp-hidden .sp-hide {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.sp-wrapper .sp-show {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.sp-hidden .sp-show {
+      opacity: 1;
+      visibility: visible;
+}
+
+.sp-toggle-btn i {
+    vertical-align: middle;
+}
+
 .sp-wrapper i {
     display: inline-block;
 }
@@ -8,8 +60,8 @@
     font-size: 18px;
 }
 
-.sp-wrapper .fa-arrow-left {
-	transform: rotate(30deg);
+.sp-menu {
+    padding: 2px;
 }
 
 .sp-menu .disabled {
@@ -25,7 +77,7 @@
     cursor: pointer;
 }
 
-.sp-menu-action {
+.sp-menu-action, .dropdown-toggle {
     display: inline-block;
     padding: 5px;
     text-align: center;
@@ -71,9 +123,9 @@
 .shapes-icon {
 	background: url('img/shapes.png') no-repeat;
 	background-position: center;
-	background-size: 15px;
-	height: 15px;
-	width: 15px;
+	background-size: 18px;
+	height: 18px;
+	width: 18px;
 }
 
 .sp-eq-trapezoid {
@@ -85,8 +137,8 @@
 .sp-parallelogram {
 	background: url('img/parallelogram.png') no-repeat;
 }
-.sp-rectangle {
-	background: url('img/rectangle.png') no-repeat;
+.sp-square {
+	background: url('img/square.png') no-repeat;
 }
 
 .sp-line-i {
@@ -107,6 +159,10 @@
 
 .min-dropdown-width .divider{
 	margin: 5px 0;
+}
+
+.sp-wrapper .fa-arrow-left {
+	transform: rotate(30deg);
 }
 
 .sp-octagon {

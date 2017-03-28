@@ -1,6 +1,13 @@
 (function(){
+	showBuffer = function(){
+		var instance = Object.values(ScratchPad.instances)[0];
+		console.log('undo buffer');
+		console.log(instance.undo);
+		console.log('redo buffer');
+		console.log(instance.redo);
+	}
 	showDebug = function(){
-		showDebugForInstance(0);
+		return showDebugForInstance(0);
 	}
 	showDebugForInstance = function(instanceIndex){
 		var instance = Object.values(ScratchPad.instances)[instanceIndex];
@@ -14,6 +21,7 @@
 		console.log('redo buffer');
 		console.log(instance.redo);
 		console.groupEnd();
+		return instance.canvas;
 	}
 	
 	captureImage = function(){
@@ -22,9 +30,8 @@
 	captureImageOf = function(index){
 		var canvas = Object.values(ScratchPad.instances)[index].canvas;
 		var image = '<img src="'+canvas.toDataURL()+'" style="border:2px dotted green;"/>';
-		//console.log(image)
 		$('#test').empty();
-		$('#test').append(image);
-		
+		$('#test').append(image);		
 	}
+	
 })();

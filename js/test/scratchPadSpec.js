@@ -39,6 +39,7 @@ describe('Test ScratchPad',function(){
   it('tests convert to Fabric calls FabricJS', function(){
     spyOn(fabric,'Canvas').andReturn({
       on: jasmine.createSpy("on"),
+      observe: jasmine.createSpy("observe"),
       dispose: jasmine.createSpy("dispose")
     });
     var instance = ScratchPad.init("#test", {dimension: {width:200,height:200}});
@@ -143,8 +144,14 @@ describe('Scrath Pad Menu - ', function(){
   it("does not set current tool if action is immediate", function(){
     $("#test [data-action='trash']").click();
     expect(instance.currentTool).toBe("trash");
+  });
+  it("sets current tool to selector if redo or undo", function(){
     $("#test [data-action='undo']").click();
+    expect(instance.currentTool).toBe("selector");  
+    $("#test [data-action='trash']").click();
     expect(instance.currentTool).toBe("trash");
+    $("#test [data-action='redo']").click();
+    expect(instance.currentTool).toBe("selector");  
   });
   it("sets current tool if action is defered or both", function(){
     $("#test [data-action='selector']").click();
@@ -164,7 +171,10 @@ describe('Text - ',function(){
     spyOn(instance.canvas, "add");
 
     setSpy = jasmine.createSpy("set");
-    textSpy = jasmine.createSpy("Textbox").andReturn({name: "textbox", set:setSpy});
+    onSpy = jasmine.createSpy("on");
+    textSpy = jasmine.createSpy("Textbox").andReturn({
+        name: "textbox", set:setSpy, on: onSpy
+    });
     fabric.Textbox = textSpy;
   });
   afterEach(function(){
@@ -185,172 +195,172 @@ describe('Text - ',function(){
 });
 
 describe("Trash Can -", function(){
-  var instance;
-  beforeEach(function(){
-    $("body").append("<div id='test'></div>");
-    instance = ScratchPad.init("#test", {menu:["text", "shapes"]});
-    instance.canvas.getPointer = function(obj) {return {x:2,y:3};};
-    spyOn(instance.canvas, "deactivateAll");
-    spyOn(instance.canvas, "renderAll");
-  });
-  afterEach(function(){
-    ScratchPad.instances = {};
-    $('#test').remove();
-  });
-  it('deletes selected object', function(){
-    spyOn(instance.canvas, "remove").andCallThrough();
-    expect((instance.canvas._objects).length).toBe(0);
-    $("#test [data-action='line']").click();
-    instance.canvas.trigger("mouse:down");
-    expect(instance.canvas._objects.length).toBe(1);
-
-    var object = instance.canvas._objects[0];
-    object.active = true;
-    instance.canvas._activeObject = object;
-
-    $("#test [data-action='trash']").click();
-    expect(instance.canvas._objects.length).toBe(1);
-    expect(object.visible).toBeFalsy();
-    expect(instance.canvas.renderAll).toHaveBeenCalled();
-  });
-  it("deletes object groups", function(){
-    spyOn(instance.canvas, "remove");
-    expect((instance.canvas._objects).length).toBe(0);
-    $("#test [data-action='line']").click();
-    instance.canvas.trigger("mouse:down");
-    $("#test [data-action='circle']").click();
-    instance.canvas.trigger("mouse:down");
-    expect((instance.canvas._objects).length).toBe(2);
-    var objects = instance.canvas._objects;
-    objects.forEach(function(obj){
-      obj.active = true;
+    var instance;
+    beforeEach(function(){
+        $("body").append("<div id='test'></div>");
+        ScratchPad.init("#test", {menu:["text", "shapes"]});
+        instance = Object.values(ScratchPad.instances)[0];
+        instance.canvas.getPointer = function(obj) {return {x:2,y:3};};
+		 spyOn(instance.canvas, "renderAll");
     });
-    instance.canvas._activeGroup = {getObjects: function(){return objects}};
-    $("#test [data-action='trash']").click();
-    expect(instance.canvas.renderAll.calls.length).toBe(3);
-    expect(instance.canvas.deactivateAll).toHaveBeenCalled();
-    expect(instance.canvas.renderAll).toHaveBeenCalled();
-  });
+    afterEach(function(){
+        ScratchPad.instances = {};
+        $('#test').remove();
+    });
+    it('deletes selected object', function(){
+        spyOn(instance.canvas, "remove").andCallThrough();
+        expect((instance.canvas._objects).length).toBe(0);
+        $("#test [data-action='line']").click();
+        instance.canvas.trigger("mouse:down");
+        expect(instance.canvas._objects.length).toBe(1);
+        
+        var object = instance.canvas._objects[0];
+		object.active = true;
+        instance.canvas._activeObject = object;
+        
+        $("#test [data-action='trash']").click();
+        expect(instance.canvas._objects.length).toBe(0);
+        expect(instance.canvas.renderAll).toHaveBeenCalled();
+    });
+    it("deletes object groups", function(){
+        spyOn(instance.canvas, "remove");
+        expect((instance.canvas._objects).length).toBe(0);
+        $("#test [data-action='line']").click();
+        instance.canvas.trigger("mouse:down");
+        $("#test [data-action='circle']").click();
+        instance.canvas.trigger("mouse:down");
+        expect((instance.canvas._objects).length).toBe(2);
+        var objects = instance.canvas._objects;
+		objects.forEach(function(obj){
+			obj.active = true;
+		});
+        $("#test [data-action='trash']").click();
+        expect(instance.canvas.renderAll.calls.length).toBe(2);
+    });
 });
 describe('test undo / redo', function(){
-
-  var instance;
-  beforeEach(function(){
-    $("body").append("<div id='test'></div>");
-    instance = ScratchPad.init("#test", {menu:["text","shapes"]});
-    instance.canvas.getPointer = function(obj) {return {x:2,y:3};};
-  });
-  afterEach(function(){
-    ScratchPad.destroyAll();
-    $('#test').remove();
-  });
-
-  it('tests trackObjectHistory with object added', function(){
-    $("#test [data-action='line']").click();
-    instance.canvas.trigger('mouse:down');
-    expect(instance.canvas).toBeDefined();
-    expect(instance.undo.length).toBe(1);
-    var undo = instance.undo[0];
-    expect(undo.itemIndex[0]).toBe(0);
-    expect(undo.itemType).toBe('Object');
-    expect(undo.action).toBe(1);
-  });
-  it('test trackObjectHistory with object modified', function(){
-    $("#test [data-action='line']").click();
-    instance.canvas.trigger('mouse:down');
-    instance.selectedObject = [];
-    instance.selectedObject[0]={itemIndex:[0],itemType:'Object', itemProperties:{}};
-    instance.canvas.trigger('object:modified');
-    expect(instance.undo.length).toBe(2);
-    var undo = instance.undo[0];
-    expect(undo.itemIndex[0]).toBe(0);
-    expect(undo.itemType).toBe('Object');
-    expect(undo.action).toBe(1);
-    undo = instance.undo[1];
-    expect(undo.itemIndex[0]).toBe(0);
-    expect(undo.itemType).toBe('Object');
-    expect(undo.action).toBe(3);
-  });
-  it('test trackObjectHistory with object removed', function(){
-    $("#test [data-action='line']").click();
-    instance.canvas.trigger('mouse:down');
-
-    instance.canvas.item(0).active=true;
-    $('#test [data-action="trash"]').click();
-    instance.canvas.trigger('mouse:down');
-    expect(instance.undo.length).toBe(2);
-    var undo = instance.undo[0];
-    expect(undo.itemIndex[0]).toBe(0);
-    expect(undo.itemType).toBe('Object');
-    expect(undo.action).toBe(1);
-    undo = instance.undo[1];
-    expect(undo.itemIndex[0]).toBe(0);
-    expect(undo.itemType).toBe('Object');
-    expect(undo.action).toBe(2);
-  });
-  it('test trackObjectHistory with objects removed', function(){
-    $("#test [data-action='line']").click();
-    instance.canvas.trigger('mouse:down');
-    instance.currentTool='line';
-    instance.canvas.trigger('mouse:down');
-    instance.currentTool='line';
-    instance.canvas.trigger('mouse:down');
-    instance.canvas.item(0).active=true;
-    instance.canvas.item(1).active=true;
-    instance.canvas.item(2).active=true;
-    $('#test [data-action="trash"]').click();
-    instance.canvas.trigger('mouse:down');
-    expect(instance.undo.length).toBe(4);
-    var undo = instance.undo[0];
-    expect(undo.itemIndex[0]).toBe(0);
-    expect(undo.itemType).toBe('Object');
-    expect(undo.action).toBe(1);
-    undo = instance.undo[3];
-    expect(undo.itemIndex).toEqual([0,1,2]);
-    expect(undo.itemType).toBe('Object');
-    expect(undo.action).toBe(2);
-  });
-  it('test trackObjectHistory with objects modified', function(){
-    $("#test [data-action='line']").click();
-    instance.canvas.trigger('mouse:down');
-    instance.currentTool='line';
-    instance.canvas.trigger('mouse:down');
-    instance.currentTool='line';
-    instance.canvas.trigger('mouse:down');
-    instance.canvas.item(0).active=true;
-    instance.canvas.item(1).active=true;
-    instance.canvas.item(2).active=true;
-    instance.selectedObject = [];
-    instance.selectedObject[0]={'itemType':'Group','action':'3','itemProperties':''};
-    instance.canvas.trigger('object:modified');
-    expect(instance.undo.length).toBe(4);
-    var undo = instance.undo[0];
-    expect(undo.itemIndex[0]).toBe(0);
-    expect(undo.itemType).toBe('Object');
-    expect(undo.action).toBe(1);
-    undo = instance.undo[3];
-    expect(undo.itemType).toBe('Group');
-    expect(undo.action).toBe(3);
-  });
-
-  it('test trackObjectHistory making sure it holds only 10 objects', function(){
-    $("#test [data-action='line']").click();
-    for(var i =0;i<10;i++){
-      instance.canvas.trigger('mouse:down');
-      instance.currentTool='line';
-
-    }
-    expect(instance.undo.length).toBe(10);
-    var undo = instance.undo[9];
-    expect(undo.itemIndex[0]).toBe(9);
-    undo = instance.undo[0];
-    expect(undo.itemIndex[0]).toBe(0);
-    instance.canvas.trigger('mouse:down');
-    expect(instance.undo[0].itemIndex[0]).toBe(1);
-    expect(instance.undo.length).toBe(10);
-    expect(instance.undo[9].itemIndex[0]).toBe(10);
-  });
-
+	var instance;
+	beforeEach(function(){
+        $("body").append("<div id='test'></div>");
+        ScratchPad.init("#test", {menu:["text","shapes"]});
+        instance = Object.values(ScratchPad.instances)[0];
+        instance.canvas.getPointer = function(obj) {return {x:2,y:3};};
+	});
+    afterEach(function(){
+        ScratchPad.destroyAll();
+        $('#test').remove();
+    });
+	
+	it('tests trackObjectHistory with object added', function(){
+		$("#test [data-action='line']").click();
+        instance.canvas.trigger('mouse:down');
+		expect(instance.canvas).toBeDefined();
+		expect(instance.undo.length).toBe(1);
+		var undo = instance.undo[0];
+		expect(undo.itemIndex[0]).toBe(0);
+		expect(undo.itemType).toBe('Object');
+		expect(undo.action).toBe(1);
+	});
+	it('test trackObjectHistory with object modified', function(){
+		$("#test [data-action='line']").click();
+        instance.canvas.trigger('mouse:down');
+		instance.selectedObject = [];
+		instance.selectedObject[0]={itemIndex:[0],itemType:'Object', itemProperties:{}};
+		instance.canvas.trigger('object:modified');
+		
+		expect(instance.undo.length).toBe(2);
+		var undo = instance.undo[0];
+		expect(undo.itemIndex[0]).toBe(0);
+		expect(undo.itemType).toBe('Object');
+		expect(undo.action).toBe(1);
+		undo = instance.undo[1];
+		expect(undo.itemIndex[0]).toBe(0);
+		expect(undo.itemType).toBe('Object');
+		expect(undo.action).toBe(3);
+	});
+	it('test trackObjectHistory with object removed', function(){
+		$("#test [data-action='line']").click();
+        instance.canvas.trigger('mouse:down');
+		
+		instance.canvas.setActiveObject(instance.canvas.item(0));//.active=true;
+		$('#test [data-action="trash"]').click();
+		expect(instance.undo.length).toBe(2);
+		var undo = instance.undo[0];
+		expect(undo.itemIndex[0]).toBe(0);
+		expect(undo.itemType).toBe('Object');
+		expect(undo.action).toBe(1);
+		undo = instance.undo[1];
+		expect(undo.itemIndex[0]).toBe(0);
+		expect(undo.itemType).toBe('Object');
+		expect(undo.action).toBe(2);
+	});
+	it('test trackObjectHistory with objects removed', function(){
+		$("#test [data-action='line']").click();
+        instance.canvas.trigger('mouse:down');
+		instance.currentTool='line';
+		instance.canvas.trigger('mouse:down');
+		instance.currentTool='line';
+		instance.canvas.trigger('mouse:down');
+		var obj1 = instance.canvas.item(0);
+		var obj2 = instance.canvas.item(1);
+		var obj3 = instance.canvas.item(2);
+		var group = new fabric.Group();
+		group.addWithUpdate(obj1);
+		group.addWithUpdate(obj2);
+		group.addWithUpdate(obj3);
+		instance.canvas.setActiveGroup(group);
+		$('#test [data-action="trash"]').click();
+		instance.canvas.trigger('mouse:down');
+		expect(instance.undo.length).toBe(4);
+		var undo = instance.undo[0];
+		expect(undo.itemIndex[0]).toBe(0);
+		expect(undo.itemType).toBe('Object');
+		expect(undo.action).toBe(1);
+		undo = instance.undo[3];
+		expect(undo.itemIndex).toEqual([0,1,2]);
+		expect(undo.itemType).toBe('Object');
+		expect(undo.action).toBe(2);
+	});
+	it('test trackObjectHistory with objects modified', function(){
+		$("#test [data-action='line']").click();
+        instance.canvas.trigger('mouse:down');
+		instance.currentTool='line';
+		instance.canvas.trigger('mouse:down');
+		instance.currentTool='line';
+		instance.canvas.trigger('mouse:down');
+		instance.canvas.item(0).active=true;
+		instance.canvas.item(1).active=true;
+		instance.canvas.item(2).active=true;
+		instance.selectedObject = [];
+		instance.selectedObject[0]={'itemType':'Group','action':'3','itemProperties':''};
+		instance.canvas.trigger('object:modified');
+		expect(instance.undo.length).toBe(4);
+		var undo = instance.undo[0];
+		expect(undo.itemIndex[0]).toBe(0);
+		expect(undo.itemType).toBe('Object');
+		expect(undo.action).toBe(1);
+		undo = instance.undo[3];
+		expect(undo.itemType).toBe('Group');
+		expect(undo.action).toBe(3);
+	});
+	
+	it('test trackObjectHistory making sure it holds only 10 objects', function(){
+		$("#test [data-action='line']").click();
+		for(var i =0;i<10;i++){
+        	instance.canvas.trigger('mouse:down');
+			instance.currentTool='line';
+		
+		}
+		expect(instance.undo.length).toBe(10);
+		var undo = instance.undo[9];
+		expect(undo.itemIndex[0]).toBe(9);
+		undo = instance.undo[0];
+		expect(undo.itemIndex[0]).toBe(0);
+		instance.canvas.trigger('mouse:down');
+		expect(instance.undo[0].itemIndex[0]).toBe(1);
+		expect(instance.undo.length).toBe(10);
+		expect(instance.undo[9].itemIndex[0]).toBe(10);
+	});
 });
 describe('Build Lines - ', function(){
   var instance, setSpy, lineSpy, polygonSpy;

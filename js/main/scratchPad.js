@@ -358,11 +358,12 @@ function ScratchPadBuilder() {
             }
         },
         _convertToFabric = function(instance, drawer) {
-            instance.canvas = new fabric.Canvas(instance.id, {
-                isDrawingMode: true,
-                stateful:true,
-                enableRetinaScaling:false
-            });
+			var canvasInitOptions = {
+				isDrawingMode: true,
+				stateful: true,
+				enableRetinaScaling: false
+			}
+            instance.canvas = new fabric.Canvas(instance.id, canvasInitOptions);
             instance.canvas.freeDrawingBrush = new fabric.PencilBrush(instance.canvas);
             instance.canvas.freeDrawingBrush.width = 2;
             drawer.bindCanvasEvents(instance, menuItems);
@@ -495,7 +496,9 @@ function ScratchPadDrawer() {
 
             instance.canvas.on('object:added', function(e){
                 if(!instance.onUndoRedo){
-                    _trackObjectHistory(instance,_add);
+					var id = new Date().getTime();
+					e.target.set({id:e.target.type+'_'+id});
+                    _trackObjectHistory(instance,_add,e.target);
                 }
             });
             instance.canvas.observe("object:moving", function(e) {
@@ -547,10 +550,24 @@ function ScratchPadDrawer() {
                 }
             })
         },
-        _makeTextBox = function() {
-            return new fabric.Textbox('Click to add text',{
+        _makeTextBox = function(instance) {
+            var textbox = new fabric.Textbox('Click to add text',{
                 fontSize: 20, 
                 width:150});
+			textbox.on('mousedown', function(e){
+				if(instance.currentTool === 'trash'){
+					
+					var index = instance.canvas.getObjects().indexOf(this);
+					instance.undo.push({
+						itemIndex: index,
+						items:[this],
+						itemType: 'Object',
+						action:2
+					});
+					instance.canvas.remove(this);
+				}
+			})
+			return textbox;
         },
         _makeLine = function(instance, event) {
             var pointer = instance.canvas.getPointer(event.e)
@@ -641,24 +658,50 @@ function ScratchPadDrawer() {
             }
         },
         _trash = function(instance, event){
+			if(event.target && event.target.type==='textbox'){
+				return;
+			}
 			var canvas = instance.canvas;
 			var itemNums = []; // item numbers on the canvas
+			var items = [];
+			var itemId = [];
+			var properties = [];
+			var activeGroup = canvas.getActiveGroup();
+			var activeObject = canvas.getActiveObject();
+			var canvasObjects = canvas.getObjects();
+			
+			if(activeGroup){
+				var objects = activeGroup.getObjects();
+				
+				canvas.discardActiveGroup();
+				objects.forEach(function(object, i){
+					
+					var index = canvasObjects.indexOf(object);
+					itemNums.push(index);
+					items.push(object);				
+					itemId.push(object.id)
+					properties = $.extend({},object._stateProperties);
+				});
+			}else if (activeObject){
+				itemNums.push(canvasObjects.indexOf(activeObject));
+				items.push(activeObject);
+				itemId.push(activeObject.id);
+				properties = $.extend({}, activeObject._stateProperties);
+			}
+			
 
-			$.each(canvas.getObjects(), function(index, item){
-			 if (item.active === true ) {
-			   item.set({ selectable: false, visible: false });
-			   itemNums.push(index);
-			 }
-			});
-
+			items.forEach( function(element){
+				canvas.remove(element);
+			})
 			if(itemNums.length>0){
 				
 				instance.undo.push({
 				   "action" : _delete,
 				   "itemIndex": itemNums,
-					"itemType":'Object'
+					"itemType":'Object',
+					"items":items,
+					"itemId":itemId
 				});
-				canvas.deactivateAll();
 				canvas.renderAll();
 			}
         },
@@ -666,7 +709,7 @@ function ScratchPadDrawer() {
         _addToCanvas = function(instance, object){
             instance.canvas.add(object);
         },
-		_trackObjectHistory = function(instance, action){
+		_trackObjectHistory = function(instance, action, object){
 			$(instance.wrapper).find('.sp-undo').removeClass('disabled');
 			if(!instance.undo){
 				instance.undo = [];
@@ -702,11 +745,20 @@ function ScratchPadDrawer() {
 				}
 
 			}else{
-
-				instance.undo.push({"action": action,"itemIndex": [objects.length - 1],"itemType":"Object"});
+				instance.undo.push({
+                    itemId: [object.id],
+                    action: action,
+                    itemIndex: [objects.length - 1],
+                    itemType: "Object", 
+                    items: [object],
+                    itemProperties: $.extend({},object._stateProperties)
+                });
 			}
 		},
 		_undoOrRedo = function(instance, event){
+			if(instance.currentTool !== 'selector'){
+				$(instance.wrapper).find("[data-action='selector']").click();
+			}
             if(!instance.undo) instance.undo = [];
             if(!instance.redo) instance.redo = [];
             
@@ -718,37 +770,37 @@ function ScratchPadDrawer() {
                 bufferToPush = action === "undo" ? instance.redo : instance.undo;
             
 			if(bufferToUse.length) {
+				
 				var itemNums = [];
-				var properties = '';
 				var state = bufferToUse.pop();
+				var properties = state.itemProperties;
 				var action = state.action;
-				var show = true;
 				var itemType = state.itemType;
-				//turn on flag to prevent event firing
+				var items = [];
+				//turn on flag to prevent object tracking
 				instance.onUndoRedo = true;
-				if (action === _add || action === _delete) {
-					if(action === _add){
-						action = _delete;
-						show = false;
-					}else {
-						action = _add;
-					}
-					state.itemIndex.forEach(function(itemIndex){
-						instance.canvas.item(itemIndex).set({
-							selectable: show,
-							visible: show
+				if(action === _add || action === _delete){
+					
+					itemNums = state.itemIndex;
+					items = state.items;
+					if(action === _delete){
+						state.items.forEach(function(item, index){
+							action = _add;
+							var _index = state.itemIndex[index];
+							instance.canvas.insertAt(item, _index,false);
+							item.set(state.itemProperties);
+							item.setCoords();
+							
 						});
-						
-						itemNums.push(itemIndex);
-						instance.canvas.item(itemIndex).setCoords();
-					});
-					instance.canvas.deactivateAll();
-				}else if(action ===_modify){
-
+					}else {
+						action = _delete;
+						var itemsRemoved = _findAndRemove(state.itemId, instance.canvas);
+					}
+				}else if(action === _modify){
 					if(itemType === 'Group'){
 						//groups work differently in fabric. it has its own properties and 
 						//do not respect properties of the objects in the group.
-						properties = JSON.stringify(instance.canvas);
+						properties = instance.canvas.toJSON(['id']);
 						instance.canvas.clear();
 						instance.canvas.loadFromJSON(state.itemProperties, function(){
 							//call as callback to make sure json is properly loaded.
@@ -756,21 +808,21 @@ function ScratchPadDrawer() {
 						});
 					}else{
 						var item = instance.canvas.item(state.itemIndex[0]);
-						properties = JSON.stringify(item._stateProperties);
-						item.set(JSON.parse(state.itemProperties));
-						item.selectable = item.visible;
+						properties = $.extend({},item._stateProperties);
+						item.set(state.itemProperties);
 						item.setCoords();
 						item.saveState();
 						itemNums.push(state.itemIndex[0]);
-					}
-
+					};
 				}
 
 				bufferToPush.push({
 					"action": action,
 					"itemIndex": itemNums,
 					"itemProperties": properties,
-					"itemType":itemType
+					"itemType":itemType,
+					"items":items,
+					"itemId":state.itemId
 				});
 				instance.canvas.renderAll();
 				instance.onUndoRedo = false;
@@ -786,16 +838,30 @@ function ScratchPadDrawer() {
 				}
 			}
 		},
-		_captureSelectedObject = function(instance){
+		_findAndRemove = function(ids, canvas){
+			_foundObjects = []
+			if(ids){
+				canvas.getObjects().forEach(function(object){
+					if(ids.indexOf(object.id) !== -1){
+						_foundObjects.push(object);
+						canvas.remove(object);
+					}
+				});
+			}	
+			return _foundObjects;
+		},
+        _captureSelectedObject = function(instance){
 			instance.selectedObject = [];
 			var activeGroup = instance.canvas.getActiveGroup();
 			if(activeGroup){
 
-				instance.selectedObject.push({"itemType":"Group", "itemProperties": JSON.stringify(instance.canvas), "action":_modify});
+				instance.selectedObject.push({"itemType":"Group", "itemProperties": instance.canvas.toJSON(['id']), "action":_modify});
 			}else{
+				
 				$.each(instance.canvas.getObjects(), function(index, item){
 					if(item.active === true){
-						instance.selectedObject.push({"itemIndex":[index],"itemType":"Object", "itemProperties": JSON.stringify(item._stateProperties)});
+						
+						instance.selectedObject.push({"itemId":[item.id],"itemIndex":[index],"itemType":"Object", "itemProperties": $.extend({},item._stateProperties)});
 					}
 				})
 			}
@@ -812,7 +878,7 @@ function ScratchPadDrawer() {
                 return;
             }
             if(menuItem.class.indexOf("sp-text") !== -1) {
-                obj = _makeTextBox();
+                obj = _makeTextBox(instance);
             } else if(menuItem.class.indexOf("sp-line") !== -1) {
                 obj = _makeLine(instance, menuItem.action);
             } else if(menuItem.sides !== undefined) {

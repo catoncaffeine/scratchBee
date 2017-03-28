@@ -162,7 +162,7 @@ describe('Scrath Pad Menu - ', function(){
 });
 
 describe('Text - ',function(){
-  var instance, setSpy, textSpy;
+  var instance, setSpy, textSpy, onSpy;
   beforeEach(function(){
     $("body").append("<div id='test'></div>");
     instance = ScratchPad.init("#test", {menu:["text"]});
@@ -198,8 +198,7 @@ describe("Trash Can -", function(){
     var instance;
     beforeEach(function(){
         $("body").append("<div id='test'></div>");
-        ScratchPad.init("#test", {menu:["text", "shapes"]});
-        instance = Object.values(ScratchPad.instances)[0];
+        instance = ScratchPad.init("#test", {menu:["text", "shapes"]});
         instance.canvas.getPointer = function(obj) {return {x:2,y:3};};
 		 spyOn(instance.canvas, "renderAll");
     });
@@ -242,8 +241,7 @@ describe('test undo / redo', function(){
 	var instance;
 	beforeEach(function(){
         $("body").append("<div id='test'></div>");
-        ScratchPad.init("#test", {menu:["text","shapes"]});
-        instance = Object.values(ScratchPad.instances)[0];
+        instance = ScratchPad.init("#test", {menu:["text","shapes"]});
         instance.canvas.getPointer = function(obj) {return {x:2,y:3};};
 	});
     afterEach(function(){

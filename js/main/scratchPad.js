@@ -433,15 +433,16 @@ function ScratchPadBuilder() {
             });
         },
         _importResource = function() {
-            var $jsFile = $("script[src*='scratchPad.js']"),
-                jsPath = $jsFile.attr("src").toString(),
-                cssPath = jsPath.replace("js/main/scratchPad.js", "resource/scratchpad.css");
-            
-            var cssFile = document.createElement("link");
-            cssFile.setAttribute("rel", "stylesheet");
-            cssFile.setAttribute("href", cssPath);
-            $jsFile.after($(cssFile));
-            resourceImported = true;
+            var $jsFile = $("script[src*='scratchPad.js']");
+            if($jsFile.length) {
+                var jsPath = $jsFile.attr("src").toString(),
+                    cssPath = jsPath.replace("js/main/scratchPad.js", "resource/scratchpad.css"),
+                    cssFile = document.createElement("link");
+                cssFile.setAttribute("rel", "stylesheet");
+                cssFile.setAttribute("href", cssPath);
+                $jsFile.after($(cssFile));
+                resourceImported = true;    
+            }
         };
     
         var build = function(wrapper, config){

@@ -50,49 +50,49 @@ function ScratchPadBuilder() {
         menuItems = {
             selector: {
                 action: "selector",
-                class: "sp-selector",
+                cssClass: "sp-selector",
                 title: "Select",
                 icon: "fa fa-arrows-alt",
                 menuActionType: 1
             },
             pencil: {
                 action: "pencil",
-                class: "sp-pencil",
+                cssClass: "sp-pencil",
                 title: "Pencil",
                 icon: "fa fa-pencil",
                 menuActionType: 1
             },
             trash: {
                 action: "trash",
-                class: "sp-trash",
+                cssClass: "sp-trash",
                 title: "Delete",
                 icon: "fa fa-trash",
                 menuActionType: 2
             },
             undo: {
                 action: "undo",
-                class:'sp-undo disabled',
+                cssClass: 'sp-undo disabled',
                 title: 'Undo',
                 icon: "fa fa-undo",
                 menuActionType: 0
             },
             redo: {
                 action: "redo",
-                class: 'sp-redo disabled',
+                cssClass: 'sp-redo disabled',
                 title: 'Redo',
                 icon: "fa fa-repeat",
                 menuActionType: 0
             },
             text: {
                 action: "text",
-                class:'sp-draw sp-text',
+                cssClass: 'sp-draw sp-text',
                 title:'Add Text',
                 icon: "fa fa-font",
                 menuActionType: 1
             },
             line:{
                 action: "line",
-                class: 'sp-draw sp-line',
+                cssClass: 'sp-draw sp-line',
                 icon: "sp-icon sp-line-i",
                 title:'Line',
                 menuActionType: 1,
@@ -101,7 +101,7 @@ function ScratchPadBuilder() {
             },
             ray: {
                 action: "ray",
-                class: 'sp-draw sp-line',
+                cssClass: 'sp-draw sp-line',
                 icon: 'fa fa-long-arrow-right',
                 title: 'Ray',
                 menuActionType: 1,
@@ -109,7 +109,7 @@ function ScratchPadBuilder() {
             },
             doubleray: {
                 action: "doubleray",
-                class: 'sp-draw sp-line',
+                cssClass: 'sp-draw sp-line',
                 icon: 'fa fa-arrows-h',
                 title: 'Double Headed Ray',
                 menuActionType: 1,
@@ -117,7 +117,7 @@ function ScratchPadBuilder() {
             },
             circle: {
                 action: "circle",
-                class: 'sp-draw sp-shape',
+                cssClass: 'sp-draw sp-shape',
                 icon: 'fa fa-circle',
                 title: 'Circle',
                 menuActionType: 1,
@@ -126,7 +126,7 @@ function ScratchPadBuilder() {
             },
             eq_triangle :{
                 action: "eq_triangle",
-                class: 'sp-draw sp-shape',
+                cssClass: 'sp-draw sp-shape',
                 icon:'sp-icon sp-eq-triangle',
                 title: 'Equilateral Triangle',
                 menuActionType: 1,
@@ -135,7 +135,7 @@ function ScratchPadBuilder() {
             },
             right_triangle: {
                 action: "right_triangle",
-                class: 'sp-draw sp-shape',
+                cssClass: 'sp-draw sp-shape',
                 icon:'sp-icon sp-right-triangle',
                 title:'Right Angled Triangle',
                 menuActionType: 1,
@@ -143,7 +143,7 @@ function ScratchPadBuilder() {
             },
             scelene_triangle: {
                 action: "scelene_triangle",
-                class: 'sp-draw sp-shape',
+                cssClass: 'sp-draw sp-shape',
                 icon: 'sp-icon sp-scelene',
                 title: 'Scelene Triangle',
                 menuActionType: 1,
@@ -151,7 +151,7 @@ function ScratchPadBuilder() {
             },
             square:{
                 action: "square",
-                class: 'sp-draw sp-shape',
+                cssClass: 'sp-draw sp-shape',
                 icon:'sp-icon sp-square',
                 title: 'Square',
                 menuActionType: 1,
@@ -160,7 +160,7 @@ function ScratchPadBuilder() {
             },
             parallelogram:{
                 action: "parallelogram",
-                class: 'sp-draw sp-shape',
+                cssClass: 'sp-draw sp-shape',
                 icon: 'sp-icon sp-parallelogram',
                 title: 'Parallelogram',
                 menuActionType: 1,
@@ -168,7 +168,7 @@ function ScratchPadBuilder() {
             },
             eq_trapezoid: {
                 action: "eq_trapezoid",
-                class: 'sp-draw sp-shape',
+                cssClass: 'sp-draw sp-shape',
                 icon: 'sp-icon sp-eq-trapezoid',
                 title: 'Equilateral Trapezoid',
                 menuActionType: 1,
@@ -176,7 +176,7 @@ function ScratchPadBuilder() {
             },
             trapezoid: {
                 action: "trapezoid",
-                class: 'sp-draw sp-shape',
+                cssClass: 'sp-draw sp-shape',
                 icon:'sp-icon sp-trapezoid',
                 title: 'Trapezoid',
                 menuActionType: 1,
@@ -184,7 +184,7 @@ function ScratchPadBuilder() {
             },
             pentagon: {
                 action: "pentagon",
-                class: 'sp-draw sp-shape',
+                cssClass: 'sp-draw sp-shape',
                 icon: 'sp-icon sp-pentagon',
                 title: 'Pentagon',
                 menuActionType: 1,
@@ -193,7 +193,7 @@ function ScratchPadBuilder() {
             },
             hexagon: {
                 action: "hexagon",
-                class: 'sp-draw sp-shape',
+                cssClass: 'sp-draw sp-shape',
                 icon: 'sp-icon sp-hexagon',
                 title: 'Hexagon',
                 menuActionType: 1,
@@ -202,7 +202,7 @@ function ScratchPadBuilder() {
             },
             octagon: {
                 action: "octagon",
-                class: 'sp-draw sp-shape',
+                cssClass: 'sp-draw sp-shape',
                 icon: 'sp-icon sp-octagon',
                 title: 'Octagon',
                 sides: 8,
@@ -210,7 +210,7 @@ function ScratchPadBuilder() {
             },
             decagon: {
                 action: "decagon",
-                class: 'sp-draw sp-shape',
+                cssClass: 'sp-draw sp-shape',
                 icon: 'sp-icon sp-decagon',
                 title: 'Decagon',
                 menuActionType: 1,
@@ -220,22 +220,22 @@ function ScratchPadBuilder() {
         },
         menuChunks = {
             basic: {
-                class: "sp-menu-basic",
+                cssClass: "sp-menu-basic",
                 items: [menuItems.selector, menuItems.pencil, menuItems.trash],
                 type: "group"
             },
             undo: {
-                class: "sp-menu-undo",
+                cssClass: "sp-menu-undo",
                 items: [menuItems.undo, menuItems.redo],
                 type: "group"
             },
             text: {
-                class: "sp-menu-text",
+                cssClass: "sp-menu-text",
                 items: [menuItems.text],
                 type: "group"
             },
             shapes: {
-                class: "sp-menu-shapes",
+                cssClass: "sp-menu-shapes",
                 items:[
                     menuItems.line, menuItems.ray, menuItems.doubleray, menuItems.circle, 
                     menuItems.eq_triangle, menuItems.right_triangle, menuItems.scelene_triangle,
@@ -299,7 +299,7 @@ function ScratchPadBuilder() {
             instance.currentTool = "pencil";
         },
         _buildMenuChunk = function(chunk) {
-            var $chunk = $("<span class='sp-menu-chunk "+chunk.class+"'></span>");
+            var $chunk = $("<span class='sp-menu-chunk "+chunk.cssClass+"'></span>");
             chunk.items.forEach(function(menuItem){
                 $chunk.append(_buildMenuButton(menuItem));
             });
@@ -307,7 +307,7 @@ function ScratchPadBuilder() {
         },
         _buildMenuDropDown = function(chunk) {
             var $chunk = $(""
-                +"<div class='btn-group sp-dropdown "+chunk.class+"'>"
+                +"<div class='btn-group sp-dropdown "+chunk.cssClass+"'>"
                 +   "<div class='dropdown-toggle' title='"+chunk.title+"' data-toggle='dropdown'>"
                 +       "<i class='sp-menu-blank "+chunk.icon+"'></i>"
                 +       "<i class='sp-menu-selected hidden'></i>"
@@ -334,7 +334,7 @@ function ScratchPadBuilder() {
         },
         _buildMenuButton = function(menuItem) {
             return ""
-                +"<div class='sp-menu-action "+menuItem.class+"' "
+                +"<div class='sp-menu-action "+menuItem.cssClass+"' "
                     +"data-action='"+menuItem.action+"' "
                     +"data-toggle='tooltip' "
                     +"title='"+menuItem.title+"'"
@@ -543,7 +543,7 @@ function ScratchPadDrawer() {
             instance.canvas.on('mouse:down', function(e){
                 if(instance.currentTool) {
                     var menuItem = menuItems[instance.currentTool];
-                    if(menuItem.class.indexOf("sp-draw") !== -1) {
+                    if(menuItem.cssClass.indexOf("sp-draw") !== -1) {
                         draw(e, instance, menuItem);
                     } else {
                         takeAction(e, instance, menuItem.action);
@@ -877,9 +877,9 @@ function ScratchPadDrawer() {
             if(!!event.target){
                 return;
             }
-            if(menuItem.class.indexOf("sp-text") !== -1) {
+            if(menuItem.cssClass.indexOf("sp-text") !== -1) {
                 obj = _makeTextBox(instance);
-            } else if(menuItem.class.indexOf("sp-line") !== -1) {
+            } else if(menuItem.cssClass.indexOf("sp-line") !== -1) {
                 obj = _makeLine(instance, pointer);
             } else if(menuItem.sides !== undefined) {
                 obj = _makeRegularShape(menuItem.sides);

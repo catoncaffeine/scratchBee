@@ -18,8 +18,16 @@ var ScratchPad = { // allows the client to create, manipulate, and destroy scrat
     
     // add methods for different format, json, jpeg, etc
 	exportCanvas : function(id){
-		return ScratchPad.instances[id] ?  ScratchPad.instances[id].canvas.toDataURL() : "";
+        if(ScratchPad.instances[id]){
+            return ScratchPad.instances[id].canvas.toDataURL();
+        }
 	},
+    hasContent: function(id) {
+        if(ScratchPad.instances[id]) {
+          return !ScratchPad.instances[id].canvas.isEmpty();
+        }
+        return false;
+    },
 	destroyAll:  function(){
 		Object.keys(ScratchPad.instances).forEach(function(id){
 			ScratchPad.destroyInstanceById(id);

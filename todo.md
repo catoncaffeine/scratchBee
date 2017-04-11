@@ -1,25 +1,22 @@
 ##TODO
 
+####ScratchPad 2.0
+------------------
+* Changing pencil stroke color
+* Changing pencil stroke width
+* Vectored line drawing
+* Background images/grid system
 
-####Canvas
-------
-* ~~cached canvas instances~~
-* ~~method to cache canvas instance~~
-* method to remove canvas instances (need to verify whether fabric has canvas destruction)
+###ScratchPad For Mobile Browsers
+---------------------------------
+* Detect whether client browser is in mobile devices
+* Expand one instance at a time
+    * Full Width of browser
+    * Set height to proportional
+* Exit Button/Toggle Button
+* Enlarge/rearrange menu buttons
+* Enhanced menu and canvas events for mobile devices
 
-####Toolbar
-----
-* ~~creating toolbar on canvas (preferred to be through config files)~~
-    * should support grouping of tools
-    
-* bind events to place objects in canvas
-    * should we add on clicking canvas after selecting tool or while selecting tool? 
-    * should we place as stalked and user can move it to where they want or find an empty space and add there *(not sure worth doing)*
-* ~~tool to remove selected objects from canvas~~
-* tool to clear canvas
-
-####Export canvas (take view)
----
-
-####Import canvas (teacher)
----
+###Existing Bugs
+----------------
+* fabric.Textbox issue on android devices/browsers

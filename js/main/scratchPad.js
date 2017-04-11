@@ -39,9 +39,10 @@ var ScratchPad = { // allows the client to create, manipulate, and destroy scrat
 		}
 	},
 	destroyInstanceById: function(id){
-		if(ScratchPad.instances[id]) {         
-            ScratchPad.instances[id].canvas.dispose();
-            $(ScratchPad.instances[id].domElement).empty();
+	    var instance = ScratchPad.instances[id];
+		if(instance) {
+		    if(instance.canvas) instance.canvas.dispose();
+            $(instance.domElement).empty();
             delete ScratchPad.instances[id];
 		}
 	},
@@ -55,6 +56,7 @@ var ScratchPad = { // allows the client to create, manipulate, and destroy scrat
 function ScratchPadBuilder() {
     var drawer = null,
         resourceImported = false,
+        resourceBasePath = "",
         menuItems = {
             selector: {
                 action: "selector",
@@ -266,11 +268,16 @@ function ScratchPadBuilder() {
             var instance = {id: "sp_" + identifier};
             var config = config || {};
             instance.domElement = $(wrapper)[0];
-            instance.menu = config.menu || getDefaultMenu();
+            instance.readonly = !!config.readonly;
             instance.dimension = config.dimension || getDefaultDimension();
-            instance.defaultAction = config.defaultAction || getDefaultAction();
             instance.toggleable = !!config.toggleable;
             instance.wrapper = $("<div class='sp-wrapper' data-sp-id='"+instance.id+"'></div>")[0];
+            $(instance.wrapper).append("<div class='sp-panel panel panel-default'></div>");
+
+            if(!instance.readonly) {
+                instance.menu = config.menu || getDefaultMenu();
+                instance.defaultAction = config.defaultAction || getDefaultAction();
+            }
             return instance;
         },
         _buildToggleButton = function(instance) {
@@ -281,13 +288,10 @@ function ScratchPadBuilder() {
                 +"<div class='sp-toggle-btn sp-show'>"
                 +"  <i class='fa fa-paint-brush'></i>"
                 +"</div>");
+            _bindToggleEvents(instance);
         },
         _buildMenu = function(instance) {
-            $(instance.wrapper).append(""
-                    +"<div class='sp-panel panel panel-default'>"
-                    +"  <div class='sp-menu panel-heading'>"
-                    +"  </div>"
-                    +"</div>");
+            $(instance.wrapper).find(".sp-panel").append("<div class='sp-menu panel-heading'></div>");
             var $menu = $(instance.wrapper).find(".sp-menu");
             var divider = "<span class='vertical-divider'></span>";        
             Object.keys(menuChunks).forEach(function(key) {
@@ -351,32 +355,35 @@ function ScratchPadBuilder() {
                 +"</div>";
         },
         _buildPad = function(instance){
-            var width = instance.dimension.width, height = instance.dimension.height;
-            $(instance.wrapper).find(".sp-menu")
-                               .after(""
-                                   + "<div class='sp-canvas-wrapper panel-body'>"
-                                   +    "<canvas class='sp-canvas' id='"+instance.id+"' width='"+width+"' height='"+height+"'></canvas>"
-                                   + "</div>");
+            var width = instance.dimension.width, height = instance.dimension.height,
+                $panel = $(instance.wrapper).find(".sp-panel"),
+                nativeCanvas = ""
+                    + "<div class='sp-canvas-wrapper panel-body'>"
+                    +    "<canvas class='sp-canvas' id='"+instance.id+"' width='"+width+"' height='"+height+"'></canvas>"
+                    + "</div>";
+            $panel.append(nativeCanvas)
         },
-        _renderScratchPad = function(instance, drawer){
+        _renderScratchPad = function(instance){
             $(instance.wrapper).appendTo($(instance.domElement));
-            _bindMenuEvents(instance, drawer);
-            if(instance.toggleable) {
-                _bindToggleEvents(instance);
-            }
         },
         _convertToFabric = function(instance, drawer) {
 			var canvasInitOptions = {
 				isDrawingMode: true,
 				stateful: true,
-				enableRetinaScaling: false
-			}
+				enableRetinaScaling: false,
+                allowTouchScrolling: true
+			};
             instance.canvas = new fabric.Canvas(instance.id, canvasInitOptions);
             instance.canvas.freeDrawingBrush = new fabric.PencilBrush(instance.canvas);
             instance.canvas.freeDrawingBrush.width = 2;
             drawer.bindCanvasEvents(instance, menuItems);
         },
-        
+        _convertToStaticCanvas = function(instance) {
+            instance.canvas = new fabric.StaticCanvas(instance.id, {
+                enableRetinaScaling: false,
+                allowTouchScrolling: true
+            });
+        },
         _toggleActiveMenu =  function(instance, clickedElement){
             var $menu = $(instance.wrapper).find(".sp-menu"),
                 $dropdowns = $menu.find(".sp-dropdown"),
@@ -423,7 +430,6 @@ function ScratchPadBuilder() {
                 
                 $(instance.wrapper).toggleClass("sp-hidden");
                 $(instance.wrapper).css({left: left});
-                
             });
         },
         _bindMenuEvents = function(instance, drawer) {
@@ -443,9 +449,10 @@ function ScratchPadBuilder() {
         _importResource = function() {
             var $jsFile = $("script[src*='scratchPad.js']");
             if($jsFile.length) {
-                var jsPath = $jsFile.attr("src").toString(),
-                    cssPath = jsPath.replace("js/main/scratchPad.js", "resource/scratchpad.css"),
-                    cssFile = document.createElement("link");
+                var jsPath = $jsFile.attr("src").toString(), cssPath, cssFile;
+                resourceBasePath = jsPath.replace("js/main/scratchPad.js", "resource/");
+                cssPath = resourceBasePath + "scratchpad.css";
+                cssFile = document.createElement("link");
                 cssFile.setAttribute("rel", "stylesheet");
                 cssFile.setAttribute("href", cssPath);
                 $jsFile.after($(cssFile));
@@ -465,10 +472,27 @@ function ScratchPadBuilder() {
             if(instance.toggleable) {
                 _buildToggleButton(instance);
             }
-            _buildMenu(instance);
-            _buildPad(instance);
-            _renderScratchPad(instance, drawer);
-            _convertToFabric(instance, drawer);
+
+            if(instance.readonly) {
+                _buildPad(instance);
+                _renderScratchPad(instance);
+                _convertToStaticCanvas(instance);
+            } else {
+                _buildMenu(instance);
+                _buildPad(instance);
+                _renderScratchPad(instance);
+                _bindMenuEvents(instance, drawer);
+                _convertToFabric(instance, drawer);
+            }
+
+            if(config && config.image) {
+                // use alt passed in or default if readonly. don't load alt if editable
+                var altURL = false;
+                if(instance.readonly) {
+                    altURL = config.imageAlt || resourceBasePath + "img/brokenImage.png";
+                }
+                drawer.loadImage(instance, config.image, altURL);
+            }
             return instance;
         },
         getDefaultMenu = function() {
@@ -512,22 +536,22 @@ function ScratchPadDrawer() {
             });
             instance.canvas.observe("object:moving", function(e) {
                 if(mouseOut) {
-                    var obj = e.target, 
-                        canvas = obj.canvas, 
+                    var obj = e.target,
+                        canvas = obj.canvas,
                         bound = obj.getBoundingRect();
-                    
+
                     var canvasH = canvas.height,
                         canvasW = canvas.width,
                         boundT = bound.top,
                         boundL = bound.left,
                         boundH = bound.height,
                         boundW = bound.width;
-                    
+
                      // if object is too big ignore
                     if(obj.currentHeight > canvasH || obj.currentWidth > canvasW){
                         return;
-                    }        
-                    obj.setCoords();        
+                    }
+                    obj.setCoords();
                     // top-left  corner
                     if(boundT < 0 || boundL < 0){
                         obj.top = Math.max(obj.top, obj.top - boundT);
@@ -561,11 +585,11 @@ function ScratchPadDrawer() {
         },
         _makeTextBox = function(instance) {
             var textbox = new fabric.Textbox('Click to add text',{
-                fontSize: 20, 
+                fontSize: 20,
                 width:150});
 			textbox.on('mousedown', function(e){
 				if(instance.currentTool === 'trash'){
-					
+
 					var index = instance.canvas.getObjects().indexOf(this);
 					instance.undo.push({
 						itemIndex: index,
@@ -639,7 +663,7 @@ function ScratchPadDrawer() {
                 coords = [{x:x,y:y}];
 
             for(var i =1; i<= _sides; i++) {
-                var x = +(_centerX+ _size * Math.cos(i*2*Math.PI/_sides)).toFixed(2), 
+                var x = +(_centerX+ _size * Math.cos(i*2*Math.PI/_sides)).toFixed(2),
                     y = +(_centerY+ _size * Math.sin(i*2*Math.PI/_sides)).toFixed(2);
                 coords.push({x:x,y:y});
             }
@@ -650,7 +674,7 @@ function ScratchPadDrawer() {
             return pol;
         },
         _makeIrregularShape = function(shape) {
-            switch (shape) { 
+            switch (shape) {
                 case "right_triangle":
                     return new fabric.Polygon([{x:0,y:0}, {x:0, y:100},{x:100, y:100}]);
                 case "scelene_triangle":
@@ -661,59 +685,98 @@ function ScratchPadDrawer() {
                     return new fabric.Polygon([{x:30, y:150}, {x:120, y:150}, {x:150, y: 225}, {x:0, y:225}],{fill:'black'});
                 case 'trapezoid':
                     return new fabric.Polygon([{x:60,y:150}, {x:150, y: 150}, {x:150, y: 225}, {x:0, y:225}],{fill:'black'});
-                default: 
+                default:
                     return;
             }
         },
-        _trash = function(instance, event){
-			if(event.target && event.target.type==='textbox'){
-				return;
-			}
-			var canvas = instance.canvas;
-			var itemNums = []; // item numbers on the canvas
-			var items = [];
-			var itemId = [];
-			var properties = [];
-			var activeGroup = canvas.getActiveGroup();
-			var activeObject = canvas.getActiveObject();
-			var canvasObjects = canvas.getObjects();
-			
-			if(activeGroup){
-				var objects = activeGroup.getObjects();
-				
-				canvas.discardActiveGroup();
-				objects.forEach(function(object, i){
-					
-					var index = canvasObjects.indexOf(object);
-					itemNums.push(index);
-					items.push(object);				
-					itemId.push(object.id)
-					properties = $.extend({},object._stateProperties);
-				});
-			}else if (activeObject){
-				itemNums.push(canvasObjects.indexOf(activeObject));
-				items.push(activeObject);
-				itemId.push(activeObject.id);
-				properties = $.extend({}, activeObject._stateProperties);
-			}
-			
-
-			items.forEach( function(element){
-				canvas.remove(element);
-			})
-			if(itemNums.length>0){
-				
-				instance.undo.push({
-				   "action" : _delete,
-				   "itemIndex": itemNums,
-					"itemType":'Object',
-					"items":items,
-					"itemId":itemId
-				});
-				canvas.renderAll();
-			}
+        _makeImage = function(image, dimension){
+            var fabricImage = new fabric.Image(image),
+                canvasHeightRatio = dimension.height/dimension.width,
+                imageHeightRatio = fabricImage.height / fabricImage.width,
+                properties = {};
+            if(canvasHeightRatio >= imageHeightRatio) {
+                properties.width = dimension.width;
+                properties.height = dimension.width * imageHeightRatio;
+            } else {
+                properties.width = dimension.height/imageHeightRatio;
+                properties.height = dimension.height;
+            }
+            fabricImage.set(properties);
+            return fabricImage;
         },
-        
+        _loadImage = function(instance, imageUrl, imageAltUrl) {
+            var image = fabric.util.createImage(), error = false;
+            image.src = imageUrl;
+            image.onload = function(){
+                var fabricImage = _makeImage(image, instance.dimension)
+                if(!error) {
+                    _addToCanvas(instance, fabricImage);
+                } else {
+                    _addBackgroundImage(instance, fabricImage)
+                }
+            };
+            image.onerror = function() {
+                if(imageAltUrl && !error) { //if alt passed in it will be background//
+                    error = true;
+                    image.src = imageAltUrl;
+                }
+            };
+        },
+        _addBackgroundImage = function(instance, imageObj){
+            var canvas = instance.canvas;
+            canvas.setBackgroundImage(imageObj, canvas.renderAll.bind(canvas), {
+                originX: 'left',
+                originY: 'top'
+            });
+        },
+        _trash = function(instance, event){
+            if(event.target && event.target.type==='textbox'){
+                return;
+            }
+            var canvas = instance.canvas;
+            var itemNums = []; // item numbers on the canvas
+            var items = [];
+            var itemId = [];
+            var properties = [];
+            var activeGroup = canvas.getActiveGroup();
+            var activeObject = canvas.getActiveObject();
+            var canvasObjects = canvas.getObjects();
+
+            if(activeGroup){
+                var objects = activeGroup.getObjects();
+
+                canvas.discardActiveGroup();
+                objects.forEach(function(object, i){
+
+                    var index = canvasObjects.indexOf(object);
+                    itemNums.push(index);
+                    items.push(object);
+                    itemId.push(object.id)
+                    properties = $.extend({},object._stateProperties);
+                });
+            }else if (activeObject){
+                itemNums.push(canvasObjects.indexOf(activeObject));
+                items.push(activeObject);
+                itemId.push(activeObject.id);
+                properties = $.extend({}, activeObject._stateProperties);
+            }
+
+
+            items.forEach( function(element){
+                canvas.remove(element);
+            });
+            if(itemNums.length>0){
+
+                instance.undo.push({
+                    "action" : _delete,
+                    "itemIndex": itemNums,
+                    "itemType":'Object',
+                    "items":items,
+                    "itemId":itemId
+                });
+                canvas.renderAll();
+            }
+        },
         _addToCanvas = function(instance, object){
             instance.canvas.add(object);
         },
@@ -731,13 +794,13 @@ function ScratchPadDrawer() {
 				var activeObject = instance.canvas.getActiveObject();
 				var activeGroup = instance.canvas.getActiveGroup();
 				if(activeGroup){
-					
+
 					instance.undo.push(instance.selectedObject.pop());
 					if(activeGroup){
 						_captureSelectedObject(instance, activeGroup);
 					}
 				}else {
-					
+
 					if(instance.selectedObject){
 						//iText instances are not an active object. Hence read any object changes when it is selected.
 						var selectedObject = instance.selectedObject.pop();
@@ -757,7 +820,7 @@ function ScratchPadDrawer() {
                     itemId: [object.id],
                     action: action,
                     itemIndex: [objects.length - 1],
-                    itemType: "Object", 
+                    itemType: "Object",
                     items: [object],
                     itemProperties: $.extend({},object._stateProperties)
                 });
@@ -769,16 +832,16 @@ function ScratchPadDrawer() {
 			}
             if(!instance.undo) instance.undo = [];
             if(!instance.redo) instance.redo = [];
-            
+
             var buttonOn = $(event.currentTarget),
                 action = buttonOn.data("action"),
                 antiAction = action === "undo" ?  "redo" : "undo",
                 buttonOff = $(instance.wrapper).find("[data-action='"+antiAction+"']"),
                 bufferToUse = action === "undo" ? instance.undo : instance.redo,
                 bufferToPush = action === "undo" ? instance.redo : instance.undo;
-            
+
 			if(bufferToUse.length) {
-				
+
 				var itemNums = [];
 				var state = bufferToUse.pop();
 				var properties = state.itemProperties;
@@ -788,7 +851,7 @@ function ScratchPadDrawer() {
 				//turn on flag to prevent object tracking
 				instance.onUndoRedo = true;
 				if(action === _add || action === _delete){
-					
+
 					itemNums = state.itemIndex;
 					items = state.items;
 					if(action === _delete){
@@ -798,7 +861,7 @@ function ScratchPadDrawer() {
 							instance.canvas.insertAt(item, _index,false);
 							item.set(state.itemProperties);
 							item.setCoords();
-							
+
 						});
 					}else {
 						action = _delete;
@@ -806,7 +869,7 @@ function ScratchPadDrawer() {
 					}
 				}else if(action === _modify){
 					if(itemType === 'Group'){
-						//groups work differently in fabric. it has its own properties and 
+						//groups work differently in fabric. it has its own properties and
 						//do not respect properties of the objects in the group.
 						properties = instance.canvas.toJSON(['id']);
 						instance.canvas.clear();
@@ -855,7 +918,7 @@ function ScratchPadDrawer() {
 						canvas.remove(object);
 					}
 				});
-			}	
+			}
 			return _foundObjects;
 		},
         _captureSelectedObject = function(instance){
@@ -865,17 +928,17 @@ function ScratchPadDrawer() {
 
 				instance.selectedObject.push({"itemType":"Group", "itemProperties": instance.canvas.toJSON(['id']), "action":_modify});
 			}else{
-				
+
 				$.each(instance.canvas.getObjects(), function(index, item){
 					if(item.active === true){
-						
+
 						instance.selectedObject.push({"itemId":[item.id],"itemIndex":[index],"itemType":"Object", "itemProperties": $.extend({},item._stateProperties)});
 					}
 				})
 			}
-			
+
 		};
-    
+
         var bindCanvasEvents = function(instance, menuItems) {
             _bindMouseDownEvents(instance, menuItems);
             _bindObjectEvents(instance);
@@ -898,16 +961,20 @@ function ScratchPadDrawer() {
                 obj.set({left:pointer.x,top:pointer.y})
                 _addToCanvas(instance, obj);
             }
-            
+
             $(instance.wrapper).find("[data-action='selector']").click();
         },
-        takeAction = function(event, instance, action) { 
+        takeAction = function(event, instance, action) {
             if(action === "trash") _trash(instance, event);
             if(action === "undo" || action === "redo") _undoOrRedo(instance, event);
+        },
+        loadImage = function(instance, imageUrl, imageAltUrl) {
+            _loadImage(instance, imageUrl, imageAltUrl);
         };
     return {
         bindCanvasEvents: bindCanvasEvents,
         takeAction: takeAction,
+        loadImage: loadImage,
         draw: draw
     }
 };

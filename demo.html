@@ -23,7 +23,8 @@
 
 		<script type="text/javascript">
 			$(document).ready(function(){
-				ScratchPad.init("#scratchPad1", {
+				var instance1 = ScratchPad.init("#scratchPad1", {
+                    toggleable: true,
                     menu:[ 
                         ScratchPad.menu.text, 
                         ScratchPad.menu.undo, 
@@ -31,22 +32,33 @@
                     ]
                 });
 
-				ScratchPad.init("#scratchPad2", {
+                var instance2 = ScratchPad.init("#scratchPad2", {
                     toggleable: true,
-                    menu:[ 
-                        ScratchPad.menu.text, 
-                        ScratchPad.menu.undo, 
-                        ScratchPad.menu.shapes
-                    ],
-                    dimension:{width:700,height:100}
+                    readonly: true,
+                    dimension:{width:500,height:100}
                 });
+
+                $("button:first").data("sp-id", instance1.id);
+                $("button:last").data("sp-id", instance2.id);
+
+                $("button").on("click", function(){
+                    var id = $(this).data("sp-id");
+                    if(ScratchPad.hasContent(id)) {
+                        var img = ScratchPad.exportCanvas(id);
+                        $("#generatedImage").html("<img src='"+img+"' />");
+                    }
+				});
 			});
 		</script>
 	</head>
 
 	<body>
-		<div id='scratchPad1'></div>
+		<div id='scratchPad1'>
+		</div>
+		<button data-sp-id="">Save</button>
         <div id="scratchPad2"></div>
 		<div id="test" style="border:1px solid red"></div>
+		<button data-sp-id="">Save</button>
+		<div id="generatedImage"></div>
 	</body>
 </html>

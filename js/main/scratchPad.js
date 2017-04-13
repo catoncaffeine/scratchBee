@@ -290,6 +290,13 @@ function ScratchPadBuilder() {
                 +"</div>");
             _bindToggleEvents(instance);
         },
+        _buildTitle = function(instance, title) {
+            var title = title || "Scratch Pad";
+            $(instance.wrapper).find(".sp-panel").append(""
+                +"<div class='sp-title panel-heading'>"
+                +" <span>"+title+"</span>"
+                +"</div>");
+        },
         _buildMenu = function(instance) {
             $(instance.wrapper).find(".sp-panel").append("<div class='sp-menu panel-heading'></div>");
             var $menu = $(instance.wrapper).find(".sp-menu");
@@ -450,9 +457,11 @@ function ScratchPadBuilder() {
             var $jsFile = $("script[src*='scratchPad.js']");
             if($jsFile.length) {
                 var jsPath = $jsFile.attr("src").toString(), cssPath, cssFile;
-                resourceBasePath = jsPath.replace("js/main/scratchPad.js", "resource/");
+
+                resourceBasePath = jsPath.substr(0, jsPath.indexOf("js/main/scratchPad.js")) + "resource/";
                 cssPath = resourceBasePath + "scratchpad.css";
                 cssFile = document.createElement("link");
+
                 cssFile.setAttribute("rel", "stylesheet");
                 cssFile.setAttribute("href", cssPath);
                 $jsFile.after($(cssFile));
@@ -474,6 +483,7 @@ function ScratchPadBuilder() {
             }
 
             if(instance.readonly) {
+                _buildTitle(instance);
                 _buildPad(instance);
                 _renderScratchPad(instance);
                 _convertToStaticCanvas(instance);

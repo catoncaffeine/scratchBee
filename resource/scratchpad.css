@@ -60,8 +60,18 @@
     font-size: 18px;
 }
 
-.sp-menu {
+.sp-menu, .sp-title {
     padding: 2px;
+}
+
+.sp-title {
+	font-size: medium;
+	font-weight: bold;
+	min-height: 32px;
+}
+
+.sp-title .span {
+	margin: 5px;
 }
 
 .sp-menu .disabled {

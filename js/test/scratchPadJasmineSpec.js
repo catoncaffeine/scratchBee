@@ -602,10 +602,13 @@ describe("Readonly Scratch Pad", function(){
            expect(instance.canvas.__eventListeners).toBeUndefined();
            expect(instance.canvas.lowerCanvasEl).toBeDefined();
        });
-       it("does not build menu", function(){
+       it("does not build menu but a title section", function(){
            expect(instance.menu).toBeUndefined();
            expect(instance.defaultAction).toBeUndefined();
            expect($("#test " + wrapper + " .sp-menu").length).toBe(0);
+
+           expect($("#test " + wrapper+ " .sp-title").length).toBe(1);
+           expect($("#test " + wrapper+ " .sp-title span").text()).toBe("Scratch Pad");
        });
     });
 });

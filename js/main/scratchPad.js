@@ -313,6 +313,10 @@ function ScratchPadBuilder() {
                     $(divider).appendTo($menu);
                 }
             });
+
+            if(instance.menu.indexOf("text") !== -1) {
+                $(instance.wrapper).append("<textarea class='sp-textarea sp-hidden-text'/>")
+            }
             //make this user defined
             $menu.find("[data-action='pencil']").addClass("active");
             instance.currentTool = "pencil";
@@ -378,7 +382,7 @@ function ScratchPadBuilder() {
 				isDrawingMode: true,
 				stateful: true,
 				enableRetinaScaling: false,
-                allowTouchScrolling: true
+                allowTouchScrolling: false
 			};
             instance.canvas = new fabric.Canvas(instance.id, canvasInitOptions);
             instance.canvas.freeDrawingBrush = new fabric.PencilBrush(instance.canvas);
@@ -583,6 +587,7 @@ function ScratchPadDrawer() {
         },
         _bindMouseDownEvents = function(instance, menuItems){
             instance.canvas.on('mouse:down', function(e){
+                _hideTextArea(instance);
                 if(instance.currentTool) {
                     var menuItem = menuItems[instance.currentTool];
                     if(menuItem.cssClass.indexOf("sp-draw") !== -1) {
@@ -591,26 +596,35 @@ function ScratchPadDrawer() {
                         takeAction(e, instance, menuItem.action);
                     }
                 }
-            })
+            });
         },
         _makeTextBox = function(instance) {
-            var textbox = new fabric.Textbox('Click to add text',{
-                fontSize: 20,
-                width:150});
-			textbox.on('mousedown', function(e){
-				if(instance.currentTool === 'trash'){
-
-					var index = instance.canvas.getObjects().indexOf(this);
-					instance.undo.push({
-						itemIndex: index,
-						items:[this],
-						itemType: 'Object',
-						action:2
-					});
-					instance.canvas.remove(this);
-				}
-			})
+            var textbox = new fabric.Text("Click to add text", {
+               fontSize: 20,
+               width:150
+            });
+            textbox.on("mousedown",function() {
+                var time = new Date().getTime();
+                if(this.lastTime && (time - this.lastTime < 500 )) {
+                    _showTextArea(instance, this);
+                }
+                this.lastTime = time;
+            });
 			return textbox;
+        },
+        _showTextArea = function(instance, activeTextArea){
+            var $textarea = $(instance.wrapper).find(".sp-textarea");
+            $textarea.val(activeTextArea.getText());
+            $textarea[0].canvasObject = activeTextArea;
+            $textarea.css({left: activeTextArea.left, top: activeTextArea.top})
+                .removeClass("sp-hidden-text");
+        },
+        _hideTextArea = function (instance) {
+            var $textarea = $(instance.wrapper).find("textarea");
+            if($textarea[0].canvasObject) {
+                $textarea[0].canvasObject.setText($textarea.val());
+            }
+            $textarea.addClass("sp-hidden-text");
         },
         _makeLine = function(instance, pointer) {
             var _x = pointer.x;

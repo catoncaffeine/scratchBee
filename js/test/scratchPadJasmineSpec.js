@@ -48,24 +48,24 @@ describe("Editable Scratch Pad - ", function(){
                 isDrawingMode:true,
                 stateful:true,
                 enableRetinaScaling: false,
-                allowTouchScrolling: true
+                allowTouchScrolling: false
             });
             expect($('#'+instance.id).attr('width')).toBe('200');
         });
-        describe("Initial Load Image", function(done){
-            it("adds an image if it is in config and image exist", function() {
-                expect(fabric.Image).toHaveBeenCalled();
-            });
-            it("adds an alternative image if the first image failed", function () {
+        /*describe("Initial Load Image", function(done){
+         it("adds an image if it is in config and image exist", function() {
+         expect(fabric.Image).toHaveBeenCalled();
+         });
+         it("adds an alternative image if the first image failed", function () {
 
-            });
-            it("adds no image if both images in config do not exist", function(){
+         });
+         it("adds no image if both images in config do not exist", function(){
 
-            });
-            it("loads the default broken image if no alternative image is passed in", function(){
+         });
+         it("loads the default broken image if no alternative image is passed in", function(){
 
-            });
-        });
+         });
+         });*/
     });
     describe('test scratchpad destroy methods', function(){
         it('tests single instance deletion by id', function(){
@@ -176,7 +176,7 @@ describe("Editable Scratch Pad - ", function(){
     });
 
     describe('Text - ',function(){
-        var instance, setSpy, textSpy, onSpy;
+        var instance, setSpy, textSpy, onSpy, textBox;
         beforeEach(function(){
             instance = ScratchPad.init("#test", {menu:["text"]});
 
@@ -185,16 +185,17 @@ describe("Editable Scratch Pad - ", function(){
 
             setSpy = jasmine.createSpy("set");
             onSpy = jasmine.createSpy("on");
-            textSpy = jasmine.createSpy("Textbox").andReturn({
-                name: "textbox", set:setSpy, on: onSpy
-            });
-            fabric.Textbox = textSpy;
+            textBox = {
+                name: "textbox", set:setSpy, on: onSpy, getText: jasmine.createSpy("getText")
+            };
+            textBox.canvasObject = textBox;
+            textSpy = jasmine.createSpy("Text").andReturn(textBox);
+            fabric.Text = textSpy;
         });
         it('adds text just one time', function(){
             $("#test [data-action='text']").click();
             expect(instance.currentTool).toBe("text");
             instance.canvas.trigger('mouse:down');
-
             expect(textSpy).toHaveBeenCalledWith('Click to add text',{
                 fontSize: 20,
                 width: 150
@@ -592,23 +593,23 @@ describe("Readonly Scratch Pad", function(){
             });
             wrapper = ".sp-wrapper[data-sp-id='"+instance.id + "']";
         });
-       it("builds scratch pad panel", function(){
+        it("builds scratch pad panel", function(){
             expect($("#test " + wrapper).length).toBe(1);
             expect($("#test " + wrapper + " .sp-panel").length).toBe(1);
-       });
-       it("builds a static canvas", function(){
-           expect(fabric.Canvas).not.toHaveBeenCalled();
-           expect(instance.canvas.upperCanvasEl).toBeUndefined();
-           expect(instance.canvas.__eventListeners).toBeUndefined();
-           expect(instance.canvas.lowerCanvasEl).toBeDefined();
-       });
-       it("does not build menu but a title section", function(){
-           expect(instance.menu).toBeUndefined();
-           expect(instance.defaultAction).toBeUndefined();
-           expect($("#test " + wrapper + " .sp-menu").length).toBe(0);
+        });
+        it("builds a static canvas", function(){
+            expect(fabric.Canvas).not.toHaveBeenCalled();
+            expect(instance.canvas.upperCanvasEl).toBeUndefined();
+            expect(instance.canvas.__eventListeners).toBeUndefined();
+            expect(instance.canvas.lowerCanvasEl).toBeDefined();
+        });
+        it("does not build menu but a title section", function(){
+            expect(instance.menu).toBeUndefined();
+            expect(instance.defaultAction).toBeUndefined();
+            expect($("#test " + wrapper + " .sp-menu").length).toBe(0);
 
-           expect($("#test " + wrapper+ " .sp-title").length).toBe(1);
-           expect($("#test " + wrapper+ " .sp-title span").text()).toBe("Scratch Pad");
-       });
+            expect($("#test " + wrapper+ " .sp-title").length).toBe(1);
+            expect($("#test " + wrapper+ " .sp-title span").text()).toBe("Scratch Pad");
+        });
     });
 });

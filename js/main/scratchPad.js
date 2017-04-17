@@ -597,7 +597,7 @@ function ScratchPadDrawer() {
                 }
             });
         },
-        _makeTextBox = function(instance) {
+        _makeTextBox = function(instance, pointer) {
             var textbox = new fabric.Text("Click to add text", {
                 fontSize: 20,
                 width:150
@@ -605,18 +605,18 @@ function ScratchPadDrawer() {
             textbox.on("mousedown",function() {
                 var time = new Date().getTime();
                 if(this.lastTime && (time - this.lastTime < 500 )) {
-                    _showTextArea(instance, this);
+                    _showTextArea(instance, this, {x: this.left, y: this.top});
                 }
                 this.lastTime = time;
             });
-            _showTextArea(instance,textbox);
+            _showTextArea(instance,textbox, pointer);
             return textbox;
         },
-        _showTextArea = function(instance, activeTextArea){
+        _showTextArea = function(instance, activeTextArea, pointer){
             var $textarea = $(instance.wrapper).find(".sp-textarea");
 
             $textarea[0].canvasObject = activeTextArea;
-            $textarea.css({left: activeTextArea.left, top: activeTextArea.top}).show(function(){
+            $textarea.css({left: pointer.x, top: pointer.y}).show(function(){
                 $textarea.val(activeTextArea.getText()).focus();
             });
         },
@@ -984,7 +984,7 @@ function ScratchPadDrawer() {
                 return;
             }
             if(menuItem.cssClass.indexOf("sp-text") !== -1) {
-                obj = _makeTextBox(instance);
+                obj = _makeTextBox(instance, pointer);
             } else if(menuItem.cssClass.indexOf("sp-line") !== -1) {
                 obj = _makeLine(instance, pointer);
             } else if(menuItem.sides !== undefined) {

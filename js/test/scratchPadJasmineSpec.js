@@ -48,24 +48,10 @@ describe("Editable Scratch Pad - ", function(){
                 isDrawingMode:true,
                 stateful:true,
                 enableRetinaScaling: false,
-                allowTouchScrolling: false
+                allowTouchScrolling: true
             });
             expect($('#'+instance.id).attr('width')).toBe('200');
         });
-        /*describe("Initial Load Image", function(done){
-         it("adds an image if it is in config and image exist", function() {
-         expect(fabric.Image).toHaveBeenCalled();
-         });
-         it("adds an alternative image if the first image failed", function () {
-
-         });
-         it("adds no image if both images in config do not exist", function(){
-
-         });
-         it("loads the default broken image if no alternative image is passed in", function(){
-
-         });
-         });*/
     });
     describe('test scratchpad destroy methods', function(){
         it('tests single instance deletion by id', function(){
@@ -180,27 +166,44 @@ describe("Editable Scratch Pad - ", function(){
         beforeEach(function(){
             instance = ScratchPad.init("#test", {menu:["text"]});
 
-            instance.canvas.getPointer = function(obj) {return {x:2,y:3};};
+            instance.canvas.getPointer = function (obj) {
+                return {x: 2, y: 3};
+            };
             spyOn(instance.canvas, "add");
 
             setSpy = jasmine.createSpy("set");
             onSpy = jasmine.createSpy("on");
             textBox = {
-                name: "textbox", set:setSpy, on: onSpy, getText: jasmine.createSpy("getText")
+                name: "textbox", set: setSpy, on: onSpy, getText: jasmine.createSpy("getText"), off: jasmine.createSpy("off")
             };
             textBox.canvasObject = textBox;
-            textSpy = jasmine.createSpy("Text").andReturn(textBox);
-            fabric.Text = textSpy;
+            textSpy = jasmine.createSpy("Textbox").andReturn(textBox);
+            fabric.Textbox = textSpy;
         });
         it('adds text just one time', function(){
+            var $textarea = $(instance.wrapper).find(".sp-textarea");
             $("#test [data-action='text']").click();
             expect(instance.currentTool).toBe("text");
+            spyOn($.fn, "focus").andReturn($textarea);
+            spyOn($.fn ,"show").andCallFake(function(callback){
+                if(typeof callback === "function") {
+                    callback();
+                    expect($.fn.focus.mostRecentCall.object).toBe($textarea);
+                }
+            });
             instance.canvas.trigger('mouse:down');
-            expect(textSpy).toHaveBeenCalledWith('Click to add text',{
+            expect(textSpy).toHaveBeenCalledWith('Click to add text', {
                 fontSize: 20,
                 width: 150
             });
             expect(instance.currentTool).toBe("selector");
+            expect($textarea[0].canvasObject).toBe(textBox);
+            expect($.fn.show).toHaveBeenCalled();
+
+            delete instance.currentTool;
+            delete $textarea[0].canvasObject;
+            instance.canvas.trigger('mouse:down');
+            expect($textarea[0].style['display']).toBe('none');
         });
     });
 

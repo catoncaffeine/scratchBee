@@ -314,8 +314,8 @@ function ScratchPadBuilder() {
                 }
             });
 
-            if(instance.menu.indexOf("text") !== -1) {
-                $(instance.wrapper).append("<textarea class='sp-textarea sp-hidden-text' display='none'/>")
+            if (instance.menu.indexOf("text") !== -1) {
+                $(instance.wrapper).append("<textarea class='sp-textarea' style='display: none' maxlength='200'/>")
             }
             //make this user defined
             $menu.find("[data-action='pencil']").addClass("active");
@@ -382,7 +382,7 @@ function ScratchPadBuilder() {
                 isDrawingMode: true,
                 stateful: true,
                 enableRetinaScaling: false,
-                allowTouchScrolling: false
+                allowTouchScrolling: true
             };
             instance.canvas = new fabric.Canvas(instance.id, canvasInitOptions);
             instance.canvas.freeDrawingBrush = new fabric.PencilBrush(instance.canvas);
@@ -463,9 +463,9 @@ function ScratchPadBuilder() {
                 var jsPath = $jsFile.attr("src").toString(), cssPath, cssFile;
 
                 resourceBasePath = jsPath.substr(0, jsPath.indexOf("js/main/scratchPad.js")) + "resource/";
+
                 cssPath = resourceBasePath + "scratchpad.css";
                 cssFile = document.createElement("link");
-
                 cssFile.setAttribute("rel", "stylesheet");
                 cssFile.setAttribute("href", cssPath);
                 $jsFile.after($(cssFile));
@@ -540,6 +540,7 @@ function ScratchPadDrawer() {
                     _captureSelectedObject(instance);
                 }
             });
+
             instance.canvas.on('object:added', function(e){
                 if(!instance.onUndoRedo){
                     var id = new Date().getTime();
@@ -595,44 +596,65 @@ function ScratchPadDrawer() {
                         takeAction(e, instance, menuItem.action);
                     }
                 }
-            });
+            })
         },
         _makeTextBox = function(instance, pointer) {
-            var textbox = new fabric.Text("Click to add text", {
+            var textbox = new fabric.Textbox("Click to add text", {
                 fontSize: 20,
                 width:150
             });
-            textbox.on("mousedown",function() {
+            textbox.off();
+            textbox.on("mousedown",function(e) {
                 var time = new Date().getTime();
                 if(this.lastTime && (time - this.lastTime < 500 )) {
-                    _showTextArea(instance, this, {x: this.left, y: this.top});
+                    var x = this.left > 0 ? this.left : e.clientX;
+                    var y = this.top > 0 ? this.top : e.clientY;
+                    _showTextArea(instance, this, {x: x, y: y});
                 }
                 this.lastTime = time;
+            });
+            textbox.on("scaling", function(){
+                if(textbox.width > instance.canvas.width) {
+                    textbox.setWidth(instance.canvas.width);
+                    textbox._initDimensions();
+                    instance.canvas.renderAll();
+                }
             });
             _showTextArea(instance,textbox, pointer);
             return textbox;
         },
-        _showTextArea = function(instance, activeTextArea, pointer){
+        _showTextArea = function (instance, activeTextArea, pointer) {
             var $textarea = $(instance.wrapper).find(".sp-textarea");
-
             $textarea[0].canvasObject = activeTextArea;
-            $textarea.css({left: pointer.x, top: pointer.y}).show(function(){
-                $textarea.val(activeTextArea.getText()).focus();
+            var left, top;
+            if (pointer.y - $textarea.outerHeight() < 0) {
+                top = $textarea.outerHeight() - 13;
+            } else {
+                top = pointer.y;
+            }
+            if (pointer.x + $textarea.outerWidth() > instance.dimension.width) {
+                left = instance.dimension.width - $textarea.outerWidth();
+            } else {
+                left = pointer.x;
+            }
+            $textarea[0].value = activeTextArea.getText();
+            $textarea.css({left: left, top: top}).show(function () {
+                $textarea.focus();
             });
         },
         _hideTextArea = function (instance) {
             var $textarea = $(instance.wrapper).find("textarea");
             if($textarea.length) {
-                if($textarea[0].canvasObject) {
-                    var canvasObject = $textarea[0].canvasObject;
+                var canvasObject = $textarea[0].canvasObject;
+                if(canvasObject) {
                     $textarea[0].canvasObject = null;
                     instance.canvas.setActiveObject(canvasObject);
-                    if (!$textarea.val()) {
-                        _trash(instance,{});
-                    } else{
-                        canvasObject.setText($textarea.val());
-                        instance.canvas.trigger("object:modified");
+                    canvasObject.setText($textarea.val());
+                    if(!canvasObject.getText()) {
+                        _trash(instance, {});
                     }
+                    $textarea[0].value = "";
+                    instance.canvas.trigger("object:modified");
                 }
                 $textarea.hide();
             }
@@ -743,7 +765,7 @@ function ScratchPadDrawer() {
             var image = fabric.util.createImage(), error = false;
             image.src = imageUrl;
             image.onload = function(){
-                var fabricImage = _makeImage(image, instance.dimension)
+                var fabricImage = _makeImage(image, instance.dimension);
                 if(!error) {
                     _addToCanvas(instance, fabricImage);
                 } else {
@@ -786,7 +808,7 @@ function ScratchPadDrawer() {
                     var index = canvasObjects.indexOf(object);
                     itemNums.push(index);
                     items.push(object);
-                    itemId.push(object.id)
+                    itemId.push(object.id);
                     properties = $.extend({},object._stateProperties);
                 });
             }else if (activeObject){
@@ -945,7 +967,7 @@ function ScratchPadDrawer() {
             }
         },
         _findAndRemove = function(ids, canvas){
-            _foundObjects = []
+            var _foundObjects = [];
             if(ids){
                 canvas.getObjects().forEach(function(object){
                     if(ids.indexOf(object.id) !== -1){
@@ -993,15 +1015,11 @@ function ScratchPadDrawer() {
                 obj = _makeIrregularShape(instance.currentTool);
             }
             if(obj){
-                obj.set({left:pointer.x,top:pointer.y})
+                obj.set({left:pointer.x,top:pointer.y});
                 _addToCanvas(instance, obj);
             }
 
             $(instance.wrapper).find("[data-action='selector']").click();
-
-            if(obj && menuItem.cssClass.indexOf("sp-text") !== -1){
-                $(instance.wrapper).find(".sp-textarea").focus();
-            }
         },
         takeAction = function(event, instance, action) {
             if(action === "trash") _trash(instance, event);

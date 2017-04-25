@@ -228,29 +228,101 @@ function ScratchPadBuilder() {
                 sides: 10,
                 group: 3
             },
+            red: {
+                action: "red",
+                cssClass: "sp-color sp-red",
+                hex: "#ff0000",
+                icon: "fa",
+                menuActionType: 3,
+                group: 0
+            },
+            yellow: {
+                action: "yellow",
+                cssClass: "sp-color sp-yellow",
+                hex: "#ffff00",
+                icon: "fa",
+                menuActionType: 3,
+                group: 0
+            },
+            lightblue: {
+                action: "lightblue",
+                cssClass: "sp-color sp-lightblue",
+                hex: "#add8e6",
+                icon: "fa",
+                menuActionType: 3,
+                group: 0
+            },
+            darkblue: {
+                action: "darkblue",
+                cssClass: "sp-color sp-darkblue",
+                hex: "#00008b",
+                icon: "fa",
+                menuActionType: 3,
+                group: 0
+            },
+            orange: {
+                action: "orange",
+                cssClass: "sp-color sp-orange",
+                hex: "#ff8c00",
+                icon: "fa",
+                menuActionType: 3,
+                group: 1
+            },
+            green: {
+                action: "green",
+                cssClass: "sp-color sp-green",
+                hex: "#008000",
+                icon: "fa",
+                menuActionType: 3,
+                group: 1
+            },
+            purple: {
+                action: "purple",
+                cssClass: "sp-color sp-purple",
+                hex: "#800080",
+                icon: "fa",
+                menuActionType: 3,
+                group: 1
+            },
+            brown: {
+                action: "brown",
+                cssClass: "sp-color sp-brown",
+                hex: "#8b4513",
+                icon: "fa",
+                menuActionType: 3,
+                group: 1
+            },
             black: {
                 action: "black",
                 cssClass: "sp-color sp-black",
                 hex: "#000000",
-                icon: "fa fa-square",
+                icon: "fa",
                 menuActionType: 3,
-                group: 0
+                group: 2
             },
             white: {
                 action: "white",
                 cssClass: "sp-color sp-white",
                 hex: "#ffffff",
-                icon: "fa fa-square",
+                icon: "fa",
                 menuActionType: 3,
-                group: 0
+                group: 2
             },
-            red: {
-                action: "red",
-                cssClass: "sp-color sp-red",
-                hex: "#ff0000",
-                icon: "fa fa-square",
+            grey: {
+                action: "grey",
+                cssClass: "sp-color sp-grey",
+                hex: "#808080",
+                icon: "fa",
                 menuActionType: 3,
-                group: 0
+                group: 2
+            },
+            pink: {
+                action: "pink",
+                cssClass: "sp-color sp-pink",
+                hex: "#ff69b4",
+                icon: "fa",
+                menuActionType: 3,
+                group: 2
             }
         },
         menuChunks = {
@@ -266,7 +338,11 @@ function ScratchPadBuilder() {
             },
             colors: {
                 cssClass: "sp-menu-color sp-permanent",
-                items: [menuItems.black, menuItems.white, menuItems.red],
+                items: [
+                    menuItems.red, menuItems.yellow, menuItems.lightblue, menuItems.darkblue,
+                    menuItems.orange, menuItems.green, menuItems.purple, menuItems.brown,
+                    menuItems.black, menuItems.white, menuItems.grey, menuItems.pink
+                ],
                 type: "dropdown",
                 title: "Colors",
                 icon: "fa fa-eyedropper"
@@ -365,7 +441,7 @@ function ScratchPadBuilder() {
         _buildMenuDropDown = function(chunk) {
             var permanent = chunk.cssClass.indexOf("sp-permanent") !== -1;
             var icons = permanent ?
-                "<i class='sp-menu-icon "+chunk.icon+"'>" :
+                "<i class='sp-dropdown-icon "+chunk.icon+"'>" :
                 "<i class='sp-menu-blank "+chunk.icon+"'></i><i class='sp-menu-selected hidden'></i>";
             var $chunk = $(""
                     +"<div class='btn-group sp-dropdown "+chunk.cssClass+"'>"
@@ -436,10 +512,10 @@ function ScratchPadBuilder() {
         //change drawing configuration. can be changed by the next config in the same group.
         // class: .selected
         _changeConfigMenu = function(clickedElement) {
-            $(clickedElement)
-                .closest(".sp-permanent")
-                .find(".sp-menu-icon")
-                .attr("current-selected", $(clickedElement).data("action"));
+            var $dropdown = $(clickedElement).closest(".sp-permanent");
+            $dropdown.find(".sp-dropdown-icon").attr("current-selected", $(clickedElement).data("action"));
+            $dropdown.find(".selected").removeClass("selected");
+            $(clickedElement).addClass("selected");
         },
 
         //change current drawing tool. can be changed by the next tool regardless of group.

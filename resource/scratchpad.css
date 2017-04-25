@@ -163,6 +163,10 @@
     padding: 4px 4px;
 }
 
+.sp-dropdown li {
+	padding-left: 5px;
+}
+
 .dropdown-menu.min-dropdown-width{
 	min-width: 125px;
 }
@@ -220,14 +224,100 @@
 	position: absolute;
 }
 
-.sp-menu-color [current-selected='black'], .sp-menu-color .sp-black  {
+.sp-permanent, .sp-permanent{
+	background: -webkit-radial-gradient(circle, lightgrey, darkgrey, grey); /* Safari */
+	background: -o-radial-gradient(circle, lightgrey, darkgrey, grey); /* Opera 11.6 to 12.0 */
+	background: -moz-radial-gradient(circle, lightgrey, darkgrey, grey); /* Firefox 3.6 to 15 */
+	background: radial-gradient(circle, lightgrey, darkgrey, grey); /* Standard syntax */
+	border-radius: 2px;
+}
+
+.sp-menu-color .sp-color.selected {
+	box-shadow: none;
+	background-color: darkgray;
+	border-radius: 2px;
+}
+
+.sp-menu-color .sp-color i {
+	box-shadow: 1px 1px 2px 1px lightgrey;
+}
+
+.sp-menu-color .selected i {
+	box-shadow: none;
+}
+
+.sp-menu-color [current-selected='black'] {
 	color: black;
 }
-
-.sp-menu-color [current-selected='white'], .sp-menu-color .sp-white {
+.sp-menu-color .sp-black i  {
+	background-color: black;
+}
+.sp-menu-color [current-selected='white'] {
 	color: white;
 }
-
-.sp-menu-color [current-selected='red'], .sp-menu-color .sp-red {
+.sp-menu-color .sp-white i {
+	background-color: white;
+}
+.sp-menu-color [current-selected='red'] {
 	color: #ff0000;
+}
+.sp-menu-color .sp-red i {
+	background-color: #ff0000;
+}
+.sp-menu-color [current-selected='yellow'] {
+	color: #ffff00;
+}
+
+.sp-menu-color .sp-yellow i {
+	background-color: #ffff00;
+}
+
+.sp-menu-color [current-selected='lightblue']{
+	color: #add8e6;
+}
+
+.sp-menu-color .sp-lightblue i {
+	background-color: #add8e6;
+}
+.sp-menu-color [current-selected='darkblue'] {
+	color: #00008b;
+}
+.sp-menu-color .sp-darkblue i {
+	background-color: #00008b;
+}
+.sp-menu-color [current-selected='orange'] {
+	color: #ff8c00;
+}
+.sp-menu-color .sp-orange i {
+	background-color: #ff8c00;
+}
+.sp-menu-color [current-selected='green'] {
+	color: #008000;
+}
+.sp-menu-color .sp-green i {
+	background-color: #008000;
+}
+.sp-menu-color [current-selected='purple'] {
+	color: #800080;
+}
+.sp-menu-color .sp-purple i {
+	background-color: #800080;
+}
+.sp-menu-color [current-selected='brown'] {
+	color: #8b4513;
+}
+.sp-menu-color .sp-brown i {
+	background-color: #8b4513;
+}
+.sp-menu-color [current-selected='grey'] {
+	color: #808080;
+}
+.sp-menu-color .sp-grey i {
+	background-color: #808080;
+}
+.sp-menu-color [current-selected='pink'] {
+	color: #ff69b4;
+}
+.sp-menu-color .sp-pink i {
+	background-color: #ff69b4;
 }

@@ -219,3 +219,15 @@
 	display: inline;
 	position: absolute;
 }
+
+.sp-menu-color [current-selected='black'], .sp-menu-color .sp-black  {
+	color: black;
+}
+
+.sp-menu-color [current-selected='white'], .sp-menu-color .sp-white {
+	color: white;
+}
+
+.sp-menu-color [current-selected='red'], .sp-menu-color .sp-red {
+	color: #ff0000;
+}

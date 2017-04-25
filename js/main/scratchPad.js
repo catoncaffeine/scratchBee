@@ -49,7 +49,8 @@ var ScratchPad = { // allows the client to create, manipulate, and destroy scrat
     menu: {
         undo: "undo",
         text: "text",
-        shapes: "shapes"
+        shapes: "shapes",
+        colors: "colors"
     }
 };
 
@@ -226,6 +227,30 @@ function ScratchPadBuilder() {
                 menuActionType: 1,
                 sides: 10,
                 group: 3
+            },
+            black: {
+                action: "black",
+                cssClass: "sp-color sp-black",
+                hex: "#000000",
+                icon: "fa fa-square",
+                menuActionType: 3,
+                group: 0
+            },
+            white: {
+                action: "white",
+                cssClass: "sp-color sp-white",
+                hex: "#ffffff",
+                icon: "fa fa-square",
+                menuActionType: 3,
+                group: 0
+            },
+            red: {
+                action: "red",
+                cssClass: "sp-color sp-red",
+                hex: "#ff0000",
+                icon: "fa fa-square",
+                menuActionType: 3,
+                group: 0
             }
         },
         menuChunks = {
@@ -238,6 +263,13 @@ function ScratchPadBuilder() {
                 cssClass: "sp-menu-undo",
                 items: [menuItems.undo, menuItems.redo],
                 type: "group"
+            },
+            colors: {
+                cssClass: "sp-menu-color sp-permanent",
+                items: [menuItems.black, menuItems.white, menuItems.red],
+                type: "dropdown",
+                title: "Colors",
+                icon: "fa fa-eyedropper"
             },
             text: {
                 cssClass: "sp-menu-text",
@@ -258,9 +290,10 @@ function ScratchPadBuilder() {
             }
         },
         menuActionType = {
-            "immediate": 0,
-            "defer": 1,
-            "both": 2
+            "immediate": 0, // take an immediate action, don't change tool
+            "defer": 1, // don't take any action, change tool
+            "sticky": 2, // take an immediate action, also change tool
+            "permanent": 3 // change canvas config permanently
         };
 
     var _buildInstance = function(wrapper, config) {
@@ -277,6 +310,7 @@ function ScratchPadBuilder() {
             if(!instance.readonly) {
                 instance.menu = config.menu || getDefaultMenu();
                 instance.defaultAction = config.defaultAction || getDefaultAction();
+                instance.fillColor = "#000000";
             }
             return instance;
         },
@@ -329,11 +363,14 @@ function ScratchPadBuilder() {
             return $chunk;
         },
         _buildMenuDropDown = function(chunk) {
+            var permanent = chunk.cssClass.indexOf("sp-permanent") !== -1;
+            var icons = permanent ?
+                "<i class='sp-menu-icon "+chunk.icon+"'>" :
+                "<i class='sp-menu-blank "+chunk.icon+"'></i><i class='sp-menu-selected hidden'></i>";
             var $chunk = $(""
                     +"<div class='btn-group sp-dropdown "+chunk.cssClass+"'>"
                     +   "<div class='dropdown-toggle' title='"+chunk.title+"' data-toggle='dropdown'>"
-                    +       "<i class='sp-menu-blank "+chunk.icon+"'></i>"
-                    +       "<i class='sp-menu-selected hidden'></i>"
+                    +       icons
                     +   "</div>"
                     +   "<ul class='min-dropdown-width dropdown-menu'></ul>"
                     +"</div>"),
@@ -395,18 +432,23 @@ function ScratchPadBuilder() {
                 allowTouchScrolling: true
             });
         },
+
+        //change drawing configuration. can be changed by the next config in the same group.
+        // class: .selected
+        _changeConfigMenu = function(clickedElement) {
+            $(clickedElement)
+                .closest(".sp-permanent")
+                .find(".sp-menu-icon")
+                .attr("current-selected", $(clickedElement).data("action"));
+        },
+
+        //change current drawing tool. can be changed by the next tool regardless of group.
+        // class: .active
         _toggleActiveMenu =  function(instance, clickedElement){
             var $menu = $(instance.wrapper).find(".sp-menu"),
-                $dropdowns = $menu.find(".sp-dropdown"),
-                $dropdown = $(clickedElement).closest(".sp-dropdown"),
-                icon = $(clickedElement).find("i").attr("class");
+                $dropdown = $(clickedElement).closest(".sp-dropdown");
 
-            //reset all icons in dropdown sub menus
-            if($dropdowns.length) {
-                $dropdowns.find(".dropdown-toggle").removeClass("active");
-                $dropdowns.find(".sp-menu-blank").show();
-                $dropdowns.find(".sp-menu-selected").attr("class", "sp-menu-selected").hide();
-            }
+            _resetDropdowns($menu);
 
             if($(clickedElement).hasClass('active')) {
                 $(clickedElement).removeClass('active');
@@ -415,14 +457,20 @@ function ScratchPadBuilder() {
             } else {
                 $(instance.wrapper).find(".sp-menu .active").removeClass("active");
                 $(clickedElement).addClass('active');
-
-                //change icon for this particular drop down
                 if($dropdown) {
                     $dropdown.find(".dropdown-toggle").addClass("active");
                     $dropdown.find(".sp-menu-blank").hide();
-                    $dropdown.find(".sp-menu-selected").attr("class", "sp-menu-selected " + icon).show();
+                    $dropdown.find(".sp-menu-selected").attr("class", "sp-menu-selected " + $(clickedElement).find("i").attr("class")).show();
                 }
                 _changeCurrentTool(instance, $(clickedElement).data("action"));
+            }
+        },
+        _resetDropdowns = function($menu) {
+            var $dropdowns = $menu.find(".sp-dropdown:not(.sp-permanent)");
+            if($dropdowns.length) {
+                $dropdowns.find(".dropdown-toggle").removeClass("active");
+                $dropdowns.find(".sp-menu-blank").show();
+                $dropdowns.find(".sp-menu-selected").attr("class", "sp-menu-selected").hide();
             }
         },
         _changeCurrentTool = function(instance, action) {
@@ -449,10 +497,15 @@ function ScratchPadBuilder() {
                 var actionType = menuItems[action].menuActionType;
                 if(actionType == menuActionType.immediate) {
                     drawer.takeAction(event, instance, action);
+                } else if(actionType == menuActionType.permanent) {
+                    if(!$(this).hasClass("selected")) {
+                        _changeConfigMenu(this);
+                        drawer.changeDrawConfig(instance, menuItems[action]);
+                    }
                 } else {
                     _toggleActiveMenu(instance, this);
-                    if(actionType == menuActionType.both){
-                        drawer.takeAction(event, instance, instance.currentTool);
+                    if(actionType == menuActionType.sticky){
+                        drawer.takeAction(event, instance, menuItems[instance.currentTool]);
                     }
                 }
             });
@@ -593,7 +646,7 @@ function ScratchPadDrawer() {
                     if(menuItem.cssClass.indexOf("sp-draw") !== -1) {
                         draw(e, instance, menuItem);
                     } else {
-                        takeAction(e, instance, menuItem.action);
+                        takeAction(e, instance, menuItem);
                     }
                 }
             })
@@ -699,11 +752,11 @@ function ScratchPadDrawer() {
         },
         _makeRegularShape = function(sides) {
             if(sides === 0) {
-                return new fabric.Circle({radius:50, fill:'black'});
+                return new fabric.Circle({radius:50});
             } else if(sides === 3) {
                 return  new fabric.Triangle({height:100, width:100});
             } else if(sides === 4) {
-                return  new fabric.Rect({width:100, height:100, fill:'black'});
+                return  new fabric.Rect({width:100, height:100});
             } else {
                 return _makeEqualSidedShapes(sides);
             }
@@ -711,7 +764,6 @@ function ScratchPadDrawer() {
         _makeEqualSidedShapes = function(sides, config) {
             var _sides = sides || 4, //just in case
                 _stroke = "black", //future feature
-                _fill = 'black', //future feature
                 _size = 60, //future feature
                 _centerX = 100,
                 _centerY = 100;
@@ -725,9 +777,7 @@ function ScratchPadDrawer() {
                 coords.push({x:x,y:y});
             }
 
-            var pol = new fabric.Polygon(coords,{
-                stroke:_stroke,fill:_fill
-            });
+            var pol = new fabric.Polygon(coords,{stroke:_stroke});
             return pol;
         },
         _makeIrregularShape = function(shape) {
@@ -737,11 +787,11 @@ function ScratchPadDrawer() {
                 case "scelene_triangle":
                     return new fabric.Polygon([{x:100,y:100},{x:200,y:35},{x:160,y:100}]);
                 case 'parallelogram':
-                    return new fabric.Rect({width:100, height:50, fill:'black',skewX:320});
+                    return new fabric.Rect({width:100, height:50,skewX:320});
                 case 'eq_trapezoid':
-                    return new fabric.Polygon([{x:30, y:150}, {x:120, y:150}, {x:150, y: 225}, {x:0, y:225}],{fill:'black'});
+                    return new fabric.Polygon([{x:30, y:150}, {x:120, y:150}, {x:150, y: 225}, {x:0, y:225}]);
                 case 'trapezoid':
-                    return new fabric.Polygon([{x:60,y:150}, {x:150, y: 150}, {x:150, y: 225}, {x:0, y:225}],{fill:'black'});
+                    return new fabric.Polygon([{x:60,y:150}, {x:150, y: 150}, {x:150, y: 225}, {x:0, y:225}]);
                 default:
                     return;
             }
@@ -994,6 +1044,11 @@ function ScratchPadDrawer() {
                 })
             }
 
+        },
+        _changeColor = function(instance, hex) {
+            var hex = hex || "#000000";
+            instance.canvas.freeDrawingBrush.color = hex;
+            instance.fillColor = hex;
         };
 
     var bindCanvasEvents = function(instance, menuItems) {
@@ -1015,15 +1070,19 @@ function ScratchPadDrawer() {
                 obj = _makeIrregularShape(instance.currentTool);
             }
             if(obj){
-                obj.set({left:pointer.x,top:pointer.y});
+                obj.set({left:pointer.x,top:pointer.y, fill: instance.fillColor});
                 _addToCanvas(instance, obj);
             }
 
             $(instance.wrapper).find("[data-action='selector']").click();
         },
-        takeAction = function(event, instance, action) {
+        takeAction = function(event, instance, menuItem) {
+            var action = menuItem.action;
             if(action === "trash") _trash(instance, event);
             if(action === "undo" || action === "redo") _undoOrRedo(instance, event);
+        },
+        changeDrawConfig = function(instance, menuItem) {
+            if(menuItem.cssClass.indexOf("sp-color") !== -1) _changeColor(instance, menuItem.hex);
         },
         loadImage = function(instance, imageUrl, imageAltUrl) {
             _loadImage(instance, imageUrl, imageAltUrl);
@@ -1032,6 +1091,7 @@ function ScratchPadDrawer() {
         bindCanvasEvents: bindCanvasEvents,
         takeAction: takeAction,
         loadImage: loadImage,
-        draw: draw
+        draw: draw,
+        changeDrawConfig: changeDrawConfig
     }
 };

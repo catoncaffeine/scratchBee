@@ -543,19 +543,21 @@ function ScratchPadBuilder() {
         },
         _bindMenuEvents = function(instance, drawer) {
             $(instance.wrapper).on("click", ".sp-menu-action", function(event) {
-                var action = $(this).data("action");
-                var actionType = menuItems[action].menuActionType;
+                var action = $(this).data("action"),
+                    menuItem = menuItems[action],
+                    actionType = menuItems[action].menuActionType;
+
                 if(actionType == menuActionType.immediate) {
                     drawer.takeAction(event, instance, action);
                 } else if(actionType == menuActionType.permanent) {
                     if(!$(this).hasClass("selected")) {
                         _changeConfigMenu(this);
-                        drawer.changeDrawConfig(instance, menuItems[action]);
+                        drawer.changeDrawConfig(instance, menuItem);
                     }
                 } else {
                     _toggleActiveMenu(instance, this);
                     if(actionType == menuActionType.sticky){
-                        drawer.takeAction(event, instance, menuItems[instance.currentTool]);
+                        drawer.takeAction(event, instance, action);
                     }
                 }
             });
@@ -696,7 +698,7 @@ function ScratchPadDrawer() {
                     if(menuItem.cssClass.indexOf("sp-draw") !== -1) {
                         draw(e, instance, menuItem);
                     } else {
-                        takeAction(e, instance, menuItem);
+                        takeAction(e, instance, menuItem.action);
                     }
                 }
             })
@@ -1126,8 +1128,7 @@ function ScratchPadDrawer() {
 
             $(instance.wrapper).find("[data-action='selector']").click();
         },
-        takeAction = function(event, instance, menuItem) {
-            var action = menuItem.action;
+        takeAction = function(event, instance, action) {
             if(action === "trash") _trash(instance, event);
             if(action === "undo" || action === "redo") _undoOrRedo(instance, event);
         },

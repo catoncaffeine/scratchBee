@@ -107,24 +107,21 @@ function ScratchPadBuilder() {
                 icon: "sp-icon sp-line-i",
                 title:'Line',
                 menuActionType: 1,
-                sides: 1,
-                group: 0
+                sides: 1
             },
             ray: {
                 action: "ray",
                 cssClass: 'sp-draw sp-line',
                 icon: 'fa fa-long-arrow-right',
                 title: 'Ray',
-                menuActionType: 1,
-                group: 0
+                menuActionType: 1
             },
             doubleray: {
                 action: "doubleray",
                 cssClass: 'sp-draw sp-line',
                 icon: 'fa fa-arrows-h',
                 title: 'Double Headed Ray',
-                menuActionType: 1,
-                group: 0
+                menuActionType: 1
             },
             circle: {
                 action: "circle",
@@ -132,8 +129,7 @@ function ScratchPadBuilder() {
                 icon: 'fa fa-circle',
                 title: 'Circle',
                 menuActionType: 1,
-                sides: 0,
-                group: 0
+                sides: 0
             },
             eq_triangle :{
                 action: "eq_triangle",
@@ -141,24 +137,21 @@ function ScratchPadBuilder() {
                 icon:'sp-icon sp-eq-triangle',
                 title: 'Equilateral Triangle',
                 menuActionType: 1,
-                sides: 3,
-                group: 1
+                sides: 3
             },
             right_triangle: {
                 action: "right_triangle",
                 cssClass: 'sp-draw sp-shape',
                 icon:'sp-icon sp-right-triangle',
                 title:'Right Angled Triangle',
-                menuActionType: 1,
-                group: 1
+                menuActionType: 1
             },
             scelene_triangle: {
                 action: "scelene_triangle",
                 cssClass: 'sp-draw sp-shape',
                 icon: 'sp-icon sp-scelene',
                 title: 'Scelene Triangle',
-                menuActionType: 1,
-                group: 1
+                menuActionType: 1
             },
             square:{
                 action: "square",
@@ -166,32 +159,28 @@ function ScratchPadBuilder() {
                 icon:'sp-icon sp-square',
                 title: 'Square',
                 menuActionType: 1,
-                sides: 4,
-                group: 2
+                sides: 4
             },
             parallelogram:{
                 action: "parallelogram",
                 cssClass: 'sp-draw sp-shape',
                 icon: 'sp-icon sp-parallelogram',
                 title: 'Parallelogram',
-                menuActionType: 1,
-                group: 2
+                menuActionType: 1
             },
             eq_trapezoid: {
                 action: "eq_trapezoid",
                 cssClass: 'sp-draw sp-shape',
                 icon: 'sp-icon sp-eq-trapezoid',
                 title: 'Equilateral Trapezoid',
-                menuActionType: 1,
-                group: 2
+                menuActionType: 1
             },
             trapezoid: {
                 action: "trapezoid",
                 cssClass: 'sp-draw sp-shape',
                 icon:'sp-icon sp-trapezoid',
                 title: 'Trapezoid',
-                menuActionType: 1,
-                group: 2
+                menuActionType: 1
             },
             pentagon: {
                 action: "pentagon",
@@ -199,8 +188,7 @@ function ScratchPadBuilder() {
                 icon: 'sp-icon sp-pentagon',
                 title: 'Pentagon',
                 menuActionType: 1,
-                sides: 5,
-                group: 3
+                sides: 5
             },
             hexagon: {
                 action: "hexagon",
@@ -208,16 +196,14 @@ function ScratchPadBuilder() {
                 icon: 'sp-icon sp-hexagon',
                 title: 'Hexagon',
                 menuActionType: 1,
-                sides: 6,
-                group: 3
+                sides: 6
             },
             octagon: {
                 action: "octagon",
                 cssClass: 'sp-draw sp-shape',
                 icon: 'sp-icon sp-octagon',
                 title: 'Octagon',
-                sides: 8,
-                group: 3
+                sides: 8
             },
             decagon: {
                 action: "decagon",
@@ -225,104 +211,91 @@ function ScratchPadBuilder() {
                 icon: 'sp-icon sp-decagon',
                 title: 'Decagon',
                 menuActionType: 1,
-                sides: 10,
-                group: 3
+                sides: 10
             },
             red: {
                 action: "red",
                 cssClass: "sp-color sp-red",
                 hex: "#ff0000",
                 icon: "fa",
-                menuActionType: 3,
-                group: 0
+                menuActionType: 3
             },
             yellow: {
                 action: "yellow",
                 cssClass: "sp-color sp-yellow",
                 hex: "#ffff00",
                 icon: "fa",
-                menuActionType: 3,
-                group: 0
+                menuActionType: 3
             },
             lightblue: {
                 action: "lightblue",
                 cssClass: "sp-color sp-lightblue",
                 hex: "#add8e6",
                 icon: "fa",
-                menuActionType: 3,
-                group: 0
+                menuActionType: 3
             },
             darkblue: {
                 action: "darkblue",
                 cssClass: "sp-color sp-darkblue",
                 hex: "#00008b",
                 icon: "fa",
-                menuActionType: 3,
-                group: 0
+                menuActionType: 3
             },
             orange: {
                 action: "orange",
                 cssClass: "sp-color sp-orange",
                 hex: "#ff8c00",
                 icon: "fa",
-                menuActionType: 3,
-                group: 1
+                menuActionType: 3
             },
             green: {
                 action: "green",
                 cssClass: "sp-color sp-green",
                 hex: "#008000",
                 icon: "fa",
-                menuActionType: 3,
-                group: 1
+                menuActionType: 3
             },
             purple: {
                 action: "purple",
                 cssClass: "sp-color sp-purple",
                 hex: "#800080",
                 icon: "fa",
-                menuActionType: 3,
-                group: 1
+                menuActionType: 3
             },
             brown: {
                 action: "brown",
                 cssClass: "sp-color sp-brown",
                 hex: "#8b4513",
                 icon: "fa",
-                menuActionType: 3,
-                group: 1
+                menuActionType: 3
             },
             black: {
                 action: "black",
                 cssClass: "sp-color sp-black",
                 hex: "#000000",
                 icon: "fa",
-                menuActionType: 3,
-                group: 2
+                menuActionType: 3
             },
             white: {
                 action: "white",
                 cssClass: "sp-color sp-white",
                 hex: "#ffffff",
                 icon: "fa",
-                menuActionType: 3,
-                group: 2
+                menuActionType: 3
             },
             grey: {
                 action: "grey",
                 cssClass: "sp-color sp-grey",
                 hex: "#808080",
                 icon: "fa",
-                menuActionType: 3,
-                group: 2
+                menuActionType: 3
             },
             pink: {
                 action: "pink",
                 cssClass: "sp-color sp-pink",
                 hex: "#ff69b4",
                 icon: "fa",
-                menuActionType: 3,
-                group: 2
+                menuActionType: 3
             }
         },
         menuChunks = {
@@ -355,8 +328,8 @@ function ScratchPadBuilder() {
             shapes: {
                 cssClass: "sp-menu-shapes",
                 items:[
-                    menuItems.line, menuItems.ray, menuItems.doubleray, menuItems.circle,
-                    menuItems.eq_triangle, menuItems.right_triangle, menuItems.scelene_triangle,
+                    menuItems.line, menuItems.ray, menuItems.doubleray, "",
+                    menuItems.circle, menuItems.eq_triangle, menuItems.right_triangle, menuItems.scelene_triangle,
                     menuItems.square, menuItems.parallelogram, menuItems.eq_trapezoid, menuItems.trapezoid,
                     menuItems.pentagon, menuItems.hexagon, menuItems.octagon, menuItems.decagon
                 ],
@@ -439,8 +412,9 @@ function ScratchPadBuilder() {
             return $chunk;
         },
         _buildMenuDropDown = function(chunk) {
-            var permanent = chunk.cssClass.indexOf("sp-permanent") !== -1;
-            var icons = permanent ?
+            var itemsInGroup = chunk.group || 4,
+                permanent = chunk.cssClass.indexOf("sp-permanent") !== -1,
+                icons = permanent ?
                 "<i class='sp-dropdown-icon "+chunk.icon+"'>" :
                 "<i class='sp-menu-blank "+chunk.icon+"'></i><i class='sp-menu-selected hidden'></i>";
             var $chunk = $(""
@@ -450,11 +424,10 @@ function ScratchPadBuilder() {
                     +   "</div>"
                     +   "<ul class='min-dropdown-width dropdown-menu'></ul>"
                     +"</div>"),
-
                 $ul = $chunk.find("ul");
 
-            chunk.items.forEach(function(menuItem) {
-                var group = menuItem.group || 0;
+            chunk.items.forEach(function(menuItem, index) {
+                var group = Math.floor((index)/itemsInGroup);
                 var $li = $chunk.find("ul li[data-group='"+group+"']");
                 if(!$li.length) {
                     if(group) {
@@ -463,8 +436,9 @@ function ScratchPadBuilder() {
                     $li = $("<li data-group='"+group+"'></li>");
                     $li.appendTo($ul);
                 }
-
-                $li.append(_buildMenuButton(menuItem));
+                if(menuItem) {
+                    $li.append(_buildMenuButton(menuItem));
+                }
             });
             return $chunk;
         },

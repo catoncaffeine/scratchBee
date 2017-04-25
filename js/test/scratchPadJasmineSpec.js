@@ -188,7 +188,7 @@ describe("Editable Scratch Pad - ", function(){
             spyOn($.fn ,"show").andCallFake(function(callback){
                 if(typeof callback === "function") {
                     callback();
-                    expect($.fn.focus.mostRecentCall.object).toBe($textarea);
+                    expect($.fn.focus.mostRecentCall.object).toEqual($textarea);
                 }
             });
             instance.canvas.trigger('mouse:down');
@@ -430,7 +430,7 @@ describe("Editable Scratch Pad - ", function(){
             expect(instance.currentTool).toBe("circle");
             instance.canvas.trigger('mouse:down');
 
-            expect(circleSpy).toHaveBeenCalledWith({radius:50, fill:'black'});
+            expect(circleSpy).toHaveBeenCalledWith({radius:50});
             expect(triangleSpy).not.toHaveBeenCalled();
             expect(rectSpy).not.toHaveBeenCalled();
             expect(polygonSpy).not.toHaveBeenCalled();
@@ -476,7 +476,7 @@ describe("Editable Scratch Pad - ", function(){
 
             expect(circleSpy).not.toHaveBeenCalled();
             expect(triangleSpy).not.toHaveBeenCalled();
-            expect(rectSpy).toHaveBeenCalledWith({width:100, height:50, fill:'black',skewX:320});
+            expect(rectSpy).toHaveBeenCalledWith({width:100, height:50,skewX:320});
             expect(polygonSpy).not.toHaveBeenCalled();
             expect(instance.currentTool).toBe("selector");
         });
@@ -487,7 +487,7 @@ describe("Editable Scratch Pad - ", function(){
 
             expect(circleSpy).not.toHaveBeenCalled();
             expect(triangleSpy).not.toHaveBeenCalled();
-            expect(rectSpy).toHaveBeenCalledWith({width:100, height:100, fill:'black'});
+            expect(rectSpy).toHaveBeenCalledWith({width:100, height:100});
             expect(polygonSpy).not.toHaveBeenCalled();
             expect(instance.currentTool).toBe("selector");
         });
@@ -499,7 +499,7 @@ describe("Editable Scratch Pad - ", function(){
             expect(circleSpy).not.toHaveBeenCalled();
             expect(triangleSpy).not.toHaveBeenCalled();
             expect(rectSpy).not.toHaveBeenCalled();
-            expect(polygonSpy).toHaveBeenCalledWith([{x:30, y:150}, {x:120, y:150}, {x:150, y: 225}, {x:0, y:225}],{fill:'black'});
+            expect(polygonSpy).toHaveBeenCalledWith([{x:30, y:150}, {x:120, y:150}, {x:150, y: 225}, {x:0, y:225}]);
             expect(instance.currentTool).toBe("selector");
         });
         it('builds trapezoid', function(){
@@ -510,7 +510,7 @@ describe("Editable Scratch Pad - ", function(){
             expect(circleSpy).not.toHaveBeenCalled();
             expect(triangleSpy).not.toHaveBeenCalled();
             expect(rectSpy).not.toHaveBeenCalled();
-            expect(polygonSpy).toHaveBeenCalledWith([{x:60,y:150}, {x:150, y: 150}, {x:150, y: 225}, {x:0, y:225}],{fill:'black'});
+            expect(polygonSpy).toHaveBeenCalledWith([{x:60,y:150}, {x:150, y: 150}, {x:150, y: 225}, {x:0, y:225}]);
             expect(instance.currentTool).toBe("selector");
         });
         it('builds hexagon', function(){
@@ -521,7 +521,7 @@ describe("Editable Scratch Pad - ", function(){
             expect(circleSpy).not.toHaveBeenCalled();
             expect(triangleSpy).not.toHaveBeenCalled();
             expect(rectSpy).not.toHaveBeenCalled();
-            expect(polygonSpy).toHaveBeenCalledWith([ { x : 160, y : 100 }, { x : 130, y : 151.96 }, { x : 70, y : 151.96 }, { x : 40, y : 100 }, { x : 70, y : 48.04 }, { x : 130, y : 48.04 }, { x : 160, y : 100 } ], { stroke : 'black', fill : 'black' });
+            expect(polygonSpy).toHaveBeenCalledWith([ { x : 160, y : 100 }, { x : 130, y : 151.96 }, { x : 70, y : 151.96 }, { x : 40, y : 100 }, { x : 70, y : 48.04 }, { x : 130, y : 48.04 }, { x : 160, y : 100 } ], { stroke : 'black'});
             expect(instance.currentTool).toBe("selector");
         });
         it('builds pentagon', function(){
@@ -532,7 +532,7 @@ describe("Editable Scratch Pad - ", function(){
             expect(circleSpy).not.toHaveBeenCalled();
             expect(triangleSpy).not.toHaveBeenCalled();
             expect(rectSpy).not.toHaveBeenCalled();
-            expect(polygonSpy).toHaveBeenCalledWith([ { x : 160, y : 100 }, { x : 118.54, y : 157.06 }, { x : 51.46, y : 135.27 }, { x : 51.46, y : 64.73 }, { x : 118.54, y : 42.94 }, { x : 160, y : 100 } ], { stroke : 'black', fill : 'black' });
+            expect(polygonSpy).toHaveBeenCalledWith([ { x : 160, y : 100 }, { x : 118.54, y : 157.06 }, { x : 51.46, y : 135.27 }, { x : 51.46, y : 64.73 }, { x : 118.54, y : 42.94 }, { x : 160, y : 100 } ], { stroke : 'black'});
             expect(instance.currentTool).toBe("selector");
         });
         it('builds octagon', function(){
@@ -543,7 +543,7 @@ describe("Editable Scratch Pad - ", function(){
             expect(circleSpy).not.toHaveBeenCalled();
             expect(triangleSpy).not.toHaveBeenCalled();
             expect(rectSpy).not.toHaveBeenCalled();
-            expect(polygonSpy).toHaveBeenCalledWith([ { x : 160, y : 100 }, { x : 142.43, y : 142.43 }, { x : 100, y : 160 }, { x : 57.57, y : 142.43 }, { x : 40, y : 100 }, { x : 57.57, y : 57.57 }, { x : 100, y : 40 }, { x : 142.43, y : 57.57 }, { x : 160, y : 100 } ], { stroke : 'black', fill : 'black' });
+            expect(polygonSpy).toHaveBeenCalledWith([ { x : 160, y : 100 }, { x : 142.43, y : 142.43 }, { x : 100, y : 160 }, { x : 57.57, y : 142.43 }, { x : 40, y : 100 }, { x : 57.57, y : 57.57 }, { x : 100, y : 40 }, { x : 142.43, y : 57.57 }, { x : 160, y : 100 } ], { stroke : 'black'});
             expect(instance.currentTool).toBe("selector");
         });
         it('builds decagon', function(){
@@ -554,7 +554,7 @@ describe("Editable Scratch Pad - ", function(){
             expect(circleSpy).not.toHaveBeenCalled();
             expect(triangleSpy).not.toHaveBeenCalled();
             expect(rectSpy).not.toHaveBeenCalled();
-            expect(polygonSpy).toHaveBeenCalledWith( [ { x : 160, y : 100 }, { x : 148.54, y : 135.27 }, { x : 118.54, y : 157.06 }, { x : 81.46, y : 157.06 }, { x : 51.46, y : 135.27 }, { x : 40, y : 100 }, { x : 51.46, y : 64.73 }, { x : 81.46, y : 42.94 }, { x : 118.54, y : 42.94 }, { x : 148.54, y : 64.73 }, { x : 160, y : 100 } ], { stroke : 'black', fill : 'black' });
+            expect(polygonSpy).toHaveBeenCalledWith( [ { x : 160, y : 100 }, { x : 148.54, y : 135.27 }, { x : 118.54, y : 157.06 }, { x : 81.46, y : 157.06 }, { x : 51.46, y : 135.27 }, { x : 40, y : 100 }, { x : 51.46, y : 64.73 }, { x : 81.46, y : 42.94 }, { x : 118.54, y : 42.94 }, { x : 148.54, y : 64.73 }, { x : 160, y : 100 } ], { stroke : 'black'});
             expect(instance.currentTool).toBe("selector");
         });
     });

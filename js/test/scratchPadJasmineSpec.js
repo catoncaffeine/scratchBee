@@ -271,48 +271,45 @@ describe("Editable Scratch Pad - ", function(){
     });
 
     describe('Text - ',function(){
-        var instance, setSpy, textSpy, onSpy, textBox;
+        var instance;
         beforeEach(function(){
             instance = ScratchPad.init("#test", {menu:["text"]});
-
             instance.canvas.getPointer = function (obj) {
                 return {x: 2, y: 3};
             };
-            spyOn(instance.canvas, "add");
-
-            setSpy = jasmine.createSpy("set");
-            onSpy = jasmine.createSpy("on");
-            textBox = {
-                name: "textbox", set: setSpy, on: onSpy, getText: jasmine.createSpy("getText"), off: jasmine.createSpy("off")
-            };
-            textBox.canvasObject = textBox;
-            textSpy = jasmine.createSpy("Textbox").andReturn(textBox);
-            fabric.Textbox = textSpy;
+            spyOn($.fn, "hide");
         });
         it('adds text just one time', function(){
-            var $textarea = $(instance.wrapper).find(".sp-textarea");
             $("#test [data-action='text']").click();
             expect(instance.currentTool).toBe("text");
+            instance.canvas.trigger('mouse:down');
+            expect(instance.currentTool).toBe("selector");
+        });
+        it("shows hidden textarea for edit", function () {
+            var $textarea = $(instance.wrapper).find(".sp-textarea");
+
             spyOn($.fn, "focus").andReturn($textarea);
-            spyOn($.fn ,"show").andCallFake(function(callback){
-                if(typeof callback === "function") {
+            spyOn($.fn, "show").andCallFake(function(callback){
+                if(this === $textarea[0]) {
                     callback();
-                    expect($.fn.focus.mostRecentCall.object).toEqual($textarea);
+                    expect($textarea.focus).toHaveBeenCalled();
+                    expect($textarea[0].canvasObject).toBe(instance.canvas.getObjects()[0]);
+                    expect($textarea.val()).toBe("Click to add text");
                 }
             });
+            $("#test [data-action='text']").click();
             instance.canvas.trigger('mouse:down');
-            expect(textSpy).toHaveBeenCalledWith('Click to add text', {
-                fontSize: 20,
-                width: 150
-            });
-            expect(instance.currentTool).toBe("selector");
-            expect($textarea[0].canvasObject).toBe(textBox);
-            expect($.fn.show).toHaveBeenCalled();
-
-            delete instance.currentTool;
-            delete $textarea[0].canvasObject;
+            expect($textarea.show).toHaveBeenCalled();
+        });
+        it("hides textarea when click on canvas", function(){
+            var $textarea = $(instance.wrapper).find(".sp-textarea");
             instance.canvas.trigger('mouse:down');
-            expect($textarea[0].style['display']).toBe('none');
+            expect($textarea.hide).toHaveBeenCalled();
+        });
+        it("hides textarea when click on menu item", function(){
+            var $textarea = $(instance.wrapper).find(".sp-textarea");
+            $("#test [data-action='selector']").click();
+            expect($textarea.hide).toHaveBeenCalled();
         });
     });
 

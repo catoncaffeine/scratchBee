@@ -547,6 +547,8 @@ function ScratchPadBuilder() {
                     menuItem = menuItems[action],
                     actionType = menuItems[action].menuActionType;
 
+                drawer.hideTextArea(instance);
+
                 if(actionType == menuActionType.immediate) {
                     drawer.takeAction(event, instance, action);
                 } else if(actionType == menuActionType.permanent) {
@@ -692,7 +694,7 @@ function ScratchPadDrawer() {
         },
         _bindMouseDownEvents = function(instance, menuItems){
             instance.canvas.on('mouse:down', function(e){
-                _hideTextArea(instance);
+                hideTextArea(instance);
                 if(instance.currentTool) {
                     var menuItem = menuItems[instance.currentTool];
                     if(menuItem.cssClass.indexOf("sp-draw") !== -1) {
@@ -703,7 +705,7 @@ function ScratchPadDrawer() {
                 }
             })
         },
-        _makeTextBox = function(instance, pointer) {
+        _makeTextBox = function(instance) {
             var textbox = new fabric.Textbox("Click to add text", {
                 fontSize: 20,
                 width:150
@@ -714,7 +716,7 @@ function ScratchPadDrawer() {
                 if(this.lastTime && (time - this.lastTime < 500 )) {
                     var x = this.left > 0 ? this.left : e.clientX;
                     var y = this.top > 0 ? this.top : e.clientY;
-                    _showTextArea(instance, this, {x: x, y: y});
+                    showTextArea(instance, this, {x: x, y: y});
                 }
                 this.lastTime = time;
             });
@@ -725,10 +727,10 @@ function ScratchPadDrawer() {
                     instance.canvas.renderAll();
                 }
             });
-            _showTextArea(instance,textbox, pointer);
+
             return textbox;
         },
-        _showTextArea = function (instance, activeTextArea, pointer) {
+        showTextArea = function (instance, activeTextArea, pointer) {
             var $textarea = $(instance.wrapper).find(".sp-textarea");
             $textarea[0].canvasObject = activeTextArea;
             var left, top;
@@ -747,19 +749,20 @@ function ScratchPadDrawer() {
                 $textarea.focus();
             });
         },
-        _hideTextArea = function (instance) {
+        hideTextArea = function (instance) {
             var $textarea = $(instance.wrapper).find("textarea");
             if($textarea.length) {
                 var canvasObject = $textarea[0].canvasObject;
                 if(canvasObject) {
-                    $textarea[0].canvasObject = null;
-                    instance.canvas.setActiveObject(canvasObject);
-                    canvasObject.setText($textarea.val());
-                    if(!canvasObject.getText()) {
-                        _trash(instance, {});
+                    var newText = $textarea.val(), originalText = canvasObject.getText();
+                    if(newText !== originalText) {
+                        canvasObject.setText($textarea.val());
+                        instance.canvas.trigger("object:modified");
                     }
+                    instance.canvas.setActiveObject(canvasObject);
+                    if(!canvasObject.getText()) _trash(instance, {});
                     $textarea[0].value = "";
-                    instance.canvas.trigger("object:modified");
+                    $textarea[0].canvasObject = null;
                 }
                 $textarea.hide();
             }
@@ -1113,7 +1116,7 @@ function ScratchPadDrawer() {
                 return;
             }
             if(menuItem.cssClass.indexOf("sp-text") !== -1) {
-                obj = _makeTextBox(instance, pointer);
+                obj = _makeTextBox(instance);
             } else if(menuItem.cssClass.indexOf("sp-line") !== -1) {
                 obj = _makeLine(instance, pointer);
             } else if(menuItem.sides !== undefined) {
@@ -1121,12 +1124,16 @@ function ScratchPadDrawer() {
             } else {
                 obj = _makeIrregularShape(instance.currentTool);
             }
+
+            $(instance.wrapper).find("[data-action='selector']").click();
+
             if(obj){
                 obj.set({left:pointer.x,top:pointer.y, fill: instance.fillColor});
                 _addToCanvas(instance, obj);
+                if(obj.type === "textbox") {
+                    showTextArea(instance, obj, pointer);
+                }
             }
-
-            $(instance.wrapper).find("[data-action='selector']").click();
         },
         takeAction = function(event, instance, action) {
             if(action === "trash") _trash(instance, event);
@@ -1143,6 +1150,8 @@ function ScratchPadDrawer() {
         takeAction: takeAction,
         loadImage: loadImage,
         draw: draw,
-        changeDrawConfig: changeDrawConfig
+        changeDrawConfig: changeDrawConfig,
+        showTextArea: showTextArea,
+        hideTextArea: hideTextArea
     }
 };

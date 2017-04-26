@@ -26,7 +26,7 @@ describe("Editable Scratch Pad - ", function(){
             var menu = ["menu1",  "menu2"];
             var instance = ScratchPad.init('#test', {
                 dimension : dimension,
-                menu : menu,
+                menu : menu
             });
             expect(instance.id).not.toBeNull();
             expect(instance.menu).toBe(menu);
@@ -120,7 +120,7 @@ describe("Editable Scratch Pad - ", function(){
     describe('Scrath Pad Menu - ', function(){
         var instance;
         beforeEach(function(){
-            instance = ScratchPad.init("#test", {menu: ["undo","text", "shapes"]});
+            instance = ScratchPad.init("#test", {menu: ["undo","text", ScratchPad.menu.shapes, ScratchPad.menu.colors]});
         });
         it("sets pencil as default menu", function(){
             expect($("#test .active").data("action")).toBe("pencil");
@@ -153,11 +153,120 @@ describe("Editable Scratch Pad - ", function(){
             $("#test [data-action='redo']").click();
             expect(instance.currentTool).toBe("selector");
         });
-        it("sets current tool if action is defered or both", function(){
+        it("sets current tool if action is deferred or sticky", function(){
             $("#test [data-action='selector']").click();
             expect(instance.currentTool).toBe("selector");
             $("#test [data-action='trash']").click();
             expect(instance.currentTool).toBe("trash");
+        });
+        describe("Default items", function(){
+
+        });
+        describe("Shapes Menu", function(){
+            it("has 4 rows of shapes", function(){
+                var $shapesmenu = $(instance.wrapper).find(".sp-dropdown.sp-menu-shapes"),
+                    $li1 = $shapesmenu.find("[data-group='0']"),
+                    $li2 = $shapesmenu.find("[data-group='1']"),
+                    $li3 = $shapesmenu.find("[data-group='2']"),
+                    $li4 = $shapesmenu.find("[data-group='3']");
+
+                expect($shapesmenu.find("[data-group]").length).toBe(4);
+
+                expect($li1.length).toBe(1);
+                expect($li1.find(".sp-draw").length).toBe(3);
+                expect($li1.find(".sp-draw.sp-line[data-action=line]").length).toBe(1);
+                expect($li1.find(".sp-draw.sp-line[data-action=ray]").length).toBe(1);
+                expect($li1.find(".sp-draw.sp-line[data-action=doubleray]").length).toBe(1);
+
+                expect($li2.length).toBe(1);
+                expect($li2.find(".sp-draw").length).toBe(4);
+                expect($li2.find(".sp-draw.sp-shape[data-action=circle]").length).toBe(1);
+                expect($li2.find(".sp-draw.sp-shape[data-action=eq_triangle]").length).toBe(1);
+                expect($li2.find(".sp-draw.sp-shape[data-action=right_triangle]").length).toBe(1);
+                expect($li2.find(".sp-draw.sp-shape[data-action=scelene_triangle]").length).toBe(1);
+
+                expect($li3.length).toBe(1);
+                expect($li3.find(".sp-draw").length).toBe(4);
+                expect($li3.find(".sp-draw.sp-shape[data-action=square]").length).toBe(1);
+                expect($li3.find(".sp-draw.sp-shape[data-action=parallelogram]").length).toBe(1);
+                expect($li3.find(".sp-draw.sp-shape[data-action=eq_trapezoid]").length).toBe(1);
+                expect($li3.find(".sp-draw.sp-shape[data-action=trapezoid]").length).toBe(1);
+
+                expect($li4.length).toBe(1);
+                expect($li4.find(".sp-draw").length).toBe(4);
+                expect($li4.find(".sp-draw.sp-shape[data-action=pentagon]").length).toBe(1);
+                expect($li4.find(".sp-draw.sp-shape[data-action=hexagon]").length).toBe(1);
+                expect($li4.find(".sp-draw.sp-shape[data-action=octagon]").length).toBe(1);
+                expect($li4.find(".sp-draw.sp-shape[data-action=decagon]").length).toBe(1);
+            });
+            it("turns the clicked shape item as active and resets current tool", function() {
+                var $shapesmenu = $(instance.wrapper).find(".sp-dropdown.sp-menu-shapes");
+
+                expect(instance.currentTool).toBe("pencil");
+                expect($shapesmenu.find(".dropdown-toggle").attr("class")).not.toContain("active");
+                expect($shapesmenu.find(".sp-line").attr("class")).not.toContain("active");
+                expect($shapesmenu.find(".sp-menu-selected").attr("class")).not.toContain("sp-icon sp-line-i");
+
+                $shapesmenu.find("[data-action=line]").click();
+                expect(instance.currentTool).toBe("line");
+                expect($shapesmenu.find("[data-action=line]").attr("class")).toContain("active");
+                expect($shapesmenu.find(".dropdown-toggle").attr("class")).toContain("active");
+                expect($shapesmenu.find(".sp-menu-selected").attr("class")).toContain("sp-icon sp-line-i");
+
+                $shapesmenu.find("[data-action=circle]").click();
+                expect(instance.currentTool).toBe("circle");
+                expect($shapesmenu.find("[data-action=line]").attr("class")).not.toContain("active");
+                expect($shapesmenu.find("[data-action=circle]").attr("class")).toContain("active");
+                expect($shapesmenu.find(".dropdown-toggle").attr("class")).toContain("active");
+                expect($shapesmenu.find(".sp-menu-selected").attr("class")).toContain("fa fa-circle");
+
+                $(instance.wrapper).find("[data-action=pencil]").click();
+                expect(instance.currentTool).toBe("pencil");
+                expect($shapesmenu.find("[data-action=circle]").attr("class")).not.toContain("active");
+                expect($shapesmenu.find(".dropdown-toggle").attr("class")).not.toContain("active");
+            });
+        });
+        describe("Colors Menu", function() {
+            it("has 3 rows of colors", function(){
+                var $colorsmenu = $(instance.wrapper).find(".sp-dropdown.sp-menu-color.sp-permanent"),
+                    $li1 = $colorsmenu.find("[data-group='0']"),
+                    $li2 = $colorsmenu.find("[data-group='1']"),
+                    $li3 = $colorsmenu.find("[data-group='2']");
+
+                expect($colorsmenu.find("[data-group]").length).toBe(3);
+
+                expect($li1.length).toBe(1);
+                expect($li1.find(".sp-color").length).toBe(4);
+                expect($li1.find(".sp-color.sp-red[data-action=red]").length).toBe(1);
+                expect($li1.find(".sp-color.sp-yellow[data-action=yellow]").length).toBe(1);
+                expect($li1.find(".sp-color.sp-lightblue[data-action=lightblue]").length).toBe(1);
+                expect($li1.find(".sp-color.sp-darkblue[data-action=darkblue]").length).toBe(1);
+
+                expect($li2.length).toBe(1);
+                expect($li2.find(".sp-color").length).toBe(4);
+                expect($li2.find(".sp-color.sp-orange[data-action=orange]").length).toBe(1);
+                expect($li2.find(".sp-color.sp-green[data-action=green]").length).toBe(1);
+                expect($li2.find(".sp-color.sp-purple[data-action=purple]").length).toBe(1);
+                expect($li2.find(".sp-color.sp-brown[data-action=brown]").length).toBe(1);
+
+                expect($li3.length).toBe(1);
+                expect($li3.find(".sp-color").length).toBe(4);
+                expect($li3.find(".sp-color.sp-black[data-action=black]").length).toBe(1);
+                expect($li3.find(".sp-color.sp-white[data-action=white]").length).toBe(1);
+                expect($li3.find(".sp-color.sp-grey[data-action=grey]").length).toBe(1);
+                expect($li3.find(".sp-color.sp-pink[data-action=pink]").length).toBe(1);
+            });
+            it("turns the clicked color as selected and does not reset current tool", function() {
+                var $colorsmenu = $(instance.wrapper).find(".sp-dropdown.sp-menu-color.sp-permanent");
+
+                expect(instance.currentTool).toBe("pencil");
+                expect($colorsmenu.find(".sp-dropdown-icon").attr("current-selected")).toBeUndefined();
+
+                $colorsmenu.find("[data-action='red']").click();
+                expect(instance.currentTool).toBe("pencil");
+                expect($colorsmenu.find(".sp-dropdown-icon").attr("current-selected")).toBe("red");
+                expect($colorsmenu.find("[data-action='red']").attr("class")).toContain("selected");
+            });
         });
     });
 
@@ -362,6 +471,33 @@ describe("Editable Scratch Pad - ", function(){
             expect(instance.undo[9].itemIndex[0]).toBe(10);
         });
     });
+
+    describe("Change Color", function(){
+        var instance;
+        beforeEach(function(){
+            instance = ScratchPad.init("#test", {menu: ["undo","text", ScratchPad.menu.shapes, ScratchPad.menu.colors]});
+        });
+        it("changes both brush color and fill color for objects", function(){
+            var $colorsmenu = $(instance.wrapper).find(".sp-dropdown.sp-menu-color.sp-permanent");
+            instance.canvas.getPointer = function(obj) {return {x:2,y:3};};
+            expect(instance.canvas.freeDrawingBrush.color).toBe("rgb(0, 0, 0)");
+
+            $colorsmenu.find("[data-action='red']").click();
+            $(instance.wrapper).find("[data-action='circle']").click();
+            instance.canvas.trigger('mouse:down');
+
+            expect(instance.canvas.freeDrawingBrush.color).toBe("#ff0000");
+            expect(instance.canvas.getObjects()[0].fill).toBe("#ff0000");
+
+            $colorsmenu.find("[data-action='brown']").click();
+            $(instance.wrapper).find("[data-action='circle']").click();
+            instance.canvas.trigger('mouse:down');
+            expect(instance.canvas.freeDrawingBrush.color).toBe("#8b4513");
+            expect(instance.canvas.getObjects()[0].fill).toBe("#ff0000");
+            expect(instance.canvas.getObjects()[1].fill).toBe("#8b4513");
+        });
+    });
+
     describe('Build Lines - ', function(){
         var instance, setSpy, lineSpy, polygonSpy;
         beforeEach(function(){

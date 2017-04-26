@@ -770,7 +770,7 @@ function ScratchPadDrawer() {
         _makeLine = function(instance, pointer) {
             var _x = pointer.x;
             var _y = pointer.y;
-            var tool = new fabric.Line([_x,_y,_x+100,_y],{left:_x, top:_y,stroke:'black',strokeWidth:2});
+            var tool = new fabric.Line([_x,_y,_x+100,_y],{left:_x, top:_y,strokeWidth:2});
             if(instance.currentTool === 'ray'){
                 tool = _makeRay({length:100, width:4,startX:_x, startY:_y });
             } else if(instance.currentTool === 'doubleray'){
@@ -818,7 +818,6 @@ function ScratchPadDrawer() {
         },
         _makeEqualSidedShapes = function(sides, config) {
             var _sides = sides || 4, //just in case
-                _stroke = "black", //future feature
                 _size = 60, //future feature
                 _centerX = 100,
                 _centerY = 100;
@@ -832,7 +831,7 @@ function ScratchPadDrawer() {
                 coords.push({x:x,y:y});
             }
 
-            var pol = new fabric.Polygon(coords,{stroke:_stroke});
+            var pol = new fabric.Polygon(coords);
             return pol;
         },
         _makeIrregularShape = function(shape) {
@@ -1128,7 +1127,12 @@ function ScratchPadDrawer() {
             $(instance.wrapper).find("[data-action='selector']").click();
 
             if(obj){
-                obj.set({left:pointer.x,top:pointer.y, fill: instance.fillColor});
+                obj.set({
+                    left:pointer.x,
+                    top:pointer.y,
+                    fill: instance.fillColor,
+                    stroke: instance.fillColor
+                });
                 _addToCanvas(instance, obj);
                 if(obj.type === "textbox") {
                     showTextArea(instance, obj, pointer);

@@ -485,13 +485,16 @@ describe("Editable Scratch Pad - ", function(){
 
             expect(instance.canvas.freeDrawingBrush.color).toBe("#ff0000");
             expect(instance.canvas.getObjects()[0].fill).toBe("#ff0000");
+            expect(instance.canvas.getObjects()[0].stroke).toBe("#ff0000");
 
             $colorsmenu.find("[data-action='brown']").click();
             $(instance.wrapper).find("[data-action='circle']").click();
             instance.canvas.trigger('mouse:down');
             expect(instance.canvas.freeDrawingBrush.color).toBe("#8b4513");
             expect(instance.canvas.getObjects()[0].fill).toBe("#ff0000");
+            expect(instance.canvas.getObjects()[0].stroke).toBe("#ff0000");
             expect(instance.canvas.getObjects()[1].fill).toBe("#8b4513");
+            expect(instance.canvas.getObjects()[1].stroke).toBe("#8b4513");
         });
     });
 
@@ -515,7 +518,7 @@ describe("Editable Scratch Pad - ", function(){
             expect(instance.currentTool).toBe("line");
             instance.canvas.trigger('mouse:down');
 
-            expect(lineSpy).toHaveBeenCalledWith([ 2, 3, 102, 3 ], { left : 2, top : 3, stroke : 'black', strokeWidth : 2 });
+            expect(lineSpy).toHaveBeenCalledWith([ 2, 3, 102, 3 ], { left : 2, top : 3, strokeWidth : 2 });
             expect(polygonSpy).not.toHaveBeenCalled();
             expect(instance.currentTool).toBe("selector");
         });
@@ -524,7 +527,7 @@ describe("Editable Scratch Pad - ", function(){
             expect(instance.currentTool).toBe("ray");
             instance.canvas.trigger('mouse:down');
 
-            expect(lineSpy).toHaveBeenCalledWith([ 2, 3, 102, 3 ], { left : 2, top : 3, stroke : 'black', strokeWidth : 2 });
+            expect(lineSpy).toHaveBeenCalledWith([ 2, 3, 102, 3 ], { left : 2, top : 3, strokeWidth : 2 });
             expect(polygonSpy).toHaveBeenCalledWith([ { x : 2, y : 3 }, { x : 102, y : 3 }, { x : 95, y : -4.000000000000001 }, { x : 116, y : 5 }, { x : 95, y : 14 }, { x : 102, y : 7 }, { x : 2, y : 7 } ]);
             expect(instance.currentTool).toBe("selector");
         });
@@ -533,7 +536,7 @@ describe("Editable Scratch Pad - ", function(){
             expect(instance.currentTool).toBe("doubleray");
             instance.canvas.trigger('mouse:down');
 
-            expect(lineSpy).toHaveBeenCalledWith([ 2, 3, 102, 3 ], { left : 2, top : 3, stroke : 'black', strokeWidth : 2 });
+            expect(lineSpy).toHaveBeenCalledWith([ 2, 3, 102, 3 ], { left : 2, top : 3, strokeWidth : 2 });
             expect(polygonSpy).toHaveBeenCalledWith([ { x : 17, y : 3 }, { x : 117, y : 3 }, { x : 110, y : -4.000000000000001 }, { x : 131, y : 5 }, { x : 110, y : 14 }, { x : 117, y : 7 }, { x : 17, y : 7 }, { x : 24, y : 14 }, { x : 2.9999999999999982, y : 5 }, { x : 24, y : -4.000000000000001 } ]);
             expect(instance.currentTool).toBe("selector");
         });
@@ -654,7 +657,7 @@ describe("Editable Scratch Pad - ", function(){
             expect(circleSpy).not.toHaveBeenCalled();
             expect(triangleSpy).not.toHaveBeenCalled();
             expect(rectSpy).not.toHaveBeenCalled();
-            expect(polygonSpy).toHaveBeenCalledWith([ { x : 160, y : 100 }, { x : 130, y : 151.96 }, { x : 70, y : 151.96 }, { x : 40, y : 100 }, { x : 70, y : 48.04 }, { x : 130, y : 48.04 }, { x : 160, y : 100 } ], { stroke : 'black'});
+            expect(polygonSpy).toHaveBeenCalledWith([ { x : 160, y : 100 }, { x : 130, y : 151.96 }, { x : 70, y : 151.96 }, { x : 40, y : 100 }, { x : 70, y : 48.04 }, { x : 130, y : 48.04 }, { x : 160, y : 100 } ]);
             expect(instance.currentTool).toBe("selector");
         });
         it('builds pentagon', function(){
@@ -665,7 +668,7 @@ describe("Editable Scratch Pad - ", function(){
             expect(circleSpy).not.toHaveBeenCalled();
             expect(triangleSpy).not.toHaveBeenCalled();
             expect(rectSpy).not.toHaveBeenCalled();
-            expect(polygonSpy).toHaveBeenCalledWith([ { x : 160, y : 100 }, { x : 118.54, y : 157.06 }, { x : 51.46, y : 135.27 }, { x : 51.46, y : 64.73 }, { x : 118.54, y : 42.94 }, { x : 160, y : 100 } ], { stroke : 'black'});
+            expect(polygonSpy).toHaveBeenCalledWith([ { x : 160, y : 100 }, { x : 118.54, y : 157.06 }, { x : 51.46, y : 135.27 }, { x : 51.46, y : 64.73 }, { x : 118.54, y : 42.94 }, { x : 160, y : 100 } ]);
             expect(instance.currentTool).toBe("selector");
         });
         it('builds octagon', function(){
@@ -676,7 +679,7 @@ describe("Editable Scratch Pad - ", function(){
             expect(circleSpy).not.toHaveBeenCalled();
             expect(triangleSpy).not.toHaveBeenCalled();
             expect(rectSpy).not.toHaveBeenCalled();
-            expect(polygonSpy).toHaveBeenCalledWith([ { x : 160, y : 100 }, { x : 142.43, y : 142.43 }, { x : 100, y : 160 }, { x : 57.57, y : 142.43 }, { x : 40, y : 100 }, { x : 57.57, y : 57.57 }, { x : 100, y : 40 }, { x : 142.43, y : 57.57 }, { x : 160, y : 100 } ], { stroke : 'black'});
+            expect(polygonSpy).toHaveBeenCalledWith([ { x : 160, y : 100 }, { x : 142.43, y : 142.43 }, { x : 100, y : 160 }, { x : 57.57, y : 142.43 }, { x : 40, y : 100 }, { x : 57.57, y : 57.57 }, { x : 100, y : 40 }, { x : 142.43, y : 57.57 }, { x : 160, y : 100 } ]);
             expect(instance.currentTool).toBe("selector");
         });
         it('builds decagon', function(){
@@ -687,7 +690,7 @@ describe("Editable Scratch Pad - ", function(){
             expect(circleSpy).not.toHaveBeenCalled();
             expect(triangleSpy).not.toHaveBeenCalled();
             expect(rectSpy).not.toHaveBeenCalled();
-            expect(polygonSpy).toHaveBeenCalledWith( [ { x : 160, y : 100 }, { x : 148.54, y : 135.27 }, { x : 118.54, y : 157.06 }, { x : 81.46, y : 157.06 }, { x : 51.46, y : 135.27 }, { x : 40, y : 100 }, { x : 51.46, y : 64.73 }, { x : 81.46, y : 42.94 }, { x : 118.54, y : 42.94 }, { x : 148.54, y : 64.73 }, { x : 160, y : 100 } ], { stroke : 'black'});
+            expect(polygonSpy).toHaveBeenCalledWith( [ { x : 160, y : 100 }, { x : 148.54, y : 135.27 }, { x : 118.54, y : 157.06 }, { x : 81.46, y : 157.06 }, { x : 51.46, y : 135.27 }, { x : 40, y : 100 }, { x : 51.46, y : 64.73 }, { x : 81.46, y : 42.94 }, { x : 118.54, y : 42.94 }, { x : 148.54, y : 64.73 }, { x : 160, y : 100 } ]);
             expect(instance.currentTool).toBe("selector");
         });
     });

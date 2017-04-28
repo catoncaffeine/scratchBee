@@ -428,11 +428,12 @@ function ScratchPadBuilder() {
             var itemsInGroup = chunk.group || 4,
                 permanent = chunk.cssClass.indexOf("sp-permanent") !== -1,
                 icons = permanent ?
-                "<i class='sp-dropdown-icon "+chunk.icon+"'>" :
-                "<i class='sp-menu-blank "+chunk.icon+"'></i><i class='sp-menu-selected hidden'></i>";
+                    "<i class='sp-dropdown-icon "+chunk.icon+"' data-toggle='tooltip' title='"+chunk.title+"'>" :
+                    "<i class='sp-menu-blank "+chunk.icon+"' data-toggle='tooltip' title='"+chunk.title+"'></i>"
+                    +"<i class='sp-menu-selected hidden' data-toggle='tooltip' title='"+chunk.title+"'></i>";
             var $chunk = $(""
                     +"<div class='btn-group sp-dropdown "+chunk.cssClass+"'>"
-                    +   "<div class='dropdown-toggle' title='"+chunk.title+"' data-toggle='dropdown'>"
+                    +   "<div class='dropdown-toggle' data-toggle='dropdown'>"
                     +       icons
                     +   "</div>"
                     +   "<ul class='min-dropdown-width dropdown-menu'></ul>"

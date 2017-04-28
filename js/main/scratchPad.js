@@ -215,6 +215,7 @@ function ScratchPadBuilder() {
             },
             red: {
                 action: "red",
+                title: "Red",
                 cssClass: "sp-color sp-red",
                 hex: "#ff0000",
                 icon: "fa",
@@ -222,6 +223,7 @@ function ScratchPadBuilder() {
             },
             yellow: {
                 action: "yellow",
+                title: "Yellow",
                 cssClass: "sp-color sp-yellow",
                 hex: "#ffff00",
                 icon: "fa",
@@ -229,6 +231,7 @@ function ScratchPadBuilder() {
             },
             lightblue: {
                 action: "lightblue",
+                title: "Sky Blue",
                 cssClass: "sp-color sp-lightblue",
                 hex: "#add8e6",
                 icon: "fa",
@@ -236,6 +239,7 @@ function ScratchPadBuilder() {
             },
             darkblue: {
                 action: "darkblue",
+                title: "Dark Blue",
                 cssClass: "sp-color sp-darkblue",
                 hex: "#00008b",
                 icon: "fa",
@@ -243,6 +247,7 @@ function ScratchPadBuilder() {
             },
             orange: {
                 action: "orange",
+                title: "Orange",
                 cssClass: "sp-color sp-orange",
                 hex: "#ff8c00",
                 icon: "fa",
@@ -250,6 +255,7 @@ function ScratchPadBuilder() {
             },
             green: {
                 action: "green",
+                title: "Green",
                 cssClass: "sp-color sp-green",
                 hex: "#008000",
                 icon: "fa",
@@ -257,6 +263,7 @@ function ScratchPadBuilder() {
             },
             purple: {
                 action: "purple",
+                title: "Purple",
                 cssClass: "sp-color sp-purple",
                 hex: "#800080",
                 icon: "fa",
@@ -264,6 +271,7 @@ function ScratchPadBuilder() {
             },
             brown: {
                 action: "brown",
+                title: "Brown",
                 cssClass: "sp-color sp-brown",
                 hex: "#8b4513",
                 icon: "fa",
@@ -271,6 +279,7 @@ function ScratchPadBuilder() {
             },
             black: {
                 action: "black",
+                title: "Black",
                 cssClass: "sp-color sp-black",
                 hex: "#000000",
                 icon: "fa",
@@ -278,6 +287,7 @@ function ScratchPadBuilder() {
             },
             white: {
                 action: "white",
+                title: "White",
                 cssClass: "sp-color sp-white",
                 hex: "#ffffff",
                 icon: "fa",
@@ -285,6 +295,7 @@ function ScratchPadBuilder() {
             },
             grey: {
                 action: "grey",
+                title: "Grey",
                 cssClass: "sp-color sp-grey",
                 hex: "#808080",
                 icon: "fa",
@@ -292,6 +303,7 @@ function ScratchPadBuilder() {
             },
             pink: {
                 action: "pink",
+                title: "Pink",
                 cssClass: "sp-color sp-pink",
                 hex: "#ff69b4",
                 icon: "fa",

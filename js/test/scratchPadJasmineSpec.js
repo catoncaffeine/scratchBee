@@ -237,24 +237,24 @@ describe("Editable Scratch Pad - ", function(){
 
                 expect($li1.length).toBe(1);
                 expect($li1.find(".sp-color").length).toBe(4);
-                expect($li1.find(".sp-color.sp-red[data-action=red]").length).toBe(1);
-                expect($li1.find(".sp-color.sp-yellow[data-action=yellow]").length).toBe(1);
-                expect($li1.find(".sp-color.sp-lightblue[data-action=lightblue]").length).toBe(1);
+                expect($li1.find(".sp-color.sp-black[data-action=black]").length).toBe(1);
+                expect($li1.find(".sp-color.sp-white[data-action=white]").length).toBe(1);
                 expect($li1.find(".sp-color.sp-darkblue[data-action=darkblue]").length).toBe(1);
+                expect($li1.find(".sp-color.sp-grey[data-action=grey]").length).toBe(1);
 
                 expect($li2.length).toBe(1);
                 expect($li2.find(".sp-color").length).toBe(4);
+                expect($li2.find(".sp-color.sp-red[data-action=red]").length).toBe(1);
+                expect($li2.find(".sp-color.sp-yellow[data-action=yellow]").length).toBe(1);
                 expect($li2.find(".sp-color.sp-orange[data-action=orange]").length).toBe(1);
-                expect($li2.find(".sp-color.sp-green[data-action=green]").length).toBe(1);
-                expect($li2.find(".sp-color.sp-purple[data-action=purple]").length).toBe(1);
-                expect($li2.find(".sp-color.sp-brown[data-action=brown]").length).toBe(1);
+                expect($li2.find(".sp-color.sp-pink[data-action=pink]").length).toBe(1);
 
                 expect($li3.length).toBe(1);
                 expect($li3.find(".sp-color").length).toBe(4);
-                expect($li3.find(".sp-color.sp-black[data-action=black]").length).toBe(1);
-                expect($li3.find(".sp-color.sp-white[data-action=white]").length).toBe(1);
-                expect($li3.find(".sp-color.sp-grey[data-action=grey]").length).toBe(1);
-                expect($li3.find(".sp-color.sp-pink[data-action=pink]").length).toBe(1);
+                expect($li3.find(".sp-color.sp-green[data-action=green]").length).toBe(1);
+                expect($li3.find(".sp-color.sp-lightblue[data-action=lightblue]").length).toBe(1);
+                expect($li3.find(".sp-color.sp-brown[data-action=brown]").length).toBe(1);
+                expect($li3.find(".sp-color.sp-purple[data-action=purple]").length).toBe(1);
             });
             it("turns the clicked color as selected and does not reset current tool", function() {
                 var $colorsmenu = $(instance.wrapper).find(".sp-dropdown.sp-menu-color.sp-permanent");

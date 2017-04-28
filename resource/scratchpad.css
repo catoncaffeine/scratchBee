@@ -224,7 +224,7 @@
 	position: absolute;
 }
 
-.sp-permanent {
+.sp-menu-color {
 	background: -webkit-radial-gradient(circle, lightgrey, darkgrey, grey); /* Safari */
 	background: -o-radial-gradient(circle, lightgrey, darkgrey, grey); /* Opera 11.6 to 12.0 */
 	background: -moz-radial-gradient(circle, lightgrey, darkgrey, grey); /* Firefox 3.6 to 15 */

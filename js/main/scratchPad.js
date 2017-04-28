@@ -213,70 +213,6 @@ function ScratchPadBuilder() {
                 menuActionType: 1,
                 sides: 10
             },
-            red: {
-                action: "red",
-                title: "Red",
-                cssClass: "sp-color sp-red",
-                hex: "#ff0000",
-                icon: "fa",
-                menuActionType: 3
-            },
-            yellow: {
-                action: "yellow",
-                title: "Yellow",
-                cssClass: "sp-color sp-yellow",
-                hex: "#ffff00",
-                icon: "fa",
-                menuActionType: 3
-            },
-            lightblue: {
-                action: "lightblue",
-                title: "Sky Blue",
-                cssClass: "sp-color sp-lightblue",
-                hex: "#add8e6",
-                icon: "fa",
-                menuActionType: 3
-            },
-            darkblue: {
-                action: "darkblue",
-                title: "Dark Blue",
-                cssClass: "sp-color sp-darkblue",
-                hex: "#00008b",
-                icon: "fa",
-                menuActionType: 3
-            },
-            orange: {
-                action: "orange",
-                title: "Orange",
-                cssClass: "sp-color sp-orange",
-                hex: "#ff8c00",
-                icon: "fa",
-                menuActionType: 3
-            },
-            green: {
-                action: "green",
-                title: "Green",
-                cssClass: "sp-color sp-green",
-                hex: "#008000",
-                icon: "fa",
-                menuActionType: 3
-            },
-            purple: {
-                action: "purple",
-                title: "Purple",
-                cssClass: "sp-color sp-purple",
-                hex: "#800080",
-                icon: "fa",
-                menuActionType: 3
-            },
-            brown: {
-                action: "brown",
-                title: "Brown",
-                cssClass: "sp-color sp-brown",
-                hex: "#8b4513",
-                icon: "fa",
-                menuActionType: 3
-            },
             black: {
                 action: "black",
                 title: "Black",
@@ -293,6 +229,14 @@ function ScratchPadBuilder() {
                 icon: "fa",
                 menuActionType: 3
             },
+            darkblue: {
+                action: "darkblue",
+                title: "Dark Blue",
+                cssClass: "sp-color sp-darkblue",
+                hex: "#00008b",
+                icon: "fa",
+                menuActionType: 3
+            },
             grey: {
                 action: "grey",
                 title: "Grey",
@@ -301,11 +245,67 @@ function ScratchPadBuilder() {
                 icon: "fa",
                 menuActionType: 3
             },
+            red: {
+                action: "red",
+                title: "Red",
+                cssClass: "sp-color sp-red",
+                hex: "#ff0000",
+                icon: "fa",
+                menuActionType: 3
+            },
+            yellow: {
+                action: "yellow",
+                title: "Yellow",
+                cssClass: "sp-color sp-yellow",
+                hex: "#ffff00",
+                icon: "fa",
+                menuActionType: 3
+            },
+            orange: {
+                action: "orange",
+                title: "Orange",
+                cssClass: "sp-color sp-orange",
+                hex: "#ff8c00",
+                icon: "fa",
+                menuActionType: 3
+            },
             pink: {
                 action: "pink",
                 title: "Pink",
                 cssClass: "sp-color sp-pink",
                 hex: "#ff69b4",
+                icon: "fa",
+                menuActionType: 3
+            },
+            green: {
+                action: "green",
+                title: "Green",
+                cssClass: "sp-color sp-green",
+                hex: "#008000",
+                icon: "fa",
+                menuActionType: 3
+            },
+            lightblue: {
+                action: "lightblue",
+                title: "Sky Blue",
+                cssClass: "sp-color sp-lightblue",
+                hex: "#add8e6",
+                icon: "fa",
+                menuActionType: 3
+            },
+            brown: {
+                action: "brown",
+                title: "Brown",
+                cssClass: "sp-color sp-brown",
+                hex: "#8b4513",
+                icon: "fa",
+                menuActionType: 3
+            },
+            purple: {
+                action: "purple",
+                title: "Purple",
+                cssClass: "sp-color sp-purple",
+                hex: "#800080",
                 icon: "fa",
                 menuActionType: 3
             }
@@ -324,9 +324,10 @@ function ScratchPadBuilder() {
             colors: {
                 cssClass: "sp-menu-color sp-permanent",
                 items: [
-                    menuItems.red, menuItems.yellow, menuItems.lightblue, menuItems.darkblue,
-                    menuItems.orange, menuItems.green, menuItems.purple, menuItems.brown,
-                    menuItems.black, menuItems.white, menuItems.grey, menuItems.pink
+                    menuItems.black, menuItems.white, menuItems.darkblue, menuItems.grey,
+                    menuItems.red, menuItems.yellow, menuItems.orange, menuItems.pink,
+                    menuItems.green, menuItems.lightblue, menuItems.brown, menuItems.purple
+
                 ],
                 type: "dropdown",
                 title: "Colors",

@@ -73,6 +73,51 @@ function ScratchPadBuilder() {
                 icon: "fa fa-pencil",
                 menuActionType: 1
             },
+            pencilSize2px:{
+                action: "pencilSize2px",
+                cssClass: 'sp-draw sp-shape',
+                icon: 'sp-icon sp-pencilSize2px',
+                title: '2px',
+                menuActionType: 2,
+                group: 1,
+                size:2
+            },
+            pencilSize5px:{
+                action: "pencilSize5px",
+                cssClass: 'sp-draw sp-shape',
+                icon: 'sp-icon sp-pencilSize5px',
+                title: '5px',
+                menuActionType: 2,
+                group: 1,
+                size:5
+            },
+            pencilSize10px:{
+                action: "pencilSize10px",
+                cssClass: 'sp-draw sp-shape',
+                icon: 'sp-icon sp-pencilSize10px',
+                title: '10px',
+                menuActionType: 2,
+                group: 1,
+                size:10
+            },
+            pencilSize20px:{
+                action: "pencilSize20px",
+                cssClass: 'sp-draw sp-shape',
+                icon: 'sp-icon sp-pencilSize20px',
+                title: '20px',
+                menuActionType: 2,
+                group: 2,
+                size:20
+            },
+            pencilSize50px:{
+                action: "pencilSize50px",
+                cssClass: 'sp-draw sp-shape',
+                icon: 'sp-icon sp-pencilSize50px',
+                title: '50px',
+                menuActionType: 2,
+                group: 2,
+                size:50
+            },
             trash: {
                 action: "trash",
                 cssClass: "sp-trash",
@@ -312,16 +357,39 @@ function ScratchPadBuilder() {
         },
         menuChunks = {
             basic: {
+                menuId: 0,
                 cssClass: "sp-menu-basic",
-                items: [menuItems.selector, menuItems.pencil, menuItems.trash],
+                items: [menuItems.selector],
                 type: "group"
             },
+            pencil: {
+                menuId: 0,
+                cssClass: "sp-menu-basic",
+                items:[
+                    menuItems.pencilSize2px,
+                    menuItems.pencilSize5px,
+                    menuItems.pencilSize10px,
+                    menuItems.pencilSize20px,
+                    menuItems.pencilSize50px
+                ],
+                type: "dropdown",
+                title: "Pencil Size",
+                icon: "fa fa-pencil"
+            },
+            trash:{
+                menuId: 0,
+                cssClass:'sp-menu-basic',
+                items:[menuItems.trash],
+                type:"group"
+            },
             undo: {
+                menuId: 1,
                 cssClass: "sp-menu-undo",
                 items: [menuItems.undo, menuItems.redo],
                 type: "group"
             },
             colors: {
+                menuId: 2,
                 cssClass: "sp-menu-color sp-permanent",
                 items: [
                     menuItems.black, menuItems.white, menuItems.darkblue, menuItems.grey,
@@ -334,11 +402,13 @@ function ScratchPadBuilder() {
                 icon: "fa fa-eyedropper"
             },
             text: {
+                menuId: 3,
                 cssClass: "sp-menu-text",
                 items: [menuItems.text],
                 type: "group"
             },
             shapes: {
+                menuId: 4,
                 cssClass: "sp-menu-shapes",
                 items:[
                     menuItems.line, menuItems.ray, menuItems.doubleray, "",
@@ -373,6 +443,8 @@ function ScratchPadBuilder() {
                 instance.menu = config.menu || getDefaultMenu();
                 instance.defaultAction = config.defaultAction || getDefaultAction();
                 instance.fillColor = "#000000";
+                instance.undo = [];
+                instance.redo = [];
             }
             return instance;
         },
@@ -397,8 +469,13 @@ function ScratchPadBuilder() {
             $(instance.wrapper).find(".sp-panel").append("<div class='sp-menu panel-heading'></div>");
             var $menu = $(instance.wrapper).find(".sp-menu");
             var divider = "<span class='vertical-divider'></span>";
+            var menuId = 0;
             Object.keys(menuChunks).forEach(function(key) {
-                if(key === "basic"|| instance.menu.indexOf(key) !== -1) {
+                if(menuId !== menuChunks[key].menuId){
+                    menuId = menuChunks[key].menuId;
+                    $(divider).appendTo($menu);
+                }
+                if( menuId === 0 || instance.menu.indexOf(key) !== -1) {
                     var $chunk;
                     if(menuChunks[key].type === "dropdown") {
                         $chunk = _buildMenuDropDown(menuChunks[key]);
@@ -406,7 +483,6 @@ function ScratchPadBuilder() {
                         $chunk = _buildMenuChunk(menuChunks[key]);
                     }
                     $chunk.appendTo($menu);
-                    $(divider).appendTo($menu);
                 }
             });
 
@@ -414,8 +490,8 @@ function ScratchPadBuilder() {
                 $(instance.wrapper).append("<textarea class='sp-textarea' style='display: none' maxlength='200'/>")
             }
             //make this user defined
-            $menu.find("[data-action='pencil']").addClass("active");
-            instance.currentTool = "pencil";
+            // $menu.find("[data-action='pencil']").addClass("active");
+            // instance.currentTool = "pencil";
         },
         _buildMenuChunk = function(chunk) {
             var $chunk = $("<span class='sp-menu-chunk "+chunk.cssClass+"'></span>");
@@ -524,7 +600,7 @@ function ScratchPadBuilder() {
                 if($dropdown) {
                     $dropdown.find(".dropdown-toggle").addClass("active");
                     $dropdown.find(".sp-menu-blank").hide();
-                    $dropdown.find(".sp-menu-selected").attr("class", "sp-menu-selected " + $(clickedElement).find("i").attr("class")).show();
+                    $dropdown.find(".sp-menu-selected").attr("class", "sp-menu-selected " + $(clickedElement).find("i").attr("class")).css("display","block");
                 }
                 _changeCurrentTool(instance, $(clickedElement).data("action"));
             }
@@ -539,8 +615,10 @@ function ScratchPadBuilder() {
         },
         _changeCurrentTool = function(instance, action) {
             instance.currentTool = action;
-            if(action === "pencil") {
+            if(action.indexOf("pencil") !== -1){
+                instance.currentTool = 'pencil'
                 instance.canvas.isDrawingMode = true;
+                instance.canvas.freeDrawingBrush.width = menuItems[action].size;
             } else {
                 instance.canvas.isDrawingMode = false;
             }
@@ -618,6 +696,7 @@ function ScratchPadBuilder() {
                 _renderScratchPad(instance);
                 _bindMenuEvents(instance, drawer);
                 _convertToFabric(instance, drawer);
+                _toggleActiveMenu(instance, $(instance.wrapper).find("[data-action='"+instance.defaultAction+"']"));
             }
 
             if(config && config.image) {
@@ -637,7 +716,7 @@ function ScratchPadBuilder() {
             return {width: 500, height: 500};
         },
         getDefaultAction = function() {
-            return menuItems.pencil.action;
+            return menuItems.pencilSize2px.action;
         };
     return {
         build: build,
@@ -726,6 +805,18 @@ function ScratchPadDrawer() {
             });
             textbox.off();
             textbox.on("mousedown",function(e) {
+                if(instance.currentTool === 'trash'){
+                    var index = instance.canvas.getObjects().indexOf(this);
+                    instance.undo.push({
+                        itemIndex: index,
+                        items:[this],
+                        itemType: 'Object',
+                        action:2
+                    });
+                    instance.canvas.remove(this);
+                    //return since there are some logic following.
+                    return;
+                }
                 var time = new Date().getTime();
                 if(this.lastTime && (time - this.lastTime < 500 )) {
                     var x = this.left > 0 ? this.left : e.clientX;
@@ -957,9 +1048,6 @@ function ScratchPadDrawer() {
         },
         _trackObjectHistory = function(instance, action, object){
             $(instance.wrapper).find('.sp-undo').removeClass('disabled');
-            if(!instance.undo){
-                instance.undo = [];
-            }
             if(instance.undo.length === 10){
                 instance.undo.shift();
             }
@@ -1005,8 +1093,6 @@ function ScratchPadDrawer() {
             if(instance.currentTool !== 'selector'){
                 $(instance.wrapper).find("[data-action='selector']").click();
             }
-            if(!instance.undo) instance.undo = [];
-            if(!instance.redo) instance.redo = [];
 
             var buttonOn = $(event.currentTarget),
                 action = buttonOn.data("action"),

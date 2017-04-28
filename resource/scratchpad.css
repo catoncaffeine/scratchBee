@@ -1,67 +1,67 @@
 .sp-wrapper {
-    display: inline-block;
-    position: relative;
-    transition: visibility 1s, opacity 0.5s;
+	display: inline-block;
+	position: relative;
+	transition: visibility 1s, opacity 0.5s;
 }
 
 .sp-toggle-btn {
-    position: absolute;
-    right: 3px;
-    top: 3px;
-    cursor: pointer;
-    padding: 3px;
-    border: 1px solid darkgray;
-    border-radius: 2px;
-    display: inline-block;
-    text-align: center;
-    vertical-align: middle;
-    transition: visibility 1s, opacity 0.5s;
+	position: absolute;
+	right: 3px;
+	top: 3px;
+	cursor: pointer;
+	padding: 3px;
+	border: 1px solid darkgray;
+	border-radius: 2px;
+	display: inline-block;
+	text-align: center;
+	vertical-align: middle;
+	transition: visibility 1s, opacity 0.5s;
 }
 
 .sp-wrapper .sp-canvas-wrapper {
-    display: inline-block;
+	display: inline-block;
 }
 
 .sp-hidden .sp-panel {
-    height: 30px;
-    width: 30px;
-    overflow: hidden;
+	height: 30px;
+	width: 30px;
+	overflow: hidden;
 }
 .sp-wrapper .sp-panel, .sp-wrapper .sp-hide {
-    visibility: visible;
+	visibility: visible;
 }
 
 .sp-hidden .sp-panel, .sp-hidden .sp-hide {
-    opacity: 0;
-    visibility: hidden;
+	opacity: 0;
+	visibility: hidden;
 }
 
 .sp-wrapper .sp-show {
-    opacity: 0;
-    visibility: hidden;
+	opacity: 0;
+	visibility: hidden;
 }
 
 .sp-hidden .sp-show {
-      opacity: 1;
-      visibility: visible;
+	opacity: 1;
+	visibility: visible;
 }
 
 .sp-toggle-btn i {
-    vertical-align: middle;
+	vertical-align: middle;
 }
 
 .sp-wrapper i {
-    display: inline-block;
+	display: inline-block;
 }
 .sp-wrapper .fa {
-    width: 18px;
-    height: 18px;
-    background: 18px;
-    font-size: 18px;
+	width: 18px;
+	height: 18px;
+	background: 18px;
+	font-size: 18px;
 }
 
 .sp-menu, .sp-title {
-    padding: 2px;
+	padding: 2px;
 }
 
 .sp-title {
@@ -72,11 +72,12 @@
 
 .sp-title span {
 	margin: 5px;
+	vertical-align: middle;
 }
 
 .sp-menu .disabled {
 	color:lightgray;
-    cursor: default;
+	cursor: default;
 }
 
 .sp-wrapper li a {
@@ -84,14 +85,14 @@
 }
 
 .sp-menu-action, .sp-dropdown {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 .sp-menu-action, .dropdown-toggle {
-    display: inline-block;
-    padding: 5px;
-    text-align: center;
-    vertical-align: middle;
+	display: inline-block;
+	padding: 5px;
+	text-align: center;
+	vertical-align: middle;
 }
 
 .sp-shape {
@@ -121,11 +122,50 @@
 	height: 100%;
 }
 .sp-menu .vertical-divider {
-    display: inline;
+	display: inline;
 	border-right:1px dotted lightgrey;
 	margin: 0px 3px;
 }
 
+.sp-pencilSize2px {
+	background: url('img/2px.png') no-repeat;
+	/*background-color: black;*/
+	/*border-radius: 100px;*/
+	/*width: 2px;*/
+	/*height: 2px;*/
+}
+.sp-pencilSize5px {
+	background: url('img/5px.png') no-repeat;
+	/*align-self: center;*/
+	/*background-color: black;*/
+	/*border-radius: 100px;*/
+	/*width: 6px;*/
+	/*height: 6px;*/
+}
+.sp-pencilSize10px {
+	background: url('img/10px.png') no-repeat;
+	/*background-color: black;*/
+	/*border-radius: 100px;*/
+	/*width: 10px;*/
+	/*height: 10px;*/
+}
+.sp-pencilSize20px {
+	background: url('img/20px.png') no-repeat;
+	/*background-color: black;*/
+	/*border-radius: 100px;*/
+	/*width: 15px;*/
+	/*height: 15px;*/
+}
+.sp-pencilSize50px {
+	background: url('img/50px.png') no-repeat;
+	/*background-color: black;*/
+	/*border-radius: 100px;*/
+	/*width: 20px;*/
+	/*height: 20px;*/
+}
+.sp-pencil-size-icon {
+	background: url('img/pencil-sizes.png') no-repeat;
+}
 .sp-shape {
 	text-align: center;
 	vertical-align: middle;
@@ -153,14 +193,14 @@
 
 .sp-line-i {
 	background: url('img/line.png') no-repeat;
-	
+
 }
 .sp-pentagon {
 	background: url('img/pentagon.png') no-repeat;
 }
 
 .sp-dropdown > .btn {
-    padding: 4px 4px;
+	padding: 4px 4px;
 }
 
 .sp-dropdown li {
@@ -181,15 +221,15 @@
 
 .sp-octagon {
 	background: url('img/octagon.png') no-repeat;
-	
+
 }
 .sp-hexagon {
 	background: url('img/hexagon.png') no-repeat;
-	
+
 }
 .sp-decagon {
 	background: url('img/decagon.png') no-repeat;
-	
+
 }
 
 .sp-icon {
@@ -222,6 +262,8 @@
 .sp-textarea {
 	display: inline;
 	position: absolute;
+	width: initial !important;
+	height: initial !important;
 }
 
 .sp-menu-color {
@@ -240,6 +282,7 @@
 
 .sp-menu-color .sp-color i {
 	box-shadow: 1px 1px 2px 1px lightgrey;
+	vertical-align: bottom;
 }
 
 .sp-menu-color .selected i {

@@ -123,22 +123,22 @@ describe("Editable Scratch Pad - ", function(){
             instance = ScratchPad.init("#test", {menu: ["undo","text", ScratchPad.menu.shapes, ScratchPad.menu.colors]});
         });
         it("sets pencil as default menu", function(){
-            expect($("#test .active").data("action")).toBe("pencil");
+            expect($("#test .active").eq(1).data("action")).toBe("pencilSize2px");
         });
         it("sets clicked item as active, and turns back to pencil if unselected", function(){
             $("#test [data-action='trash']").click();
-            expect($("#test [data-action='pencil']").hasClass("active")).toBe(false);
+            expect($("#test [data-action='pencilSize2px']").hasClass("active")).toBe(false);
             expect($("#test [data-action='trash']").hasClass("active")).toBe(true);
 
             $("#test [data-action='trash']").click();
             expect($("#test [data-action='trash']").hasClass("active")).toBe(false);
-            expect($("#test [data-action='pencil']").hasClass("active")).toBe(true);
+            expect($("#test [data-action='pencilSize2px']").hasClass("active")).toBe(true);
         });
         it("turns pencil mode on and off", function(){
             expect(instance.canvas.isDrawingMode).toBe(true);
             $("#test [data-action='selector']").click();
             expect(instance.canvas.isDrawingMode).toBe(false);
-            $("#test [data-action='pencil']").click();
+            $("#test [data-action='pencilSize2px']").click();
             expect(instance.canvas.isDrawingMode).toBe(true);
         });
         it("does not set current tool if action is immediate", function(){
@@ -220,7 +220,7 @@ describe("Editable Scratch Pad - ", function(){
                 expect($shapesmenu.find(".dropdown-toggle").attr("class")).toContain("active");
                 expect($shapesmenu.find(".sp-menu-selected").attr("class")).toContain("fa fa-circle");
 
-                $(instance.wrapper).find("[data-action=pencil]").click();
+                $(instance.wrapper).find("[data-action=pencilSize2px]").click();
                 expect(instance.currentTool).toBe("pencil");
                 expect($shapesmenu.find("[data-action=circle]").attr("class")).not.toContain("active");
                 expect($shapesmenu.find(".dropdown-toggle").attr("class")).not.toContain("active");
@@ -269,7 +269,32 @@ describe("Editable Scratch Pad - ", function(){
             });
         });
     });
-
+    describe('test pencil sizes', function(){
+        var instance;
+        beforeEach(function(){
+            instance = ScratchPad.init("#test",{menu:["text"]});
+        });
+        it('test 2px pencil', function(){
+            $(instance.wrapper).find('[data-action="pencilSize2px"]').click();
+            expect(instance.canvas.freeDrawingBrush.width).toBe(2);
+        });
+        it('test 5px pencil', function(){
+            $(instance.wrapper).find('[data-action="pencilSize5px"]').click();
+            expect(instance.canvas.freeDrawingBrush.width).toBe(5);
+        });
+        it('test 10px pencil', function(){
+            $(instance.wrapper).find('[data-action="pencilSize10px"]').click();
+            expect(instance.canvas.freeDrawingBrush.width).toBe(10);
+        });
+        it('test 20px pencil', function(){
+            $(instance.wrapper).find('[data-action="pencilSize20px"]').click();
+            expect(instance.canvas.freeDrawingBrush.width).toBe(20);
+        });
+        it('test 50px pencil', function(){
+            $(instance.wrapper).find('[data-action="pencilSize50px"]').click();
+            expect(instance.canvas.freeDrawingBrush.width).toBe(50);
+        });
+    });
     describe('Text - ',function(){
         var instance;
         beforeEach(function(){

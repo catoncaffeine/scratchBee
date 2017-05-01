@@ -205,13 +205,15 @@
 
 .sp-dropdown li {
 	padding-left: 5px;
+	padding-right: 5px;
 }
 
-.dropdown-menu.min-dropdown-width{
-	min-width: 125px;
+.sp-dropdown .dropdown-menu {
+	min-width: auto;
+	white-space: nowrap;
 }
 
-.min-dropdown-width .divider{
+.sp-dropdown .dropdown-menu .divider{
 	margin: 5px 0;
 }
 

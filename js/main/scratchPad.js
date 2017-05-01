@@ -512,7 +512,7 @@ function ScratchPadBuilder() {
                     +   "<div class='dropdown-toggle' data-toggle='dropdown'>"
                     +       icons
                     +   "</div>"
-                    +   "<ul class='min-dropdown-width dropdown-menu'></ul>"
+                    +   "<ul class='dropdown-menu'></ul>"
                     +"</div>"),
                 $ul = $chunk.find("ul");
 

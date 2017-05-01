@@ -461,11 +461,20 @@ function ScratchPadBuilder() {
                 icon: "shapes-icon"
             }
         },
+
+        /*
+        Action Type Explained -
+            immediate: take an immediate action on the canvas, but don't change current tool (e.g. undo, redo)
+            defer: no immediate action is taken, change current tool and WHAT canvas draws (e.g. pencil, text, all shapes)
+            sticky: take an immediate action and change current tool (e.g. trash)
+            permanent: no action taken, change HOW canvas draws (e.g. pencil size, text size, color)
+        */
+
         menuActionType = {
-            "immediate": 0, // take an immediate action, don't change tool
-            "defer": 1, // don't take any action, change tool
-            "sticky": 2, // take an immediate action, also change tool
-            "permanent": 3 // change canvas config permanently
+            "immediate": 0,
+            "defer": 1,
+            "sticky": 2,
+            "permanent": 3
         };
 
     var _buildInstance = function(wrapper, config) {
@@ -530,9 +539,6 @@ function ScratchPadBuilder() {
             if (instance.menu.indexOf("text") !== -1) {
                 $(instance.wrapper).append("<textarea class='sp-textarea' style='display: none' maxlength='200'/>")
             }
-            //make this user defined
-            // $menu.find("[data-action='pencil']").addClass("active");
-            // instance.currentTool = "pencil";
         },
         _buildMenuChunk = function(chunk) {
             var $chunk = $("<span class='sp-menu-chunk "+chunk.cssClass+"'></span>");
@@ -541,6 +547,22 @@ function ScratchPadBuilder() {
             });
             return $chunk;
         },
+
+        /*
+            Dropdowns -
+                can contain a list of actionable items, each item in such dropdown changes WHAT canvas draws
+                    e.g. Shapes dropdown
+                can also contain a list of config items, each item in such dropdown changes HOW canvas draws
+                    e.g. Colors dropdown
+            The icon(s) for the Dropdowns -
+                can be simple for presentation to indicate what is selected
+                    e.g. Shapes and Colors
+                can be an actionable item
+                    e.g. Pencil and Text
+                    This means simply clicking on the Pencil dropdown changes the current tool to pencil
+                    with pencil size set to the most recently selected size
+                    and will also show the list of pencil sizes available, most recently selected size highlighted
+        * */
         _buildMenuDropDown = function(chunk) {
             var itemsInGroup = chunk.group || 4,
                 permanent = chunk.cssClass.indexOf("sp-permanent") !== -1,
@@ -624,9 +646,19 @@ function ScratchPadBuilder() {
                 allowTouchScrolling: true
             });
         },
-
-        //change drawing configuration. can be changed by the next config in the same group.
-        // class: .selected
+        /*
+            If a menu dropdown is marked with .sp-permanent, and the item inside has actionType of permanent (3)
+            clicking an item inside that dropdown permanently changes HOW canvas draws (e.g. pencil size)
+            until another item inside the same dropdown is selected
+            One of the items in such dropdowns have to be selected
+            Making a selection on this dropdown does not affect other dropdowns
+            Selected items in such dropdowns is indicated with class .selected
+            e.g.
+                pencil size 1px is currently selected,
+                clicking 5px will change drawing brush size to 5px and mark 5px as selected
+                clicking inside canvas will now scratch with 5px wide lines
+                but will NOT affect drawing color
+        * */
         _changeConfigMenu = function(clickedElement) {
             var $dropdown = $(clickedElement).closest(".sp-permanent"),
             icon = $(clickedElement).find("i"),
@@ -638,8 +670,17 @@ function ScratchPadBuilder() {
             $dropdown.find(".sp-menu-selected").attr("class", "sp-menu-selected " + iconClass).text(iconText);
         },
 
-        //change current drawing tool. can be changed by the next tool regardless of group.
-        // class: .active
+        /*
+            If a menu dropdown is NOT marked with .sp-permanenet, and the item inside has actionType of deferred (1)
+            clicking an item inside that dropdown will change the current tool and WHAT canvas draws
+            The clicked item will be marked with class .active
+            and all other tools with class .active will have this class removed
+            e.g.
+                pencil is the active current tool
+                circle under shapes menu is clicked
+                pencil is no longer the active current tool, and circle is
+                clicking inside canvas will draw a circle
+        * */
         _toggleActiveMenu =  function(instance, clickedElement){
             var $menu = $(instance.wrapper).find(".sp-menu"),
                 $dropdown = $(clickedElement).closest(".sp-dropdown:not(.sp-permanent)");

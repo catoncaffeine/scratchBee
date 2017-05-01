@@ -125,14 +125,12 @@ describe("Editable Scratch Pad - ", function(){
         it("sets pencil as default menu", function(){
             expect($("#test .active").data("action")).toBe("pencil");
         });
-        it("sets clicked item as active, and turns back to pencil if unselected", function(){
+        it("sets clicked item as active", function(){
             $("#test [data-action='trash']").click();
-            expect($("#test [data-action='pencil']").hasClass("active")).toBe(false);
             expect($("#test [data-action='trash']").hasClass("active")).toBe(true);
 
             $("#test [data-action='trash']").click();
-            expect($("#test [data-action='trash']").hasClass("active")).toBe(false);
-            expect($("#test [data-action='pencil']").hasClass("active")).toBe(true);
+            expect($("#test [data-action='trash']").hasClass("active")).toBe(true);
         });
         it("turns pencil mode on and off", function(){
             expect(instance.canvas.isDrawingMode).toBe(true);

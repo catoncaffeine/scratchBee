@@ -337,7 +337,31 @@ describe("Editable Scratch Pad - ", function(){
             expect($textarea.hide).toHaveBeenCalled();
         });
     });
+	describe("Textbox Deletion-", function() {
+        var instance;
+        beforeEach(function () {
+            instance = ScratchPad.init("#test", {menu: ["text", "shapes"]});
+            instance.canvas.getPointer = function (obj) {
+                return {x: 2, y: 3};
+            };
+            spyOn(instance.canvas, "renderAll");
+        });
+        it('deletes textbox', function () {
+            spyOn(instance.canvas, "remove").andCallThrough();
+            expect((instance.canvas._objects).length).toBe(0);
+            $("#test [data-action='text']").click();
+            instance.canvas.trigger("mouse:down");
+            expect(instance.canvas._objects.length).toBe(1);
 
+            var textBox = instance.canvas._objects[0];
+            instance.canvas.discardActiveObject();
+            instance.canvas.renderAll();
+            instance.currentTool='trash';
+            textBox.trigger('mousedown',{target:textBox});
+            expect(instance.canvas._objects.length).toBe(0,"because Someone removed /modified mousedown event listener from ScratchPad Textbox");
+            expect(instance.canvas.renderAll).toHaveBeenCalled();
+        });
+    });
     describe("Trash Can -", function(){
         var instance;
         beforeEach(function(){

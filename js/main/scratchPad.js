@@ -390,7 +390,8 @@ function ScratchPadBuilder() {
                 ],
                 type: "dropdown",
                 title: "Pencil Size",
-                icon: "fa fa-pencil"
+                icon: "fa fa-pencil",
+				group:3
             },
             trash:{
                 menuId: 0,

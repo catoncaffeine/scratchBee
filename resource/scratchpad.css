@@ -166,6 +166,10 @@
 .sp-pencil-size-icon {
 	background: url('img/pencil-sizes.png') no-repeat;
 }
+.sp-pencil-size {
+	text-align: center;
+	vertical-align: middle;
+}
 .sp-shape {
 	text-align: center;
 	vertical-align: middle;

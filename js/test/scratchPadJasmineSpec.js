@@ -65,7 +65,7 @@ describe("Editable Scratch Pad - ", function(){
                     canvas : canvas,
                     wrapper: $('#test')
                 }
-            }
+            };
             ScratchPad.destroyInstanceById('1');
             expect(ScratchPad.instances['1']).toBeUndefined();
             expect(canvas.dispose).toHaveBeenCalled();
@@ -333,6 +333,61 @@ describe("Editable Scratch Pad - ", function(){
             var $textarea = $(instance.wrapper).find(".sp-textarea");
             $("#test [data-action='selector']").click();
             expect($textarea.hide).toHaveBeenCalled();
+        });
+        describe("Text Size Menu", function(){
+            it("has one row with 12, 18, 24, 30 as available text sizes", function(){
+                var $dropdown = $("#test .sp-dropdown.sp-permanent.sp-menu-text");
+                var $li1 = $dropdown.find("[data-group='0']");
+                expect($dropdown.length).toBe(1);
+                expect($dropdown.find("li").length).toBe(1);
+
+                expect($li1.length).toBe(1);
+                expect($li1.find(".sp-textsize.sp-text12[data-action='text12']").length).toBe(1);
+                expect($li1.find(".sp-textsize.sp-text16[data-action='text16']").length).toBe(1);
+                expect($li1.find(".sp-textsize.sp-text24[data-action='text24']").length).toBe(1);
+                expect($li1.find(".sp-textsize.sp-text30[data-action='text30']").length).toBe(1);
+            });
+        });
+        describe("Text Size Change", function(){
+            it("draws textbox without having to select a text size", function(){
+                expect(instance.textsize).toBe(12);
+                $("#test [data-action='text']").click();
+                instance.canvas.trigger("mouse:down");
+                var textbox1 = instance.canvas.getObjects()[0];
+                expect(textbox1).toBeDefined();
+                expect(textbox1.fontSize).toBe(12);
+            });
+            it("changes text size for future textbox when a size is selected", function() {
+                expect(instance.textsize).toBe(12);
+                $("#test [data-action='text']").click();
+                expect(instance.currentTool).toBe('text');
+                $("#test [data-action='text24']").click();
+                expect(instance.textsize).toBe(24);
+                expect(instance.currentTool).toBe('text');
+                expect($("#test .sp-menu-text .sp-dropdown-icon").attr("current-selected")).toBe("text24");
+                expect($("#test .sp-menu-text .sp-menu-selected").text()).toBe("24");
+
+                instance.canvas.trigger("mouse:down");
+
+                var textbox1 = instance.canvas.getObjects()[0];
+                expect(textbox1).toBeDefined();
+                expect(textbox1.fontSize).toBe(24);
+            });
+            it("does not change other drawing configurations", function(){
+                expect(instance.pencilSize).toBe(2);
+                expect(instance.textsize).toBe(12);
+                expect($("#test [data-action='pencilSize2px'].selected").length).toBe(1);
+                expect($("#test [data-action='text12'].selected").length).toBe(1);
+                expect($("#test [data-action='text24'].selected").length).toBe(0);
+
+                $("#test [data-action='text24']").click();
+
+                expect(instance.pencilSize).toBe(2);
+                expect(instance.textsize).toBe(24);
+                expect($("#test [data-action='pencilSize2px'].selected").length).toBe(1);
+                expect($("#test [data-action='text12'].selected").length).toBe(0);
+                expect($("#test [data-action='text24'].selected").length).toBe(1);
+            });
         });
     });
 	describe("Textbox Deletion-", function() {

@@ -491,11 +491,13 @@ function ScratchPadBuilder() {
             if(!instance.readonly) {
                 instance.menu = config.menu || getDefaultMenu();
                 instance.defaultAction = config.defaultAction || getDefaultAction();
-                instance.fillColor = "#000000";
-				instance.pencilSize = menuItems.pencilSize2px.size;
+                instance.pencilSize = menuItems.pencilSize2px.size;
                 instance.undo = [];
                 instance.redo = [];
+                if(instance.menu.indexOf("colors") !== -1) instance.fillColor = menuItems.black.hex;
+                if(instance.menu.indexOf("text") !== -1) instance.textsize = menuItems.text12.size;
             }
+
             return instance;
         },
         _buildToggleButton = function(instance) {
@@ -537,7 +539,7 @@ function ScratchPadBuilder() {
             });
 
             if (instance.menu.indexOf("text") !== -1) {
-                $(instance.wrapper).append("<textarea class='sp-textarea' style='display: none' maxlength='200'/>")
+                $(instance.wrapper).append("<textarea class='sp-textarea' style='display: none' maxlength='200'/>");
             }
         },
         _buildMenuChunk = function(chunk) {
@@ -746,6 +748,11 @@ function ScratchPadBuilder() {
                 }
             });
         },
+        _setupDefaultInMenu = function(instance) {
+            $(instance.wrapper).find('[data-action="'+instance.defaultAction+'"]').addClass('active');
+            instance.currentTool = instance.defaultAction;
+            if(instance.textsize) $(instance.wrapper).find("[data-action='text"+instance.textsize+"']").click();
+        },
         _importResource = function() {
             var $jsFile = $("script[src*='scratchPad.js']");
             if($jsFile.length) {
@@ -786,8 +793,7 @@ function ScratchPadBuilder() {
                 _renderScratchPad(instance);
                 _bindMenuEvents(instance, drawer);
                 _convertToFabric(instance, drawer);
-				$(instance.wrapper).find('[data-action="'+instance.defaultAction+'"]').addClass('active');
-				instance.currentTool = instance.defaultAction;
+                _setupDefaultInMenu(instance);
             }
 
             if(config && config.image) {
@@ -890,7 +896,7 @@ function ScratchPadDrawer() {
             })
         },
         _makeTextBox = function(instance) {
-            var textsize = instance.textsize || 18,
+            var textsize = instance.textsize || 12,
                 textbox = new fabric.Textbox("Click to add text", {
                 fontSize: textsize,
                 width:150

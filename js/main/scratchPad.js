@@ -519,35 +519,19 @@ function ScratchPadBuilder() {
             return $chunk;
         },
         _buildMenuDropDown = function(chunk) {
-
-            // TODO: REFACTOR THIS!!!//
-
             var itemsInGroup = chunk.group || 4,
                 permanent = chunk.cssClass.indexOf("sp-permanent") !== -1,
-                icons = permanent ?
-                    "<i class='sp-dropdown-icon "+chunk.icon+"' data-toggle='tooltip' title='"+chunk.title+"'>":
-                    "<i class='sp-menu-blank "+chunk.icon+"' data-toggle='tooltip' title='"+chunk.title+"'></i>"
-                    +"<i class='sp-menu-selected hidden' data-toggle='tooltip' title='"+chunk.title+"'></i>";
-
+                genericChunk = chunk.action ?  chunk.action : chunk,
+                actionClass = chunk.action ?  " sp-menu-action " + chunk.action.cssClass : "",
+                dataAction = chunk.action ? " data-action='" + chunk.action.action + "'" : "";
             var $chunk = $(""
                     +"<div class='btn-group sp-dropdown "+chunk.cssClass+"'>"
-                    +   "<div class='dropdown-toggle' data-toggle='dropdown'>"
-                    +       icons
+                    +   "<div class='dropdown-toggle" + actionClass + "' data-toggle='dropdown'" + dataAction + ">"
+                    +       _buildDropdownIcons(permanent, genericChunk)
                     +   "</div>"
                     +   "<ul class='dropdown-menu'></ul>"
-                    +"</div>");
-
-
-            if(chunk.action) {
-                $chunk = $(""
-                    +"<div class='btn-group sp-dropdown "+chunk.cssClass+"'>"
-                    +   "<div class='dropdown-toggle sp-menu-action "+chunk.action.cssClass+"' data-toggle='dropdown' data-action='"+chunk.action.action+"'>"
-                    +       "<i class='sp-dropdown-icon " + chunk.action.icon+ "'>"
-                    +   "</div>"
-                    +   "<ul class='dropdown-menu'></ul>"
-                    +"</div>");
-            }
-            var $ul = $chunk.find("ul");
+                    +"</div>"),
+                $ul = $chunk.find("ul");
 
             chunk.items.forEach(function(menuItem, index) {
 
@@ -567,15 +551,24 @@ function ScratchPadBuilder() {
             });
             return $chunk;
         },
+        _buildDropdownIcons = function(permanent, genericChunk) {
+            var primaryIcon = "";
+            if(permanent) {
+                primaryIcon = "<i class='sp-dropdown-icon "+genericChunk.icon+"' data-toggle='tooltip' title='"+genericChunk.title+"'></i>";
+            } else {
+                primaryIcon = "<i class='sp-menu-blank "+genericChunk.icon+"' data-toggle='tooltip' title='"+genericChunk.title+"'></i>";
+            }
+            return primaryIcon + "<i class='sp-menu-selected' data-toggle='tooltip' title='"+genericChunk.title+"'></i>";
+        },
         _buildMenuButton = function(menuItem, selected) {
-            var selectedClass = selected ? "selected" : "";
+            var selectedClass = selected ? "selected" : "", iconText = menuItem.iconText || "";
             return ""
                 +"<div class='sp-menu-action "+menuItem.cssClass + " " + selectedClass+"' "
                 +"data-action='"+menuItem.action+"' "
                 +"data-toggle='tooltip' "
                 +"title='"+menuItem.title+"'"
                 +">"
-                +"<i class='"+menuItem.icon+"'></i>"
+                +"<i class='"+menuItem.icon+"'>"+iconText+"</i>"
                 +"</div>";
         },
         _buildPad = function(instance){
@@ -612,25 +605,23 @@ function ScratchPadBuilder() {
         //change drawing configuration. can be changed by the next config in the same group.
         // class: .selected
         _changeConfigMenu = function(clickedElement) {
-            var $dropdown = $(clickedElement).closest(".sp-permanent");
+            var $dropdown = $(clickedElement).closest(".sp-permanent"),
+            icon = $(clickedElement).find("i"),
+            iconClass = $(icon).attr("class"),
+            iconText = $(icon).text();
             $dropdown.find(".sp-dropdown-icon").attr("current-selected", $(clickedElement).data("action"));
             $dropdown.find(".selected").removeClass("selected");
             $(clickedElement).addClass("selected");
+            $dropdown.find(".sp-menu-selected").attr("class", "sp-menu-selected " + iconClass).text(iconText);
         },
 
         //change current drawing tool. can be changed by the next tool regardless of group.
         // class: .active
         _toggleActiveMenu =  function(instance, clickedElement){
             var $menu = $(instance.wrapper).find(".sp-menu"),
-                $dropdown = $(clickedElement).closest(".sp-dropdown");
-
-            _resetDropdowns($menu);
-
-            if($(clickedElement).hasClass('active')) {
-                $(clickedElement).removeClass('active');
-                $(instance.wrapper).find("[data-action='"+instance.defaultAction+"']").addClass("active");
-                _changeCurrentTool(instance, instance.defaultAction);
-            } else {
+                $dropdown = $(clickedElement).closest(".sp-dropdown:not(.sp-permanent)");
+            if(!$(clickedElement).hasClass('active')) {
+                _resetDropdowns($menu);
                 $(instance.wrapper).find(".sp-menu .active").removeClass("active");
                 $(clickedElement).addClass('active');
                 if($dropdown) {

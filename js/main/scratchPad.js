@@ -146,20 +146,40 @@ function ScratchPadBuilder() {
                 icon: "fa fa-font",
                 menuActionType: 1
             },
-            text18: {
-                action: "text18",
-                cssClass: 'sp-textsize sp-text18',
-                title:'18px',
-                icon: "fa fa-text-width",
-                size: 18,
+            text12: {
+                action: "text12",
+                cssClass: 'sp-textsize sp-text12',
+                title:'12px',
+                icon: "fa",
+                iconText: 12,
+                size: 12,
                 menuActionType: 3
             },
-            text22: {
-                action: "text22",
-                cssClass: 'sp-textsize sp-text22',
-                title:'22px',
-                icon: "fa fa-text-width",
-                size: 22,
+            text16: {
+                action: "text16",
+                cssClass: 'sp-textsize sp-text16',
+                title:'16px',
+                icon: "fa",
+                iconText: 16,
+                size: 16,
+                menuActionType: 3
+            },
+            text24: {
+                action: "text24",
+                cssClass: 'sp-textsize sp-text24',
+                title:'24px',
+                icon: "fa",
+                iconText: 24,
+                size: 24,
+                menuActionType: 3
+            },
+            text30: {
+                action: "text30",
+                cssClass: 'sp-textsize sp-text30',
+                title:'30px',
+                icon: "fa",
+                iconText: 30,
+                size: 30,
                 menuActionType: 3
             },
             line:{
@@ -421,9 +441,10 @@ function ScratchPadBuilder() {
             text: {
                 menuId: 3,
                 cssClass: "sp-menu-text sp-permanent",
-                items: [menuItems.text18, menuItems.text22],
+                items: [menuItems.text12, menuItems.text16, menuItems.text24, menuItems.text30],
                 type: "dropdown",
-                action: menuItems.text
+                action: menuItems.text,
+                group: 4
             },
             shapes: {
                 menuId: 4,

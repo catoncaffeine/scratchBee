@@ -123,22 +123,22 @@ describe("Editable Scratch Pad - ", function(){
             instance = ScratchPad.init("#test", {menu: ["undo","text", ScratchPad.menu.shapes, ScratchPad.menu.colors]});
         });
         it("sets pencil as default menu", function(){
-            expect($("#test .active").eq(1).data("action")).toBe("pencilSize2px");
+            expect($("#test .active").data("action")).toBe("pencil");
         });
         it("sets clicked item as active, and turns back to pencil if unselected", function(){
             $("#test [data-action='trash']").click();
-            expect($("#test [data-action='pencilSize2px']").hasClass("active")).toBe(false);
+            expect($("#test [data-action='pencil']").hasClass("active")).toBe(false);
             expect($("#test [data-action='trash']").hasClass("active")).toBe(true);
 
             $("#test [data-action='trash']").click();
             expect($("#test [data-action='trash']").hasClass("active")).toBe(false);
-            expect($("#test [data-action='pencilSize2px']").hasClass("active")).toBe(true);
+            expect($("#test [data-action='pencil']").hasClass("active")).toBe(true);
         });
         it("turns pencil mode on and off", function(){
             expect(instance.canvas.isDrawingMode).toBe(true);
             $("#test [data-action='selector']").click();
             expect(instance.canvas.isDrawingMode).toBe(false);
-            $("#test [data-action='pencilSize2px']").click();
+            $("#test [data-action='pencil']").click();
             expect(instance.canvas.isDrawingMode).toBe(true);
         });
         it("does not set current tool if action is immediate", function(){
@@ -220,7 +220,7 @@ describe("Editable Scratch Pad - ", function(){
                 expect($shapesmenu.find(".dropdown-toggle").attr("class")).toContain("active");
                 expect($shapesmenu.find(".sp-menu-selected").attr("class")).toContain("fa fa-circle");
 
-                $(instance.wrapper).find("[data-action=pencilSize2px]").click();
+                $(instance.wrapper).find("[data-action=pencil]").click();
                 expect(instance.currentTool).toBe("pencil");
                 expect($shapesmenu.find("[data-action=circle]").attr("class")).not.toContain("active");
                 expect($shapesmenu.find(".dropdown-toggle").attr("class")).not.toContain("active");

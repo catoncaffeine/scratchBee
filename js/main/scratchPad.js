@@ -146,6 +146,22 @@ function ScratchPadBuilder() {
                 icon: "fa fa-font",
                 menuActionType: 1
             },
+            text18: {
+                action: "text18",
+                cssClass: 'sp-textsize sp-text18',
+                title:'18px',
+                icon: "fa fa-text-width",
+                size: 18,
+                menuActionType: 3
+            },
+            text22: {
+                action: "text22",
+                cssClass: 'sp-textsize sp-text22',
+                title:'22px',
+                icon: "fa fa-text-width",
+                size: 22,
+                menuActionType: 3
+            },
             line:{
                 action: "line",
                 cssClass: 'sp-draw sp-line',
@@ -403,9 +419,10 @@ function ScratchPadBuilder() {
             },
             text: {
                 menuId: 3,
-                cssClass: "sp-menu-text",
-                items: [menuItems.text],
-                type: "group"
+                cssClass: "sp-menu-text sp-permanent",
+                items: [menuItems.text18, menuItems.text22],
+                type: "dropdown",
+                action: menuItems.text
             },
             shapes: {
                 menuId: 4,
@@ -501,22 +518,38 @@ function ScratchPadBuilder() {
             return $chunk;
         },
         _buildMenuDropDown = function(chunk) {
+
+            // TODO: REFACTOR THIS!!!//
+
             var itemsInGroup = chunk.group || 4,
                 permanent = chunk.cssClass.indexOf("sp-permanent") !== -1,
                 icons = permanent ?
-                    "<i class='sp-dropdown-icon "+chunk.icon+"' data-toggle='tooltip' title='"+chunk.title+"'>" :
+                    "<i class='sp-dropdown-icon "+chunk.icon+"' data-toggle='tooltip' title='"+chunk.title+"'>":
                     "<i class='sp-menu-blank "+chunk.icon+"' data-toggle='tooltip' title='"+chunk.title+"'></i>"
                     +"<i class='sp-menu-selected hidden' data-toggle='tooltip' title='"+chunk.title+"'></i>";
+
             var $chunk = $(""
                     +"<div class='btn-group sp-dropdown "+chunk.cssClass+"'>"
                     +   "<div class='dropdown-toggle' data-toggle='dropdown'>"
                     +       icons
                     +   "</div>"
                     +   "<ul class='dropdown-menu'></ul>"
-                    +"</div>"),
-                $ul = $chunk.find("ul");
+                    +"</div>");
+
+
+            if(chunk.action) {
+                $chunk = $(""
+                    +"<div class='btn-group sp-dropdown "+chunk.cssClass+"'>"
+                    +   "<div class='dropdown-toggle sp-menu-action "+chunk.action.cssClass+"' data-toggle='dropdown' data-action='"+chunk.action.action+"'>"
+                    +       "<i class='sp-dropdown-icon " + chunk.action.icon+ "'>"
+                    +   "</div>"
+                    +   "<ul class='dropdown-menu'></ul>"
+                    +"</div>");
+            }
+            var $ul = $chunk.find("ul");
 
             chunk.items.forEach(function(menuItem, index) {
+
                 var group = Math.floor((index)/itemsInGroup);
                 var $li = $chunk.find("ul li[data-group='"+group+"']");
                 if(!$li.length) {
@@ -527,14 +560,16 @@ function ScratchPadBuilder() {
                     $li.appendTo($ul);
                 }
                 if(menuItem) {
-                    $li.append(_buildMenuButton(menuItem));
+                    var selected = (permanent && index == 0) ? true : false;
+                    $li.append(_buildMenuButton(menuItem, selected));
                 }
             });
             return $chunk;
         },
-        _buildMenuButton = function(menuItem) {
+        _buildMenuButton = function(menuItem, selected) {
+            var selectedClass = selected ? "selected" : "";
             return ""
-                +"<div class='sp-menu-action "+menuItem.cssClass+"' "
+                +"<div class='sp-menu-action "+menuItem.cssClass + " " + selectedClass+"' "
                 +"data-action='"+menuItem.action+"' "
                 +"data-toggle='tooltip' "
                 +"title='"+menuItem.title+"'"
@@ -799,8 +834,9 @@ function ScratchPadDrawer() {
             })
         },
         _makeTextBox = function(instance) {
-            var textbox = new fabric.Textbox("Click to add text", {
-                fontSize: 20,
+            var textsize = instance.textsize || 18,
+                textbox = new fabric.Textbox("Click to add text", {
+                fontSize: textsize,
                 width:150
             });
             textbox.off();
@@ -1203,6 +1239,9 @@ function ScratchPadDrawer() {
             var hex = hex || "#000000";
             instance.canvas.freeDrawingBrush.color = hex;
             instance.fillColor = hex;
+        },
+        _changeTextsize = function(instance, size) {
+            instance.textsize = size;
         };
 
     var bindCanvasEvents = function(instance, menuItems) {
@@ -1245,6 +1284,7 @@ function ScratchPadDrawer() {
         },
         changeDrawConfig = function(instance, menuItem) {
             if(menuItem.cssClass.indexOf("sp-color") !== -1) _changeColor(instance, menuItem.hex);
+            if(menuItem.cssClass.indexOf("sp-textsize") !== -1) _changeTextsize(instance, menuItem.size);
         },
         loadImage = function(instance, imageUrl, imageAltUrl) {
             _loadImage(instance, imageUrl, imageAltUrl);

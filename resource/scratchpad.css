@@ -276,7 +276,7 @@
 	border-radius: 2px;
 }
 
-.sp-menu-color .sp-color.selected {
+.sp-permanent .selected {
 	box-shadow: none;
 	background-color: darkgray;
 	border-radius: 2px;

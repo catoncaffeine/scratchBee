@@ -695,12 +695,16 @@ function ScratchPadBuilder() {
         },
         _importResource = function() {
             var $jsFile = $("script[src*='scratchPad.js']");
+			
             if($jsFile.length) {
-                var jsPath = $jsFile.attr("src").toString(), cssPath, cssFile;
-
+				
+                var jsPath = $jsFile.attr("src").toString(), cssPath, cssFile, cssName = "scratchpad.css";
+				if(jsPath.indexOf("?")!== -1){
+					cssName += jsPath.substr(jsPath.indexOf("?"));
+				}
                 resourceBasePath = jsPath.substr(0, jsPath.indexOf("js/main/scratchPad.js")) + "resource/";
 
-                cssPath = resourceBasePath + "scratchpad.css";
+                cssPath = resourceBasePath + cssName;
                 cssFile = document.createElement("link");
                 cssFile.setAttribute("rel", "stylesheet");
                 cssFile.setAttribute("href", cssPath);

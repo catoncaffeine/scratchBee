@@ -75,7 +75,7 @@ function ScratchPadBuilder() {
             },
             pencilSize2px:{
                 action: "pencilSize2px",
-                cssClass: 'sp-draw sp-pencil-size',
+                cssClass: 'sp-pencil-size',
                 icon: 'sp-icon sp-pencilSize2px',
                 title: '2px',
                 menuActionType: 3,
@@ -84,7 +84,7 @@ function ScratchPadBuilder() {
             },
             pencilSize5px:{
                 action: "pencilSize5px",
-                cssClass: 'sp-draw sp-pencil-size',
+                cssClass: 'sp-pencil-size',
                 icon: 'sp-icon sp-pencilSize5px',
                 title: '5px',
                 menuActionType: 3,
@@ -93,7 +93,7 @@ function ScratchPadBuilder() {
             },
             pencilSize10px:{
                 action: "pencilSize10px",
-                cssClass: 'sp-draw sp-pencil-size',
+                cssClass: 'sp-pencil-size',
                 icon: 'sp-icon sp-pencilSize10px',
                 title: '10px',
                 menuActionType: 3,
@@ -102,7 +102,7 @@ function ScratchPadBuilder() {
             },
             pencilSize20px:{
                 action: "pencilSize20px",
-                cssClass: 'sp-draw sp-pencil-size',
+                cssClass: 'sp-pencil-size',
                 icon: 'sp-icon sp-pencilSize20px',
                 title: '20px',
                 menuActionType: 3,
@@ -111,7 +111,7 @@ function ScratchPadBuilder() {
             },
             pencilSize50px:{
                 action: "pencilSize50px",
-                cssClass: 'sp-draw sp-pencil-size',
+                cssClass: 'sp-pencil-size',
                 icon: 'sp-icon sp-pencilSize50px',
                 title: '50px',
                 menuActionType: 3,

@@ -948,6 +948,7 @@ function ScratchPadDrawer() {
                 left = pointer.x;
             }
             $textarea[0].value = activeTextArea.getText();
+            $textarea[0].setAttribute("textsize", activeTextArea.getFontSize());
             $textarea.css({left: left, top: top}).show(function () {
                 $textarea.focus();
             });

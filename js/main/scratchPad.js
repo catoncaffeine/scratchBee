@@ -79,7 +79,6 @@ function ScratchPadBuilder() {
                 icon: 'sp-icon sp-pencilSize2px',
                 title: '2px',
                 menuActionType: 3,
-                group: 0,
                 size:2
             },
             pencilSize5px:{
@@ -88,7 +87,6 @@ function ScratchPadBuilder() {
                 icon: 'sp-icon sp-pencilSize5px',
                 title: '5px',
                 menuActionType: 3,
-                group: 0,
                 size:5
             },
             pencilSize10px:{
@@ -97,7 +95,6 @@ function ScratchPadBuilder() {
                 icon: 'sp-icon sp-pencilSize10px',
                 title: '10px',
                 menuActionType: 3,
-                group: 0,
                 size:10
             },
             pencilSize20px:{
@@ -106,7 +103,6 @@ function ScratchPadBuilder() {
                 icon: 'sp-icon sp-pencilSize20px',
                 title: '20px',
                 menuActionType: 3,
-                group: 0,
                 size:20
             },
             pencilSize50px:{
@@ -115,7 +111,6 @@ function ScratchPadBuilder() {
                 icon: 'sp-icon sp-pencilSize50px',
                 title: '50px',
                 menuActionType: 3,
-                group: 0,
                 size:50
             },
             trash: {
@@ -458,7 +453,7 @@ function ScratchPadBuilder() {
                 ],
                 type: "dropdown",
                 title: "Shapes",
-                icon: "shapes-icon"
+                icon: "sp-icon shapes-icon"
             }
         },
 
@@ -903,7 +898,8 @@ function ScratchPadDrawer() {
             var textsize = instance.textsize || 12,
                 textbox = new fabric.Textbox("Click to add text", {
                 fontSize: textsize,
-                width:150
+                width:150,
+                fontFamily: "sans-serif"
             });
             textbox.off();
             textbox.on("mousedown",function(e) {

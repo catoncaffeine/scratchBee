@@ -104,12 +104,13 @@
 	display: inline-block;
 }
 
-.sp-menu .sp-shape:hover, .sp-menu .sp-line:hover{
+.sp-menu .sp-shape:hover, .sp-menu .sp-line:hover, .sp-menu .sp-textsize:hover, .sp-menu .sp-pencil-size:hover{
 	border-left: 1px solid lightgray;
 	border-left: 1px solid lightgray;
 	border-radius: 2px;
 	box-shadow: 1px 1px 1px;
 }
+
 .sp-wrapper .active{
 	background-color: darkgray;
 	border-radius: 2px;
@@ -220,7 +221,13 @@
 	background-size: 18px;
 	width: 18px;
 	height: 18px;
+	vertical-align: middle;
 }
+
+.sp-line .sp-icon, .sp-shape .sp-icon {
+	vertical-align: initial;
+}
+
 .sp-eq-triangle {
 	width: 0;
 	height: 0;
@@ -359,6 +366,13 @@
 .sp-menu-text .sp-textsize i {
 	width: auto;
 	height: auto;
+}
+.sp-menu-text .sp-menu-selected {
+	display: none;
+}
+
+.sp-menu-text .sp-textsize i, .sp-textarea[textsize] {
+	font-family: sans-serif;
 }
 
 .sp-menu-text .sp-text12 i, .sp-textarea[textsize='12'] {

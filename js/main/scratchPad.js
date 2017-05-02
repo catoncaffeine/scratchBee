@@ -227,11 +227,11 @@ function ScratchPadBuilder() {
                 title:'Right Angled Triangle',
                 menuActionType: 1
             },
-            scelene_triangle: {
-                action: "scelene_triangle",
+            scalene_triangle: {
+                action: "scalene_triangle",
                 cssClass: 'sp-draw sp-shape',
-                icon: 'sp-icon sp-scelene',
-                title: 'Scelene Triangle',
+                icon: 'sp-icon sp-scalene',
+                title: 'Scalene Triangle',
                 menuActionType: 1
             },
             square:{
@@ -452,7 +452,7 @@ function ScratchPadBuilder() {
                 cssClass: "sp-menu-shapes",
                 items:[
                     menuItems.line, menuItems.ray, menuItems.doubleray, "",
-                    menuItems.circle, menuItems.eq_triangle, menuItems.right_triangle, menuItems.scelene_triangle,
+                    menuItems.circle, menuItems.eq_triangle, menuItems.right_triangle, menuItems.scalene_triangle,
                     menuItems.square, menuItems.parallelogram, menuItems.eq_trapezoid, menuItems.trapezoid,
                     menuItems.pentagon, menuItems.hexagon, menuItems.octagon, menuItems.decagon
                 ],
@@ -1041,7 +1041,7 @@ function ScratchPadDrawer() {
             switch (shape) {
                 case "right_triangle":
                     return new fabric.Polygon([{x:0,y:0}, {x:0, y:100},{x:100, y:100}]);
-                case "scelene_triangle":
+                case "scalene_triangle":
                     return new fabric.Polygon([{x:100,y:100},{x:200,y:35},{x:160,y:100}]);
                 case 'parallelogram':
                     return new fabric.Rect({width:100, height:50,skewX:320});

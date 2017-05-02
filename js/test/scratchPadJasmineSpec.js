@@ -272,6 +272,11 @@ describe("Editable Scratch Pad - ", function(){
         beforeEach(function(){
             instance = ScratchPad.init("#test",{menu:["text"]});
         });
+        it("sets 2px as default when menu loads", function(){
+            var $dropdown = $("#test .sp-menu-pencil");
+            expect($dropdown.find(".sp-pencil-size[data-action='pencilSize2px'].selected").length).toBe(1);
+            expect($dropdown.find(".sp-dropdown-icon").attr("current-selected")).toBe("pencilSize2px");
+        });
         it('test 2px pencil', function(){
             $(instance.wrapper).find('[data-action="pencilSize2px"]').click();
             expect(instance.canvas.freeDrawingBrush.width).toBe(2);
@@ -346,11 +351,16 @@ describe("Editable Scratch Pad - ", function(){
                 expect($li1.find(".sp-textsize.sp-text16[data-action='text16']").length).toBe(1);
                 expect($li1.find(".sp-textsize.sp-text24[data-action='text24']").length).toBe(1);
                 expect($li1.find(".sp-textsize.sp-text30[data-action='text30']").length).toBe(1);
+
+                expect($li1.find(".sp-textsize.sp-text12[data-action='text12'].selected").length).toBe(1);
+                expect($dropdown.find(".sp-menu-selected").text()).toBe("12");
+                expect($dropdown.find(".sp-dropdown-icon").attr("current-selected")).toBe("text12");
             });
         });
         describe("Text Size Change", function(){
             it("draws textbox without having to select a text size", function(){
                 expect(instance.textsize).toBe(12);
+                expect($(instance.wrapper).find("textarea").attr("textsize")).toBe("12");
                 $("#test [data-action='text']").click();
                 instance.canvas.trigger("mouse:down");
                 var textbox1 = instance.canvas.getObjects()[0];
@@ -359,6 +369,7 @@ describe("Editable Scratch Pad - ", function(){
             });
             it("changes text size for future textbox when a size is selected", function() {
                 expect(instance.textsize).toBe(12);
+                expect($(instance.wrapper).find("textarea").attr("textsize")).toBe("12");
                 $("#test [data-action='text']").click();
                 expect(instance.currentTool).toBe('text');
                 $("#test [data-action='text24']").click();
@@ -366,6 +377,7 @@ describe("Editable Scratch Pad - ", function(){
                 expect(instance.currentTool).toBe('text');
                 expect($("#test .sp-menu-text .sp-dropdown-icon").attr("current-selected")).toBe("text24");
                 expect($("#test .sp-menu-text .sp-menu-selected").text()).toBe("24");
+                expect($(instance.wrapper).find("textarea").attr("textsize")).toBe("24");
 
                 instance.canvas.trigger("mouse:down");
 

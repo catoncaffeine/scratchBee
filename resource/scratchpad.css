@@ -129,39 +129,18 @@
 
 .sp-pencilSize2px {
 	background: url('img/2px.png') no-repeat;
-	/*background-color: black;*/
-	/*border-radius: 100px;*/
-	/*width: 2px;*/
-	/*height: 2px;*/
 }
 .sp-pencilSize5px {
 	background: url('img/5px.png') no-repeat;
-	/*align-self: center;*/
-	/*background-color: black;*/
-	/*border-radius: 100px;*/
-	/*width: 6px;*/
-	/*height: 6px;*/
 }
 .sp-pencilSize10px {
 	background: url('img/10px.png') no-repeat;
-	/*background-color: black;*/
-	/*border-radius: 100px;*/
-	/*width: 10px;*/
-	/*height: 10px;*/
 }
 .sp-pencilSize20px {
 	background: url('img/20px.png') no-repeat;
-	/*background-color: black;*/
-	/*border-radius: 100px;*/
-	/*width: 15px;*/
-	/*height: 15px;*/
 }
 .sp-pencilSize50px {
 	background: url('img/50px.png') no-repeat;
-	/*background-color: black;*/
-	/*border-radius: 100px;*/
-	/*width: 20px;*/
-	/*height: 20px;*/
 }
 .sp-pencil-size-icon {
 	background: url('img/pencil-sizes.png') no-repeat;

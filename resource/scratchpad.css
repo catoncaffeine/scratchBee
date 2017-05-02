@@ -142,9 +142,7 @@
 .sp-pencilSize50px {
 	background: url('img/50px.png') no-repeat;
 }
-.sp-pencil-size-icon {
-	background: url('img/pencil-sizes.png') no-repeat;
-}
+
 .sp-pencil-size {
 	text-align: center;
 	vertical-align: middle;
@@ -230,7 +228,7 @@
 	border-right: 7px solid transparent;
 	border-bottom: 15px solid black;
 }
-.sp-scelene {
+.sp-scalene {
 	width: 0;
 	height: 0;
 	border-left: 10px solid transparent;

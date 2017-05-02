@@ -347,29 +347,28 @@ describe("Editable Scratch Pad - ", function(){
                 expect($dropdown.find("li").length).toBe(1);
 
                 expect($li1.length).toBe(1);
-                expect($li1.find(".sp-textsize.sp-text12[data-action='text12']").length).toBe(1);
                 expect($li1.find(".sp-textsize.sp-text16[data-action='text16']").length).toBe(1);
                 expect($li1.find(".sp-textsize.sp-text24[data-action='text24']").length).toBe(1);
                 expect($li1.find(".sp-textsize.sp-text30[data-action='text30']").length).toBe(1);
 
-                expect($li1.find(".sp-textsize.sp-text12[data-action='text12'].selected").length).toBe(1);
-                expect($dropdown.find(".sp-menu-selected").text()).toBe("12");
-                expect($dropdown.find(".sp-dropdown-icon").attr("current-selected")).toBe("text12");
+                expect($li1.find(".sp-textsize.sp-text16[data-action='text16'].selected").length).toBe(1);
+                expect($dropdown.find(".sp-menu-selected").text()).toBe("16");
+                expect($dropdown.find(".sp-dropdown-icon").attr("current-selected")).toBe("text16");
             });
         });
         describe("Text Size Change", function(){
             it("draws textbox without having to select a text size", function(){
-                expect(instance.textsize).toBe(12);
-                expect($(instance.wrapper).find("textarea").attr("textsize")).toBe("12");
+                expect(instance.textsize).toBe(16);
+                expect($(instance.wrapper).find("textarea").attr("textsize")).toBe("16");
                 $("#test [data-action='text']").click();
                 instance.canvas.trigger("mouse:down");
                 var textbox1 = instance.canvas.getObjects()[0];
                 expect(textbox1).toBeDefined();
-                expect(textbox1.fontSize).toBe(12);
+                expect(textbox1.fontSize).toBe(16);
             });
             it("changes text size for future textbox when a size is selected", function() {
-                expect(instance.textsize).toBe(12);
-                expect($(instance.wrapper).find("textarea").attr("textsize")).toBe("12");
+                expect(instance.textsize).toBe(16);
+                expect($(instance.wrapper).find("textarea").attr("textsize")).toBe("16");
                 $("#test [data-action='text']").click();
                 expect(instance.currentTool).toBe('text');
                 $("#test [data-action='text24']").click();
@@ -387,9 +386,9 @@ describe("Editable Scratch Pad - ", function(){
             });
             it("does not change other drawing configurations", function(){
                 expect(instance.pencilSize).toBe(2);
-                expect(instance.textsize).toBe(12);
+                expect(instance.textsize).toBe(16);
                 expect($("#test [data-action='pencilSize2px'].selected").length).toBe(1);
-                expect($("#test [data-action='text12'].selected").length).toBe(1);
+                expect($("#test [data-action='text16'].selected").length).toBe(1);
                 expect($("#test [data-action='text24'].selected").length).toBe(0);
 
                 $("#test [data-action='text24']").click();
@@ -397,7 +396,7 @@ describe("Editable Scratch Pad - ", function(){
                 expect(instance.pencilSize).toBe(2);
                 expect(instance.textsize).toBe(24);
                 expect($("#test [data-action='pencilSize2px'].selected").length).toBe(1);
-                expect($("#test [data-action='text12'].selected").length).toBe(0);
+                expect($("#test [data-action='text16'].selected").length).toBe(0);
                 expect($("#test [data-action='text24'].selected").length).toBe(1);
             });
         });

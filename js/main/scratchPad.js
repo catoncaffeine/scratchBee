@@ -141,15 +141,6 @@ function ScratchPadBuilder() {
                 icon: "fa fa-font",
                 menuActionType: 1
             },
-            text12: {
-                action: "text12",
-                cssClass: 'sp-textsize sp-text12',
-                title:'12px',
-                icon: "fa",
-                iconText: 12,
-                size: 12,
-                menuActionType: 3
-            },
             text16: {
                 action: "text16",
                 cssClass: 'sp-textsize sp-text16',
@@ -437,10 +428,10 @@ function ScratchPadBuilder() {
             text: {
                 menuId: 3,
                 cssClass: "sp-menu-text sp-permanent",
-                items: [menuItems.text12, menuItems.text16, menuItems.text24, menuItems.text30],
+                items: [menuItems.text16, menuItems.text24, menuItems.text30],
                 type: "dropdown",
                 action: menuItems.text,
-                group: 4
+                group: 3
             },
             shapes: {
                 menuId: 4,
@@ -490,7 +481,7 @@ function ScratchPadBuilder() {
                 instance.undo = [];
                 instance.redo = [];
                 if(instance.menu.indexOf("colors") !== -1) instance.fillColor = menuItems.black.hex;
-                if(instance.menu.indexOf("text") !== -1) instance.textsize = menuItems.text12.size;
+                if(instance.menu.indexOf("text") !== -1) instance.textsize = menuItems.text16.size;
             }
 
             return instance;
@@ -895,7 +886,7 @@ function ScratchPadDrawer() {
             })
         },
         _makeTextBox = function(instance) {
-            var textsize = instance.textsize || 12,
+            var textsize = instance.textsize || 16,
                 textbox = new fabric.Textbox("Click to add text", {
                 fontSize: textsize,
                 width:150,

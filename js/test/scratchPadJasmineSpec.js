@@ -181,7 +181,7 @@ describe("Editable Scratch Pad - ", function(){
                 expect($li2.find(".sp-draw.sp-shape[data-action=circle]").length).toBe(1);
                 expect($li2.find(".sp-draw.sp-shape[data-action=eq_triangle]").length).toBe(1);
                 expect($li2.find(".sp-draw.sp-shape[data-action=right_triangle]").length).toBe(1);
-                expect($li2.find(".sp-draw.sp-shape[data-action=scelene_triangle]").length).toBe(1);
+                expect($li2.find(".sp-draw.sp-shape[data-action=scalene_triangle]").length).toBe(1);
 
                 expect($li3.length).toBe(1);
                 expect($li3.find(".sp-draw").length).toBe(4);
@@ -696,9 +696,9 @@ describe("Editable Scratch Pad - ", function(){
             expect(polygonSpy).toHaveBeenCalledWith([{x:0,y:0}, {x:0, y:100},{x:100, y:100}]);
             expect(instance.currentTool).toBe("selector");
         });
-        it('builds scelene triangle', function(){
-            $("#test [data-action='scelene_triangle']").click();
-            expect(instance.currentTool).toBe("scelene_triangle");
+        it('builds scalene triangle', function(){
+            $("#test [data-action='scalene_triangle']").click();
+            expect(instance.currentTool).toBe("scalene_triangle");
             instance.canvas.trigger('mouse:down');
 
             expect(circleSpy).not.toHaveBeenCalled();

@@ -227,11 +227,11 @@ function ScratchPadBuilder() {
                 title:'Right Angled Triangle',
                 menuActionType: 1
             },
-            scelene_triangle: {
-                action: "scelene_triangle",
+            scalene_triangle: {
+                action: "scalene_triangle",
                 cssClass: 'sp-draw sp-shape',
-                icon: 'sp-icon sp-scelene',
-                title: 'Scelene Triangle',
+                icon: 'sp-icon sp-scalene',
+                title: 'Scalene Triangle',
                 menuActionType: 1
             },
             square:{
@@ -400,7 +400,7 @@ function ScratchPadBuilder() {
             },
             pencil: {
                 menuId: 0,
-                cssClass: "sp-menu-basic sp-permanent",
+                cssClass: "sp-menu-basic sp-menu-pencil sp-permanent",
                 items:[
                     menuItems.pencilSize2px,
                     menuItems.pencilSize5px,
@@ -452,7 +452,7 @@ function ScratchPadBuilder() {
                 cssClass: "sp-menu-shapes",
                 items:[
                     menuItems.line, menuItems.ray, menuItems.doubleray, "",
-                    menuItems.circle, menuItems.eq_triangle, menuItems.right_triangle, menuItems.scelene_triangle,
+                    menuItems.circle, menuItems.eq_triangle, menuItems.right_triangle, menuItems.scalene_triangle,
                     menuItems.square, menuItems.parallelogram, menuItems.eq_trapezoid, menuItems.trapezoid,
                     menuItems.pentagon, menuItems.hexagon, menuItems.octagon, menuItems.decagon
                 ],
@@ -539,7 +539,7 @@ function ScratchPadBuilder() {
             });
 
             if (instance.menu.indexOf("text") !== -1) {
-                $(instance.wrapper).append("<textarea class='sp-textarea' style='display: none' maxlength='200'/>");
+                $(instance.wrapper).append("<textarea class='sp-textarea' style='display: none' maxlength='200' textsize='"+instance.textsize+"'/>");
             }
         },
         _buildMenuChunk = function(chunk) {
@@ -592,8 +592,7 @@ function ScratchPadBuilder() {
                     $li.appendTo($ul);
                 }
                 if(menuItem) {
-                    var selected = (permanent && index == 0) ? true : false;
-                    $li.append(_buildMenuButton(menuItem, selected));
+                    $li.append(_buildMenuButton(menuItem));
                 }
             });
             return $chunk;
@@ -607,10 +606,10 @@ function ScratchPadBuilder() {
             }
             return primaryIcon + "<i class='sp-menu-selected' data-toggle='tooltip' title='"+genericChunk.title+"'></i>";
         },
-        _buildMenuButton = function(menuItem, selected) {
-            var selectedClass = selected ? "selected" : "", iconText = menuItem.iconText || "";
+        _buildMenuButton = function(menuItem) {
+            var iconText = menuItem.iconText || "";
             return ""
-                +"<div class='sp-menu-action "+menuItem.cssClass + " " + selectedClass+"' "
+                +"<div class='sp-menu-action "+menuItem.cssClass + "' "
                 +"data-action='"+menuItem.action+"' "
                 +"data-toggle='tooltip' "
                 +"title='"+menuItem.title+"'"
@@ -752,6 +751,7 @@ function ScratchPadBuilder() {
             $(instance.wrapper).find('[data-action="'+instance.defaultAction+'"]').addClass('active');
             instance.currentTool = instance.defaultAction;
             if(instance.textsize) $(instance.wrapper).find("[data-action='text"+instance.textsize+"']").click();
+            if(instance.pencilSize) $(instance.wrapper).find("[data-action='pencilSize"+instance.pencilSize+"px']").click();
         },
         _importResource = function() {
             var $jsFile = $("script[src*='scratchPad.js']");
@@ -1045,7 +1045,7 @@ function ScratchPadDrawer() {
             switch (shape) {
                 case "right_triangle":
                     return new fabric.Polygon([{x:0,y:0}, {x:0, y:100},{x:100, y:100}]);
-                case "scelene_triangle":
+                case "scalene_triangle":
                     return new fabric.Polygon([{x:100,y:100},{x:200,y:35},{x:160,y:100}]);
                 case 'parallelogram':
                     return new fabric.Rect({width:100, height:50,skewX:320});
@@ -1308,6 +1308,7 @@ function ScratchPadDrawer() {
         },
         _changeTextsize = function(instance, size) {
             instance.textsize = size;
+            $(instance.wrapper).find(".sp-textarea").attr("textsize", size);
         },
 		_changePencilSize = function(instance, size){
 			if(!size){

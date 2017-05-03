@@ -58,6 +58,16 @@ function ScratchPadBuilder() {
     var drawer = null,
         resourceImported = false,
         resourceBasePath = "",
+
+        /* Format for menu Items
+            action : same as its key value, intended to be used as id, added to data-action attribute to the menu button
+            cssClass: class appended to the outer div of the button, can be used for both styling and events
+            title: tooltip title
+            icon: icon that goes inside the button for display, either use fa or custom image, not functional, no events
+            menuActionType: see menuActionType section
+            other attributes are specific to that particular menu item
+        * */
+
         menuItems = {
             selector: {
                 action: "selector",
@@ -719,7 +729,7 @@ function ScratchPadBuilder() {
                 drawer.hideTextArea(instance);
 
                 if(actionType == menuActionType.immediate) {
-                    drawer.takeAction(event, instance, action);
+                    drawer.takeAction(event, instance, menuItem);
                 } else if(actionType == menuActionType.permanent) {
                     if(!$(this).hasClass("selected")) {
                         _changeConfigMenu(this);
@@ -728,7 +738,7 @@ function ScratchPadBuilder() {
                 } else {
                     _toggleActiveMenu(instance, this);
                     if(actionType == menuActionType.sticky){
-                        drawer.takeAction(event, instance, action);
+                        drawer.takeAction(event, instance, menuItem);
                     }
                 }
             });
@@ -880,7 +890,7 @@ function ScratchPadDrawer() {
                     if(menuItem.cssClass.indexOf("sp-draw") !== -1) {
                         draw(e, instance, menuItem);
                     } else {
-                        takeAction(e, instance, menuItem.action);
+                        takeAction(e, instance, menuItem);
                     }
                 }
             })
@@ -1340,7 +1350,8 @@ function ScratchPadDrawer() {
                 }
             }
         },
-        takeAction = function(event, instance, action) {
+        takeAction = function(event, instance, menuItem) {
+            var action = menuItem.action;
             if(action === "trash") _trash(instance, event);
             if(action === "undo" || action === "redo") _undoOrRedo(instance, event);
         },

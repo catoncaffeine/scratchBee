@@ -50,7 +50,8 @@ var ScratchPad = { // allows the client to create, manipulate, and destroy scrat
         undo: "undo",
         text: "text",
         shapes: "shapes",
-        colors: "colors"
+        colors: "colors",
+        backgrounds: "backgrounds"
     }
 };
 
@@ -385,6 +386,37 @@ function ScratchPadBuilder() {
                 hex: "#800080",
                 icon: "fa",
                 menuActionType: 3
+            },
+            background_nobg: {
+                action: "background_nobg",
+                title: "White Background",
+                cssClass: "sp-background sp-nobg",
+                icon: "sp-icon sp-nobg-icon",
+                menuActionType: 3
+            },
+            background_line: {
+                action: "background_line",
+                title: "Line Paper",
+                cssClass: "sp-background sp-line-paper",
+                source: "resource/img/linePaper.png",
+                icon: "sp-icon sp-line-paper-icon",
+                menuActionType: 3
+            },
+            background_grid: {
+                action: "background_grid",
+                title: "Large Grid",
+                cssClass: "sp-background sp-grid",
+                source: "resource/img/grid.png",
+                icon: "sp-icon sp-grid-icon",
+                menuActionType: 3
+            },
+            background_sgrid: {
+                action: "background_sgrid",
+                title: "Small Grid",
+                cssClass: "sp-background sp-sgrid",
+                source: "resource/img/sGrid.png",
+                icon: "sp-icon sp-sgrid-icon",
+                menuActionType: 3
             }
         },
         menuChunks = {
@@ -455,6 +487,19 @@ function ScratchPadBuilder() {
                 type: "dropdown",
                 title: "Shapes",
                 icon: "sp-icon shapes-icon"
+            },
+            backgrounds: {
+                menuId: 5,
+                cssClass: "sp-menu-backgrounds sp-permanent",
+                items: [
+                    menuItems.background_nobg,
+                    menuItems.background_line,
+                    menuItems.background_sgrid,
+                    menuItems.background_grid
+                ],
+                type: "dropdown",
+                title: "Background",
+                icon: "fa fa-file-text-o"
             }
         },
 
@@ -492,6 +537,7 @@ function ScratchPadBuilder() {
                 instance.redo = [];
                 if(instance.menu.indexOf("colors") !== -1) instance.fillColor = menuItems.black.hex;
                 if(instance.menu.indexOf("text") !== -1) instance.textsize = menuItems.text16.size;
+                if(instance.menu.indexOf("backgrounds") !== -1) instance.backgrounds = {};
             }
 
             return instance;
@@ -771,10 +817,10 @@ function ScratchPadBuilder() {
 
     var build = function(wrapper, config){
             if (!resourceImported) {
-                _importResource()
+                _importResource();
             }
             if(!drawer) {
-                drawer = new ScratchPadDrawer();
+                drawer = new ScratchPadDrawer(resourceBasePath);
             }
 
             var instance = _buildInstance(wrapper, config);
@@ -823,8 +869,8 @@ function ScratchPadBuilder() {
     };
 };
 
-function ScratchPadDrawer() {
-    var _add = 1, _delete = 2, _modify = 3,
+function ScratchPadDrawer(resourceBasePath) {
+    var _add = 1, _delete = 2, _modify = 3, _resourceBasePath = resourceBasePath,
         _bindObjectEvents = function(instance){
             var mouseOut = false;
             instance.canvas.on('object:modified', function(e){
@@ -960,7 +1006,10 @@ function ScratchPadDrawer() {
                 var canvasObject = $textarea[0].canvasObject;
                 if(canvasObject) {
                     var newText = $textarea.val(), originalText = canvasObject.getText();
+                    console.log(newText);
+                    console.log(originalText);
                     if(newText !== originalText) {
+
                         canvasObject.setText($textarea.val());
                         instance.canvas.trigger("object:modified");
                     }
@@ -1082,17 +1131,42 @@ function ScratchPadDrawer() {
                 }
             };
             image.onerror = function() {
-                if(imageAltUrl && !error) { //if alt passed in it will be background//
+                if(imageAltUrl && !error) {
                     error = true;
                     image.src = imageAltUrl;
                 }
             };
         },
+        _changeBackground = function(instance, menuItem) {
+            //Hopefully get a way to test this??//
+            if(!instance.background) instance.background = {};
+            if(!menuItem.source) {
+                _setBackgroundColor(instance.canvas, null);
+                return;
+            }
+
+            if(instance.background[menuItem.action]) {
+                _setBackgroundColor(instance.canvas, instance.background[menuItem.action]);
+                return;
+            }
+
+            fabric.util.loadImage(menuItem.source, function(img) {
+                instance.background[menuItem.action] = new fabric.Pattern({
+                    source: img,
+                    repeat: "repeat"
+                });
+                _setBackgroundColor(instance.canvas, instance.background[menuItem.action]);
+            });
+        },
+        _setBackgroundColor = function(canvas, pattern) {
+            canvas.setBackgroundColor(pattern, canvas.renderAll.bind(canvas));
+        },
         _addBackgroundImage = function(instance, imageObj){
             var canvas = instance.canvas;
             canvas.setBackgroundImage(imageObj, canvas.renderAll.bind(canvas), {
                 originX: 'left',
-                originY: 'top'
+                originY: 'top',
+                crossOrigin: 'anonymous'
             });
         },
         _trash = function(instance, event){
@@ -1308,7 +1382,7 @@ function ScratchPadDrawer() {
             instance.textsize = size;
             $(instance.wrapper).find(".sp-textarea").attr("textsize", size);
         },
-		_changePencilSize = function(instance, size){
+		_changePencilSize = function(instance, size) {
 			if(!size){
 				size = menuItem.pencilSize2px.size;
 			}
@@ -1359,6 +1433,7 @@ function ScratchPadDrawer() {
             if(menuItem.cssClass.indexOf("sp-color") !== -1) _changeColor(instance, menuItem.hex);
             if(menuItem.cssClass.indexOf("sp-textsize") !== -1) _changeTextsize(instance, menuItem.size);
 			if(menuItem.cssClass.indexOf('sp-pencil-size') !== -1) _changePencilSize(instance, menuItem.size);
+            if(menuItem.action.indexOf("background") !== -1) _changeBackground(instance, menuItem);
         },
         loadImage = function(instance, imageUrl, imageAltUrl) {
             _loadImage(instance, imageUrl, imageAltUrl);

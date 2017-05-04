@@ -1,0 +1,436 @@
+.sp-wrapper {
+  display: inline-block;
+  position: relative;
+  transition: visibility 1s, opacity 0.5s;
+}
+
+.sp-toggle-btn {
+  position: absolute;
+  right: 3px;
+  top: 3px;
+  cursor: pointer;
+  padding: 3px;
+  border: 1px solid darkgray;
+  border-radius: 2px;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  transition: visibility 1s, opacity 0.5s;
+}
+
+.sp-wrapper .sp-canvas-wrapper {
+  display: inline-block;
+}
+
+.sp-hidden .sp-panel {
+  height: 30px;
+  width: 30px;
+  overflow: hidden;
+}
+.sp-wrapper .sp-panel, .sp-wrapper .sp-hide {
+  visibility: visible;
+}
+
+.sp-hidden .sp-panel, .sp-hidden .sp-hide {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.sp-wrapper .sp-show {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.sp-hidden .sp-show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.sp-toggle-btn i {
+  vertical-align: middle;
+}
+
+.sp-wrapper i {
+  display: inline-block;
+}
+.sp-wrapper .fa {
+  width: 18px;
+  height: 18px;
+  background: 18px;
+  font-size: 18px;
+}
+
+.sp-menu, .sp-title {
+  padding: 2px;
+}
+
+.sp-title {
+  font-size: medium;
+  font-weight: bold;
+  min-height: 32px;
+}
+
+.sp-title span {
+  margin: 5px;
+  vertical-align: middle;
+}
+
+.sp-menu .disabled {
+  color:lightgray;
+  cursor: default;
+}
+
+.sp-wrapper li a {
+  padding: 3px 15px;
+}
+
+.sp-menu-action, .sp-dropdown {
+  cursor: pointer;
+}
+
+.sp-menu-action, .dropdown-toggle {
+  display: inline-block;
+  padding: 5px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.sp-shape {
+  width: 25px;
+  height: 25px;
+  margin: 2px;
+  padding: 3px;
+  text-align: center;
+  display: inline-block;
+}
+
+.sp-menu .sp-shape:hover, .sp-menu .sp-line:hover, .sp-menu .sp-textsize:hover, .sp-menu .sp-pencil-size:hover{
+  border-left: 1px solid lightgray;
+  border-left: 1px solid lightgray;
+  border-radius: 2px;
+  box-shadow: 1px 1px 1px;
+}
+
+.sp-wrapper .active{
+  background-color: darkgray;
+  border-radius: 2px;
+}
+.sp-wrapper .panel-body{
+  padding: 0px;
+}
+.sp-wrapper .canvas-container{
+  width: 100%;
+  height: 100%;
+}
+.sp-menu .vertical-divider {
+  display: inline;
+  border-right:1px dotted lightgrey;
+  margin: 0px 3px;
+}
+
+.sp-pencilSize2px {
+  background: url('img/2px.png') no-repeat;
+}
+.sp-pencilSize5px {
+  background: url('img/5px.png') no-repeat;
+}
+.sp-pencilSize10px {
+  background: url('img/10px.png') no-repeat;
+}
+.sp-pencilSize20px {
+  background: url('img/20px.png') no-repeat;
+}
+.sp-pencilSize50px {
+  background: url('img/50px.png') no-repeat;
+}
+
+.sp-pencil-size {
+  text-align: center;
+  vertical-align: middle;
+}
+.sp-shape {
+  text-align: center;
+  vertical-align: middle;
+}
+.shapes-icon {
+  background: url('img/shapes.png') no-repeat;
+  background-position: center;
+  background-size: 18px;
+  height: 18px;
+  width: 18px;
+}
+
+.sp-eq-trapezoid {
+  background: url('img/trapezoid2.png') no-repeat;
+}
+.sp-trapezoid {
+  background: url('img/trapezoid1.png') no-repeat;
+}
+.sp-parallelogram {
+  background: url('img/parallelogram.png') no-repeat;
+}
+.sp-square {
+  background: url('img/square.png') no-repeat;
+}
+
+.sp-line-i {
+  background: url('img/line.png') no-repeat;
+
+}
+.sp-pentagon {
+  background: url('img/pentagon.png') no-repeat;
+}
+
+.sp-dropdown > .btn {
+  padding: 4px 4px;
+}
+
+.sp-dropdown li {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.sp-dropdown .dropdown-menu {
+  min-width: auto;
+  white-space: nowrap;
+}
+
+.sp-dropdown .dropdown-menu .divider{
+  margin: 5px 0;
+}
+
+.sp-wrapper .fa-arrow-left {
+  transform: rotate(30deg);
+}
+
+.sp-octagon {
+  background: url('img/octagon.png') no-repeat;
+
+}
+.sp-hexagon {
+  background: url('img/hexagon.png') no-repeat;
+
+}
+.sp-decagon {
+  background: url('img/decagon.png') no-repeat;
+
+}
+
+.sp-icon {
+  background-position: center;
+  background-size: 18px;
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
+
+.sp-line .sp-icon, .sp-shape .sp-icon {
+  vertical-align: initial;
+}
+
+.sp-eq-triangle {
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 15px solid black;
+}
+.sp-scalene {
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 13px solid black;
+}
+.sp-right-triangle {
+  width: 0;
+  height: 0;
+  border-right: 7px solid transparent;
+  border-bottom: 15px solid black;
+}
+
+.sp-textarea {
+  display: inline;
+  position: absolute;
+  width: initial !important;
+  height: initial !important;
+}
+
+.sp-menu-color {
+  background: -webkit-radial-gradient(circle, lightgrey, darkgrey, grey); /* Safari */
+  background: -o-radial-gradient(circle, lightgrey, darkgrey, grey); /* Opera 11.6 to 12.0 */
+  background: -moz-radial-gradient(circle, lightgrey, darkgrey, grey); /* Firefox 3.6 to 15 */
+  background: radial-gradient(circle, lightgrey, darkgrey, grey); /* Standard syntax */
+  border-radius: 2px;
+}
+
+.sp-permanent .sp-dropdown-icon,
+.sp-permanent .sp-menu-selected {
+  display: inline-block;
+}
+
+.sp-permanent .selected {
+  box-shadow: none;
+  background-color: darkgray;
+  border-radius: 2px;
+}
+
+.sp-menu-color .sp-color i {
+  box-shadow: 1px 1px 2px 1px lightgrey;
+  vertical-align: bottom;
+}
+
+.sp-menu-color .selected i {
+  box-shadow: none;
+}
+
+.sp-menu-color [current-selected='black'] {
+  color: black;
+}
+.sp-menu-color .sp-black i  {
+  background-color: black;
+}
+.sp-menu-color [current-selected='white'] {
+  color: white;
+}
+.sp-menu-color .sp-white i {
+  background-color: white;
+}
+.sp-menu-color [current-selected='red'] {
+  color: #ff0000;
+}
+.sp-menu-color .sp-red i {
+  background-color: #ff0000;
+}
+.sp-menu-color [current-selected='yellow'] {
+  color: #ffff00;
+}
+
+.sp-menu-color .sp-yellow i {
+  background-color: #ffff00;
+}
+
+.sp-menu-color [current-selected='lightblue']{
+  color: #add8e6;
+}
+
+.sp-menu-color .sp-lightblue i {
+  background-color: #add8e6;
+}
+.sp-menu-color [current-selected='darkblue'] {
+  color: #00008b;
+}
+.sp-menu-color .sp-darkblue i {
+  background-color: #00008b;
+}
+.sp-menu-color [current-selected='orange'] {
+  color: #ff8c00;
+}
+.sp-menu-color .sp-orange i {
+  background-color: #ff8c00;
+}
+.sp-menu-color [current-selected='green'] {
+  color: #008000;
+}
+.sp-menu-color .sp-green i {
+  background-color: #008000;
+}
+.sp-menu-color [current-selected='purple'] {
+  color: #800080;
+}
+.sp-menu-color .sp-purple i {
+  background-color: #800080;
+}
+.sp-menu-color [current-selected='brown'] {
+  color: #8b4513;
+}
+.sp-menu-color .sp-brown i {
+  background-color: #8b4513;
+}
+.sp-menu-color [current-selected='grey'] {
+  color: #808080;
+}
+.sp-menu-color .sp-grey i {
+  background-color: #808080;
+}
+.sp-menu-color [current-selected='pink'] {
+  color: #ff69b4;
+}
+.sp-menu-color .sp-pink i {
+  background-color: #ff69b4;
+}
+
+.sp-menu-color .sp-menu-selected {
+  display: none;
+}
+
+.sp-menu-text .sp-textsize i {
+  width: auto;
+  height: auto;
+}
+.sp-menu-text .sp-menu-selected {
+  display: none;
+}
+
+.sp-menu-text .sp-textsize i, .sp-textarea[textsize] {
+  font-family: sans-serif;
+}
+
+.sp-menu-text .sp-text16 i, .sp-textarea[textsize='16'] {
+  font-size: 16px;
+}
+
+
+.sp-menu-text .sp-text24 i, .sp-textarea[textsize='24'] {
+  font-size: 24px;
+}
+
+.sp-menu-text .sp-text30 i, .sp-textarea[textsize='30'] {
+  font-size: 30px;
+}
+
+.sp-menu-pencil .sp-dropdown-icon,
+.sp-menu-pencil .active .sp-menu-selected {
+  display: inline-block;
+}
+
+.sp-menu-pencil .active .sp-dropdown-icon,
+.sp-menu-pencil .sp-menu-selected {
+  display: none;
+}
+
+.sp-menu-backgrounds .sp-menu-icon{
+  display: inline-block;
+}
+
+.sp-menu-backgrounds .sp-dropdown-icon[current-selected],
+.sp-menu-backgrounds .sp-menu-selected.sp-nobg-icon{
+  display: none;
+}
+
+.sp-menu-backgrounds .sp-dropdown-icon[current-selected='background_nobg'] {
+  display: inline-block;
+}
+
+.sp-background .sp-icon {
+  width: 32px;
+  height: 32px;
+  box-shadow: 1px 1px 2px 1px lightgrey;
+}
+
+.sp-nobg-icon {
+  color: white;
+  background-color: white;
+}
+
+.sp-sgrid-icon {
+  background: url('img/sGridIcon.png') no-repeat;
+}
+
+.sp-grid-icon {
+  background: url('img/gridIcon.png') no-repeat;
+}
+
+.sp-line-paper-icon {
+  background: url('img/linePaperIcon.png') no-repeat;
+}

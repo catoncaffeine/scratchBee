@@ -403,24 +403,14 @@
 	display: inline-block;
 }
 
-.sp-menu-backgrounds .sp-dropdown-icon[current-selected],
-.sp-menu-backgrounds .sp-menu-selected.sp-nobg-icon{
+.sp-menu-backgrounds .sp-menu-selected{
 	display: none;
-}
-
-.sp-menu-backgrounds .sp-dropdown-icon[current-selected='background_nobg'] {
-	display: inline-block;
 }
 
 .sp-background .sp-icon {
 	width: 32px;
 	height: 32px;
 	box-shadow: 1px 1px 2px 1px lightgrey;
-}
-
-.sp-nobg-icon {
-	color: white;
-	background-color: white;
 }
 
 .sp-sgrid-icon {
@@ -431,6 +421,14 @@
 	background: url('img/gridIcon.png') no-repeat;
 }
 
-.sp-line-paper-icon {
-	background: url('img/linePaperIcon.png') no-repeat;
+/*.sp-line-paper-icon {*/
+	/*background: url('img/linePaperIcon.png') no-repeat;*/
+/*}*/
+
+.sp-ruler-paper-icon {
+	background: url('img/rulerPaperIcon.png') no-repeat;
+}
+
+.sp-alphabet-paper-icon {
+	background: url('img/alphabetPaperIcon.png') no-repeat;
 }

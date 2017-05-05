@@ -394,31 +394,66 @@ function ScratchPadBuilder() {
                 icon: "sp-icon sp-nobg-icon",
                 menuActionType: 3
             },
-            background_line: {
-                action: "background_line",
-                title: "Line Paper",
-                cssClass: "sp-background sp-line-paper",
-                source: "resource/img/linePaper.png",
-                icon: "sp-icon sp-line-paper-icon",
-                menuActionType: 3
-            },
+            // background_line: {
+            //     action: "background_line",
+            //     title: "Line Paper",
+            //     cssClass: "sp-background sp-line-paper",
+            //     source: "resource/img/linePaper.png",
+            //     icon: "sp-icon sp-line-paper-icon",
+            //     menuActionType: 0
+            // },
             background_grid: {
                 action: "background_grid",
                 title: "Large Grid",
-                cssClass: "sp-background sp-grid",
+                cssClass: "sp-background sp-grid sp-deselect",
                 source: "resource/img/grid.png",
                 icon: "sp-icon sp-grid-icon",
+                deselect: "background_nobg",
                 menuActionType: 3
             },
             background_sgrid: {
                 action: "background_sgrid",
                 title: "Small Grid",
-                cssClass: "sp-background sp-sgrid",
+                cssClass: "sp-background sp-sgrid sp-deselect",
                 source: "resource/img/sGrid.png",
                 icon: "sp-icon sp-sgrid-icon",
+                deselect: "background_nobg",
+                menuActionType: 3
+            },
+            background_ruler: {
+                action: "background_ruler",
+                title: "Lined Paper",
+                cssClass: "sp-background sp-ruler-paper sp-deselect",
+                source: "resource/img/rulerPaper.png",
+                repeat: "no-repeat",
+                icon: "sp-icon sp-ruler-paper-icon",
+                deselect: "background_nobg",
+                menuActionType: 3
+            },
+            background_alphabet: {
+                action: "background_alphabet",
+                title: "Alphabet Paper",
+                cssClass: "sp-background sp-alphabet-paper sp-deselect",
+                source: "resource/img/alphabetPaper.png",
+                icon: "sp-icon sp-alphabet-paper-icon",
+                deselect: "background_nobg",
                 menuActionType: 3
             }
         },
+        /* Format for menu Chunks
+             menuId: used to determine wither there should be a vertical divider (append one when menu id changes)
+             type: either group or dropdown (for now)
+                - group: a list of buttons that will be shown together on menu (e.g. selector + trash + pencil)
+                - dropdown: a list of buttons that hides behind a display button. The display button can be either actionable or just for display
+             action: used if the display button in the dropdown is actionable (e.g. pencil, text)
+             items: the group of actionable items that goes into that chunk (group/dropdown)
+             cssClass: the css class for the whole group
+                - sp-permanent: actionable items in this group will permanently change the config of the canvas
+                  (e.g. pencil size, color, text size)
+             title: title for tooltip to be put on the display icon
+             icon: the display button for dropdown, this icon will be displayed when nothing in this dropdown is selected
+             group: how many items goes into 1 row in the dropdown
+         * */
         menuChunks = {
             basic: {
                 menuId: 0,
@@ -492,14 +527,15 @@ function ScratchPadBuilder() {
                 menuId: 5,
                 cssClass: "sp-menu-backgrounds sp-permanent",
                 items: [
-                    menuItems.background_nobg,
-                    menuItems.background_line,
                     menuItems.background_sgrid,
-                    menuItems.background_grid
+                    menuItems.background_grid,
+                    menuItems.background_ruler,
+                    menuItems.background_alphabet
                 ],
                 type: "dropdown",
                 title: "Background",
-                icon: "fa fa-file-text-o"
+                icon: "fa fa-picture-o",
+                group: 2
             }
         },
 
@@ -702,15 +738,17 @@ function ScratchPadBuilder() {
                 clicking inside canvas will now scratch with 5px wide lines
                 but will NOT affect drawing color
         * */
-        _changeConfigMenu = function(clickedElement) {
+        _changeConfigMenu = function(clickedElement, deselect) {
             var $dropdown = $(clickedElement).closest(".sp-permanent"),
             icon = $(clickedElement).find("i"),
-            iconClass = $(icon).attr("class"),
-            iconText = $(icon).text();
-            $dropdown.find(".sp-dropdown-icon").attr("current-selected", $(clickedElement).data("action"));
+            currentSelect = deselect ?  false : $(clickedElement).data("action"),
+            iconClass = deselect ? "" : $(icon).attr("class");
+
+            $dropdown.find(".sp-dropdown-icon").attr("current-selected", currentSelect);
             $dropdown.find(".selected").removeClass("selected");
-            $(clickedElement).addClass("selected");
-            $dropdown.find(".sp-menu-selected").attr("class", "sp-menu-selected " + iconClass).text(iconText);
+            $dropdown.find(".sp-menu-selected").attr("class", "sp-menu-selected " + iconClass);
+
+            $(clickedElement).toggleClass("selected", !deselect);
         },
 
         /*
@@ -777,13 +815,18 @@ function ScratchPadBuilder() {
                 if(actionType == menuActionType.immediate) {
                     drawer.takeAction(event, instance, menuItem);
                 } else if(actionType == menuActionType.permanent) {
-                    if(!$(this).hasClass("selected")) {
-                        _changeConfigMenu(this);
-                        drawer.changeDrawConfig(instance, menuItem);
+                    var selected = $(this).hasClass("selected"),
+                        deselect = $(this).hasClass("sp-deselect"),
+                        menuItemToChangeTo;
+                    if((!selected) || deselect) {
+                        menuItemToChangeTo = selected ?  menuItems[menuItem.deselect] : menuItem;
+
+                        _changeConfigMenu(this, selected);
+                        drawer.changeDrawConfig(instance, menuItemToChangeTo);
                     }
                 } else {
                     _toggleActiveMenu(instance, this);
-                    if(actionType == menuActionType.sticky){
+                    if(actionType == menuActionType.sticky) {
                         drawer.takeAction(event, instance, menuItem);
                     }
                 }
@@ -1006,10 +1049,7 @@ function ScratchPadDrawer(resourceBasePath) {
                 var canvasObject = $textarea[0].canvasObject;
                 if(canvasObject) {
                     var newText = $textarea.val(), originalText = canvasObject.getText();
-                    console.log(newText);
-                    console.log(originalText);
                     if(newText !== originalText) {
-
                         canvasObject.setText($textarea.val());
                         instance.canvas.trigger("object:modified");
                     }
@@ -1138,25 +1178,43 @@ function ScratchPadDrawer(resourceBasePath) {
             };
         },
         _changeBackground = function(instance, menuItem) {
-            //Hopefully get a way to test this??//
-            if(!instance.background) instance.background = {};
+            // track in undo and redo//
+
+            if(!instance.backgrounds) instance.backgrounds = {};
             if(!menuItem.source) {
                 _setBackgroundColor(instance.canvas, null);
                 return;
             }
 
-            if(instance.background[menuItem.action]) {
-                _setBackgroundColor(instance.canvas, instance.background[menuItem.action]);
+            if(instance.backgrounds[menuItem.action]) {
+                _setBackgroundColor(instance.canvas, instance.backgrounds[menuItem.action]);
                 return;
             }
 
-            fabric.util.loadImage(menuItem.source, function(img) {
-                instance.background[menuItem.action] = new fabric.Pattern({
-                    source: img,
-                    repeat: "repeat"
-                });
-                _setBackgroundColor(instance.canvas, instance.background[menuItem.action]);
+            fabric.Image.fromURL(menuItem.source, function(img) {
+                instance.backgrounds[menuItem.action] = _formatBackgroundPattern(instance, menuItem.repeat, img);
+                _setBackgroundColor(instance.canvas, instance.backgrounds[menuItem.action]);
             });
+        },
+        _formatBackgroundPattern = function(instance, repeat, img) {
+            var repeat = repeat || "repeat", source;
+            if(!img) {
+                return null;
+            }
+            if(repeat === "no-repeat") {
+                var patternSourceCanvas = new fabric.StaticCanvas();
+                img.scaleToWidth(instance.dimension.width);
+                img.setTop(instance.dimension.height/2 - img.height/2);
+                patternSourceCanvas.add(img);
+                patternSourceCanvas.setDimensions({
+                    width: instance.dimension.width,
+                    height: instance.dimension.height
+                });
+                source = patternSourceCanvas.getElement();
+            } else {
+                source = img.getElement();
+            }
+            return new fabric.Pattern({source: source, repeat: repeat});
         },
         _setBackgroundColor = function(canvas, pattern) {
             canvas.setBackgroundColor(pattern, canvas.renderAll.bind(canvas));

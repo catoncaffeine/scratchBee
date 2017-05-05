@@ -340,7 +340,7 @@ describe("Editable Scratch Pad - ", function(){
             expect($textarea.hide).toHaveBeenCalled();
         });
         describe("Text Size Menu", function(){
-            it("has one row with 12, 18, 24, 30 as available text sizes", function(){
+            it("has one row with 18, 24, 30 as available text sizes", function(){
                 var $dropdown = $("#test .sp-dropdown.sp-permanent.sp-menu-text");
                 var $li1 = $dropdown.find("[data-group='0']");
                 expect($dropdown.length).toBe(1);
@@ -352,7 +352,6 @@ describe("Editable Scratch Pad - ", function(){
                 expect($li1.find(".sp-textsize.sp-text30[data-action='text30']").length).toBe(1);
 
                 expect($li1.find(".sp-textsize.sp-text16[data-action='text16'].selected").length).toBe(1);
-                expect($dropdown.find(".sp-menu-selected").text()).toBe("16");
                 expect($dropdown.find(".sp-dropdown-icon").attr("current-selected")).toBe("text16");
             });
         });
@@ -375,7 +374,6 @@ describe("Editable Scratch Pad - ", function(){
                 expect(instance.textsize).toBe(24);
                 expect(instance.currentTool).toBe('text');
                 expect($("#test .sp-menu-text .sp-dropdown-icon").attr("current-selected")).toBe("text24");
-                expect($("#test .sp-menu-text .sp-menu-selected").text()).toBe("24");
                 expect($(instance.wrapper).find("textarea").attr("textsize")).toBe("24");
 
                 instance.canvas.trigger("mouse:down");
@@ -806,6 +804,79 @@ describe("Editable Scratch Pad - ", function(){
             expect(polygonSpy).toHaveBeenCalledWith( [ { x : 160, y : 100 }, { x : 148.54, y : 135.27 }, { x : 118.54, y : 157.06 }, { x : 81.46, y : 157.06 }, { x : 51.46, y : 135.27 }, { x : 40, y : 100 }, { x : 51.46, y : 64.73 }, { x : 81.46, y : 42.94 }, { x : 118.54, y : 42.94 }, { x : 148.54, y : 64.73 }, { x : 160, y : 100 } ]);
             expect(instance.currentTool).toBe("selector");
         });
+    });
+    describe("Scratch Pad Backgrounds", function () {
+        var instance;
+        beforeEach(function(){
+            instance = ScratchPad.init("#test", {menu:[ScratchPad.menu.backgrounds]});
+        });
+        describe("Backgrounds Menu", function() {
+            it("has two groups in the dropdown and 4 backgrounds", function(){
+                var $dropdown = $("#test .sp-menu-backgrounds"),
+                    $li1 = $dropdown.find("[data-group='0']"),
+                    $li2 = $dropdown.find("[data-group='0']");
+                expect($dropdown.length).toBe(1);
+                expect($li1.length).toBe(1);
+                expect($li2.length).toBe(1);
+
+                expect($li1.find(".sp-background.sp-nobg[data-action='background_nobg']"));
+                expect($li1.find(".sp-background.sp-line-paper[data-action='background_line']"));
+                expect($li2.find(".sp-background.sp-grid[data-action='background_sgrid']"));
+                expect($li2.find(".sp-background.sp-sgrid[data-action='background_grid']"));
+            });
+        });
+       describe("Background change", function() {
+           beforeEach(function(){
+               spyOn(instance.canvas, "setBackgroundColor");
+               expect(instance.backgrounds).toEqual({});
+           });
+           it("tries to load image given the source property for the menu item and it is not cached to the instance", function () {
+               spyOn(fabric.Image, "fromURL").andCallFake(function(source, callback){
+                   var mockImage = new fabric.Image();
+                   callback(mockImage);
+                   expect(instance.backgrounds["background_sgrid"]).toBeDefined();
+                   expect(instance.backgrounds["background_sgrid"].repeat).toBe("repeat");
+                   expect(instance.canvas.setBackgroundColor.mostRecentCall.args[0]).toBe(instance.backgrounds["background_sgrid"]);
+               });
+               $("#test [data-action='background_sgrid']").click();
+           });
+           it("gets rid of background if image fails to load", function() {
+               spyOn(fabric.Image, "fromURL").andCallFake(function(source, callback){
+                   callback(null);
+                   expect(instance.backgrounds["background_sgrid"]).toBe(null);
+                   expect(instance.canvas.setBackgroundColor.mostRecentCall.args[0]).toBe(null);
+               });
+               $("#test [data-action='background_sgrid']").click();
+           });
+           it("uses the cached version of of the background if it has been loaded previously", function() {
+               instance.backgrounds["background_sgrid"] = "Hello";
+               spyOn(fabric.Image, "fromURL");
+               $("#test [data-action='background_sgrid']").click();
+               expect(fabric.Image.fromURL).not.toHaveBeenCalled();
+               expect(instance.canvas.setBackgroundColor.mostRecentCall.args[0]).toBe("Hello");
+           });
+           it("loads a non-repeat image as background", function() {
+               spyOn(fabric.Image, "fromURL").andCallFake(function(source, callback){
+                   var mockImage = new fabric.Image();
+                   callback(mockImage);
+                   expect(instance.backgrounds["background_ruler"]).toBeDefined();
+                   expect(instance.backgrounds["background_ruler"].repeat).toBe("no-repeat");
+                   expect(instance.canvas.setBackgroundColor.mostRecentCall.args[0]).toBe(instance.backgrounds["background_ruler"]);
+               });
+               $("#test [data-action='background_ruler']").click();
+           });
+           it("gets rid of background if deselected", function(){
+               spyOn(fabric.Image, "fromURL").andCallFake(function(source, callback){
+                   var mockImage = new fabric.Image();
+                   callback(mockImage);
+                   expect(instance.canvas.setBackgroundColor.mostRecentCall.args[0]).toBe(instance.backgrounds["background_sgrid"]);
+
+                   $("#test [data-action='background_sgrid']").click();
+                   expect(instance.canvas.setBackgroundColor.mostRecentCall.args[0]).toBe(null);
+               });
+               $("#test [data-action='background_sgrid']").click();
+           });
+       });
     });
 
     describe("Scratch Pad Toggleable Setup - ", function(){

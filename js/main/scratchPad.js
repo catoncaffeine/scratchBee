@@ -896,7 +896,8 @@ function ScratchPadDrawer() {
             textbox.on("mousedown",function(e) {
                 if(instance.currentTool === 'trash'){
                     var index = instance.canvas.getObjects().indexOf(this);
-                    instance.undo.push({
+
+					_pushToUndoBuffer(instance, {
                         itemIndex: index,
                         items:[this],
                         itemType: 'Object',
@@ -1085,6 +1086,11 @@ function ScratchPadDrawer() {
                 originY: 'top'
             });
         },
+		_pushToUndoBuffer = function(instance, object){
+			instance.redo=[];
+			$(instance.wrapper).find("[data-action='redo']").addClass('disabled');
+			instance.undo.push(object);	
+		},
         _trash = function(instance, event){
             if(event.target && event.target.type==='textbox'){
                 return;
@@ -1123,7 +1129,7 @@ function ScratchPadDrawer() {
             });
             if(itemNums.length>0){
 
-                instance.undo.push({
+               _pushToUndoBuffer(instance,{
                     "action" : _delete,
                     "itemIndex": itemNums,
                     "itemType":'Object',
@@ -1148,7 +1154,7 @@ function ScratchPadDrawer() {
                 var activeGroup = instance.canvas.getActiveGroup();
                 if(activeGroup){
 
-                    instance.undo.push(instance.selectedObject.pop());
+					_pushToUndoBuffer(instance, instance.selectedObject.pop());
                     if(activeGroup){
                         _captureSelectedObject(instance, activeGroup);
                     }
@@ -1159,7 +1165,8 @@ function ScratchPadDrawer() {
                         var selectedObject = instance.selectedObject.pop();
 
                         $.extend(selectedObject,{'action':action});
-                        instance.undo.push(selectedObject);
+
+						_pushToUndoBuffer(instance, selectedObject);
                         if(activeObject){
                             activeObject.saveState();
                             //track further changes while still selected (anything other than text objects).
@@ -1169,7 +1176,7 @@ function ScratchPadDrawer() {
                 }
 
             }else{
-                instance.undo.push({
+				_pushToUndoBuffer(instance, {
                     itemId: [object.id],
                     action: action,
                     itemIndex: [objects.length - 1],
@@ -1177,13 +1184,14 @@ function ScratchPadDrawer() {
                     items: [object],
                     itemProperties: $.extend({},object._stateProperties)
                 });
+
             }
         },
         _undoOrRedo = function(instance, event){
             if(instance.currentTool !== 'selector'){
                 $(instance.wrapper).find("[data-action='selector']").click();
             }
-
+			
             var buttonOn = $(event.currentTarget),
                 action = buttonOn.data("action"),
                 antiAction = action === "undo" ?  "redo" : "undo",
@@ -1341,6 +1349,7 @@ function ScratchPadDrawer() {
             }
         },
         takeAction = function(event, instance, action) {
+
             if(action === "trash") _trash(instance, event);
             if(action === "undo" || action === "redo") _undoOrRedo(instance, event);
         },

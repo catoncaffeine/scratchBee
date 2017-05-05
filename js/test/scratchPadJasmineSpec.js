@@ -465,7 +465,7 @@ describe("Editable Scratch Pad - ", function(){
     describe('Undo / Redo', function(){
         var instance;
         beforeEach(function(){
-            instance = ScratchPad.init("#test", {menu:["text","shapes"]});
+            instance = ScratchPad.init("#test", {menu:["text","shapes","undo", "backgrounds"]});
             instance.canvas.getPointer = function(obj) {return {x:2,y:3};};
         });
         it('tests trackObjectHistory with object added', function(){
@@ -577,6 +577,57 @@ describe("Editable Scratch Pad - ", function(){
             expect(instance.undo[0].itemIndex[0]).toBe(1);
             expect(instance.undo.length).toBe(10);
             expect(instance.undo[9].itemIndex[0]).toBe(10);
+        });
+        describe("Undo Redo Background Change", function () {
+            beforeEach(function(){
+                spyOn(instance.canvas, "setBackgroundImage");
+                spyOn(fabric.Image, "fromURL").andCallFake(function(source, callback){
+
+                });
+            });
+            it("tracks history for background change", function(){
+                $("#test [data-action='background_sgrid']").click();
+                expect(instance.undo.length).toBe(1);
+                expect(instance.undo[0].action).toBe(4);
+                expect(instance.undo[0].whichConfig).toBe("background");
+                expect(instance.undo[0].menuItem.action).toBe("background_nobg");
+
+                $("#test [data-action='background_grid']").click();
+                expect(instance.undo.length).toBe(2);
+                expect(instance.undo[1].action).toBe(4);
+                expect(instance.undo[1].whichConfig).toBe("background");
+                expect(instance.undo[1].menuItem.action).toBe("background_sgrid");
+            });
+            it("undos background change", function(){
+                $("#test [data-action='background_sgrid']").click();
+                $("#test [data-action='background_grid']").click();
+                expect(instance.currentBackground.action).toBe("background_grid");
+                expect(instance.undo.length).toBe(2);
+                expect(instance.redo.length).toBe(0);
+
+                $('#test [data-action="undo"]').click();
+                expect(instance.currentBackground.action).toBe("background_sgrid");
+                expect(instance.undo.length).toBe(1);
+                expect(instance.redo.length).toBe(1);
+                expect(instance.undo[0].action).toBe(4);
+                expect(instance.undo[0].whichConfig).toBe("background");
+                expect(instance.undo[0].menuItem.action).toBe("background_nobg");
+                expect(instance.redo.length).toBe(1);
+                expect(instance.redo[0].action).toBe(4);
+                expect(instance.redo[0].whichConfig).toBe("background");
+                expect(instance.redo[0].menuItem.action).toBe("background_grid");
+
+                $('#test [data-action="redo"]').click();
+                expect(instance.currentBackground.action).toBe("background_grid");
+                expect(instance.undo.length).toBe(2);
+                expect(instance.redo.length).toBe(0);
+                expect(instance.undo[0].action).toBe(4);
+                expect(instance.undo[0].whichConfig).toBe("background");
+                expect(instance.undo[0].menuItem.action).toBe("background_nobg");
+                expect(instance.undo[1].action).toBe(4);
+                expect(instance.undo[1].whichConfig).toBe("background");
+                expect(instance.undo[1].menuItem.action).toBe("background_sgrid");
+            });
         });
     });
 	describe('Reset redo buffer', function(){
@@ -910,6 +961,7 @@ describe("Editable Scratch Pad - ", function(){
                    expect(instance.canvas.setBackgroundColor.mostRecentCall.args[0]).toBe(instance.backgrounds["background_sgrid"]);
                });
                $("#test [data-action='background_sgrid']").click();
+               expect(instance.currentBackground.action).toBe("background_sgrid");
            });
            it("gets rid of background if image fails to load", function() {
                spyOn(fabric.Image, "fromURL").andCallFake(function(source, callback){
@@ -935,6 +987,7 @@ describe("Editable Scratch Pad - ", function(){
                    expect(instance.canvas.setBackgroundColor.mostRecentCall.args[0]).toBe(instance.backgrounds["background_ruler"]);
                });
                $("#test [data-action='background_ruler']").click();
+               expect(instance.currentBackground.action).toBe("background_ruler");
            });
            it("gets rid of background if deselected", function(){
                spyOn(fabric.Image, "fromURL").andCallFake(function(source, callback){
@@ -946,6 +999,7 @@ describe("Editable Scratch Pad - ", function(){
                    expect(instance.canvas.setBackgroundColor.mostRecentCall.args[0]).toBe(null);
                });
                $("#test [data-action='background_sgrid']").click();
+               expect(instance.currentBackground.action).toBe("background_nobg");
            });
        });
     });

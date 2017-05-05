@@ -390,7 +390,7 @@ function ScratchPadBuilder() {
             background_nobg: {
                 action: "background_nobg",
                 title: "White Background",
-                cssClass: "sp-background sp-nobg",
+                cssClass: "sp-background sp-nobg hidden",
                 icon: "sp-icon sp-nobg-icon",
                 menuActionType: 3
             },
@@ -527,6 +527,7 @@ function ScratchPadBuilder() {
                 menuId: 5,
                 cssClass: "sp-menu-backgrounds sp-permanent",
                 items: [
+                    menuItems.background_nobg,
                     menuItems.background_sgrid,
                     menuItems.background_grid,
                     menuItems.background_ruler,
@@ -535,7 +536,7 @@ function ScratchPadBuilder() {
                 type: "dropdown",
                 title: "Background",
                 icon: "fa fa-picture-o",
-                group: 2
+                group: 3
             }
         },
 
@@ -573,7 +574,10 @@ function ScratchPadBuilder() {
                 instance.redo = [];
                 if(instance.menu.indexOf("colors") !== -1) instance.fillColor = menuItems.black.hex;
                 if(instance.menu.indexOf("text") !== -1) instance.textsize = menuItems.text16.size;
-                if(instance.menu.indexOf("backgrounds") !== -1) instance.backgrounds = {};
+                if(instance.menu.indexOf("backgrounds") !== -1) {
+                    instance.backgrounds = {};
+                    instance.currentBackground = menuItems.background_nobg
+                };
             }
 
             return instance;
@@ -820,7 +824,14 @@ function ScratchPadBuilder() {
                         menuItemToChangeTo;
                     if((!selected) || deselect) {
                         menuItemToChangeTo = selected ?  menuItems[menuItem.deselect] : menuItem;
-
+                        if(menuItem.action.indexOf("background") !== -1) {
+                            var currentMenuItem = menuItems[$(this).closest(".sp-dropdown").find(".selected").data("action")];
+                            drawer.pushToUndoBuffer(instance, {
+                                action: 4,
+                                whichConfig: "background",
+                                menuItem: currentMenuItem || menuItems.background_nobg
+                            });
+                        }
                         _changeConfigMenu(this, selected);
                         drawer.changeDrawConfig(instance, menuItemToChangeTo);
                     }
@@ -830,6 +841,11 @@ function ScratchPadBuilder() {
                         drawer.takeAction(event, instance, menuItem);
                     }
                 }
+            });
+
+            $(instance.wrapper).on("configchange", ".sp-menu", function(event, menuItem) {
+                var menuItem = $(instance.wrapper).find("[data-action='"+menuItem.action+"']");
+                _changeConfigMenu(menuItem, menuItem.hasClass("selected"));
             });
         },
         _setupDefaultInMenu = function(instance) {
@@ -913,7 +929,8 @@ function ScratchPadBuilder() {
 };
 
 function ScratchPadDrawer(resourceBasePath) {
-    var _add = 1, _delete = 2, _modify = 3, _resourceBasePath = resourceBasePath,
+    var _add = 1, _delete = 2, _modify = 3, _config = 4,
+        _resourceBasePath = resourceBasePath,
         _bindObjectEvents = function(instance){
             var mouseOut = false;
             instance.canvas.on('object:modified', function(e){
@@ -996,7 +1013,7 @@ function ScratchPadDrawer(resourceBasePath) {
                 if(instance.currentTool === 'trash'){
                     var index = instance.canvas.getObjects().indexOf(this);
 
-					_pushToUndoBuffer(instance, {
+					pushToUndoBuffer(instance, {
                         itemIndex: index,
                         items:[this],
                         itemType: 'Object',
@@ -1182,6 +1199,7 @@ function ScratchPadDrawer(resourceBasePath) {
             // track in undo and redo//
 
             if(!instance.backgrounds) instance.backgrounds = {};
+            instance.currentBackground = menuItem;
             if(!menuItem.source) {
                 _setBackgroundColor(instance.canvas, null);
                 return;
@@ -1228,7 +1246,11 @@ function ScratchPadDrawer(resourceBasePath) {
                 crossOrigin: 'anonymous'
             });
         },
-		_pushToUndoBuffer = function(instance, object){
+		pushToUndoBuffer = function(instance, object){
+            $(instance.wrapper).find('.sp-undo').removeClass('disabled');
+            if(instance.undo.length === 10){
+                instance.undo.shift();
+            }
 			instance.redo=[];
 			$(instance.wrapper).find("[data-action='redo']").addClass('disabled');
 			instance.undo.push(object);	
@@ -1271,7 +1293,7 @@ function ScratchPadDrawer(resourceBasePath) {
             });
             if(itemNums.length>0){
 
-               _pushToUndoBuffer(instance,{
+               pushToUndoBuffer(instance,{
                     "action" : _delete,
                     "itemIndex": itemNums,
                     "itemType":'Object',
@@ -1285,10 +1307,6 @@ function ScratchPadDrawer(resourceBasePath) {
             instance.canvas.add(object);
         },
         _trackObjectHistory = function(instance, action, object){
-            $(instance.wrapper).find('.sp-undo').removeClass('disabled');
-            if(instance.undo.length === 10){
-                instance.undo.shift();
-            }
             var objects = instance.canvas.getObjects();
 
             if(action === _modify){
@@ -1296,7 +1314,7 @@ function ScratchPadDrawer(resourceBasePath) {
                 var activeGroup = instance.canvas.getActiveGroup();
                 if(activeGroup){
 
-					_pushToUndoBuffer(instance, instance.selectedObject.pop());
+					pushToUndoBuffer(instance, instance.selectedObject.pop());
                     if(activeGroup){
                         _captureSelectedObject(instance, activeGroup);
                     }
@@ -1308,7 +1326,7 @@ function ScratchPadDrawer(resourceBasePath) {
 
                         $.extend(selectedObject,{'action':action});
 
-						_pushToUndoBuffer(instance, selectedObject);
+						pushToUndoBuffer(instance, selectedObject);
                         if(activeObject){
                             activeObject.saveState();
                             //track further changes while still selected (anything other than text objects).
@@ -1318,7 +1336,7 @@ function ScratchPadDrawer(resourceBasePath) {
                 }
 
             }else{
-				_pushToUndoBuffer(instance, {
+				pushToUndoBuffer(instance, {
                     itemId: [object.id],
                     action: action,
                     itemIndex: [objects.length - 1],
@@ -1335,14 +1353,14 @@ function ScratchPadDrawer(resourceBasePath) {
             }
 			
             var buttonOn = $(event.currentTarget),
-                action = buttonOn.data("action"),
-                antiAction = action === "undo" ?  "redo" : "undo",
+                menuAction = buttonOn.data("action"),
+                antiAction = menuAction === "undo" ?  "redo" : "undo",
                 buttonOff = $(instance.wrapper).find("[data-action='"+antiAction+"']"),
-                bufferToUse = action === "undo" ? instance.undo : instance.redo,
-                bufferToPush = action === "undo" ? instance.redo : instance.undo;
+                bufferToUse = menuAction === "undo" ? instance.undo : instance.redo,
+                bufferToPush = menuAction === "undo" ? instance.redo : instance.undo;
 
             if(bufferToUse.length) {
-
+                var menuItem;
                 var itemNums = [];
                 var state = bufferToUse.pop();
                 var properties = state.itemProperties;
@@ -1386,6 +1404,11 @@ function ScratchPadDrawer(resourceBasePath) {
                         item.saveState();
                         itemNums.push(state.itemIndex[0]);
                     };
+                } else if(action === _config && state.whichConfig === "background") {
+                    menuItem = instance.currentBackground;
+                    _changeBackground(instance, state.menuItem);
+                    $(instance.wrapper).find(".sp-menu").trigger("configchange", state.menuItem);
+                    state.menuItem = menuItem;
                 }
 
                 bufferToPush.push({
@@ -1394,7 +1417,9 @@ function ScratchPadDrawer(resourceBasePath) {
                     "itemProperties": properties,
                     "itemType":itemType,
                     "items":items,
-                    "itemId":state.itemId
+                    "itemId":state.itemId,
+                    "menuItem": menuItem,
+                    "whichConfig": state.whichConfig
                 });
                 instance.canvas.renderAll();
                 instance.onUndoRedo = false;
@@ -1511,6 +1536,7 @@ function ScratchPadDrawer(resourceBasePath) {
         draw: draw,
         changeDrawConfig: changeDrawConfig,
         showTextArea: showTextArea,
-        hideTextArea: hideTextArea
+        hideTextArea: hideTextArea,
+        pushToUndoBuffer: pushToUndoBuffer
     }
 };

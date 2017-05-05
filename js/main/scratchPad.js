@@ -1070,11 +1070,12 @@ function ScratchPadDrawer(resourceBasePath) {
                 var canvasObject = $textarea[0].canvasObject;
                 if(canvasObject) {
                     var newText = $textarea.val(), originalText = canvasObject.getText();
+                    instance.canvas.setActiveObject(canvasObject);
                     if(newText !== originalText) {
                         canvasObject.setText($textarea.val());
                         instance.canvas.trigger("object:modified");
+                        instance.canvas.renderAll();
                     }
-                    instance.canvas.setActiveObject(canvasObject);
                     if(!canvasObject.getText()) _trash(instance, {});
                     $textarea[0].value = "";
                     $textarea[0].canvasObject = null;

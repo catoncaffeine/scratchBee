@@ -931,6 +931,7 @@ function ScratchPadBuilder() {
 function ScratchPadDrawer(resourceBasePath) {
     var _add = 1, _delete = 2, _modify = 3, _config = 4,
         _resourceBasePath = resourceBasePath,
+        _textPlaceholder = "Click to add text",
         _bindObjectEvents = function(instance){
             var mouseOut = false;
             instance.canvas.on('object:modified', function(e){
@@ -1003,7 +1004,7 @@ function ScratchPadDrawer(resourceBasePath) {
         },
         _makeTextBox = function(instance) {
             var textsize = instance.textsize || 16,
-                textbox = new fabric.Textbox("Click to add text", {
+                textbox = new fabric.Textbox(_textPlaceholder, {
                 fontSize: textsize,
                 width:150,
                 fontFamily: "sans-serif"
@@ -1055,8 +1056,10 @@ function ScratchPadDrawer(resourceBasePath) {
             } else {
                 left = pointer.x;
             }
+
             $textarea[0].value = activeTextArea.getText();
             $textarea[0].setAttribute("textsize", activeTextArea.getFontSize());
+            if($textarea[0].value === _textPlaceholder) $textarea[0].select();
             $textarea.css({left: left, top: top}).show(function () {
                 $textarea.focus();
             });

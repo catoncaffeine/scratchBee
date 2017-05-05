@@ -1225,14 +1225,14 @@ function ScratchPadDrawer(resourceBasePath) {
                 return null;
             }
             if(repeat === "no-repeat") {
-                var patternSourceCanvas = new fabric.StaticCanvas();
-                img.scaleToWidth(instance.dimension.width);
-                img.setTop(instance.dimension.height/2 - img.height/2);
+                var patternSourceCanvas = new fabric.StaticCanvas(), width = instance.dimension.width, height = instance.dimension.height;
+                img.scaleToWidth(width-0.5);
+                img.setTop(height/2 - img.height/2);
+                patternSourceCanvas.setWidth(width);
+                patternSourceCanvas.setHeight(height);
+                patternSourceCanvas.getElement().setAttribute("width", width);
+                patternSourceCanvas.getElement().setAttribute("height", height);
                 patternSourceCanvas.add(img);
-                patternSourceCanvas.setDimensions({
-                    width: instance.dimension.width,
-                    height: instance.dimension.height
-                });
                 source = patternSourceCanvas.getElement();
             } else {
                 source = img.getElement();

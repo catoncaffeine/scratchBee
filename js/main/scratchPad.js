@@ -1059,8 +1059,9 @@ function ScratchPadDrawer(resourceBasePath) {
 
             $textarea[0].value = activeTextArea.getText();
             $textarea[0].setAttribute("textsize", activeTextArea.getFontSize());
-            if($textarea[0].value === _textPlaceholder) $textarea[0].select();
+
             $textarea.css({left: left, top: top}).show(function () {
+                if($textarea[0].value === _textPlaceholder) $textarea[0].select();
                 $textarea.focus();
             });
         },

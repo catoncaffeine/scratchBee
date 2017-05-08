@@ -406,7 +406,7 @@ function ScratchPadBuilder() {
                 action: "background_grid",
                 title: "Large Grid",
                 cssClass: "sp-background sp-grid sp-deselect",
-                source: "resource/img/grid.png",
+                source: "grid.png",
                 icon: "sp-icon sp-grid-icon",
                 deselect: "background_nobg",
                 menuActionType: 3
@@ -415,7 +415,7 @@ function ScratchPadBuilder() {
                 action: "background_sgrid",
                 title: "Small Grid",
                 cssClass: "sp-background sp-sgrid sp-deselect",
-                source: "resource/img/sGrid.png",
+                source: "sGrid.png",
                 icon: "sp-icon sp-sgrid-icon",
                 deselect: "background_nobg",
                 menuActionType: 3
@@ -424,7 +424,7 @@ function ScratchPadBuilder() {
                 action: "background_ruler",
                 title: "Lined Paper",
                 cssClass: "sp-background sp-ruler-paper sp-deselect",
-                source: "resource/img/rulerPaper.png",
+                source: "rulerPaper.png",
                 repeat: "no-repeat",
                 icon: "sp-icon sp-ruler-paper-icon",
                 deselect: "background_nobg",
@@ -434,7 +434,7 @@ function ScratchPadBuilder() {
                 action: "background_alphabet",
                 title: "Alphabet Paper",
                 cssClass: "sp-background sp-alphabet-paper sp-deselect",
-                source: "resource/img/alphabetPaper.png",
+                source: "alphabetPaper.png",
                 icon: "sp-icon sp-alphabet-paper-icon",
                 deselect: "background_nobg",
                 menuActionType: 3
@@ -1214,7 +1214,7 @@ function ScratchPadDrawer(resourceBasePath) {
                 return;
             }
 
-            fabric.Image.fromURL(menuItem.source, function(img) {
+            fabric.Image.fromURL(_resourceBasePath + "img/" + menuItem.source, function(img) {
                 instance.backgrounds[menuItem.action] = _formatBackgroundPattern(instance, menuItem.repeat, img);
                 _setBackgroundColor(instance.canvas, instance.backgrounds[menuItem.action]);
             });

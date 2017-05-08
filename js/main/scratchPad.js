@@ -1442,12 +1442,15 @@ function ScratchPadDrawer(resourceBasePath) {
         _findAndRemove = function(ids, canvas){
             var _foundObjects = [];
             if(ids){
+				
                 canvas.getObjects().forEach(function(object){
-                    if(ids.indexOf(object.id) !== -1){
+                    if(object && ids.indexOf(object.id) !== -1){
                         _foundObjects.push(object);
-                        canvas.remove(object);
                     }
                 });
+				_foundObjects.forEach(function (object){
+					canvas.remove(object);
+				});
             }
             return _foundObjects;
         },

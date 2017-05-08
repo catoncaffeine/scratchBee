@@ -465,7 +465,7 @@ describe("Editable Scratch Pad - ", function(){
     describe('Undo / Redo', function(){
         var instance;
         beforeEach(function(){
-            instance = ScratchPad.init("#test", {menu:["text","shapes","undo", "backgrounds"]});
+            instance = ScratchPad.init("#test", {menu:["trash","text","shapes","undo", "backgrounds"]});
             instance.canvas.getPointer = function(obj) {return {x:2,y:3};};
         });
         it('tests trackObjectHistory with object added', function(){
@@ -629,79 +629,115 @@ describe("Editable Scratch Pad - ", function(){
                 expect(instance.undo[1].menuItem.action).toBe("background_sgrid");
             });
         });
+		describe('Reset redo buffer', function(){
+
+			it('3 objects added, clicked undo and added another object', function(){
+				$("#test [data-action='line']").click();
+				instance.canvas.trigger('mouse:down');
+				expect($('#test [data-action="undo"]').hasClass('disabled')).toBeFalsy();
+				$("#test [data-action='line']").click();
+				instance.canvas.trigger('mouse:down');
+				$("#test [data-action='line']").click();
+				instance.canvas.trigger('mouse:down');
+				expect(instance.canvas).toBeDefined();
+				expect(instance.undo.length).toBe(3);
+				$('#test [data-action="undo"]').click();
+				expect(instance.undo.length).toBe(2);
+				expect(instance.redo.length).toBe(1);
+				$("#test [data-action='line']").click();
+				instance.canvas.trigger('mouse:down');
+				expect(instance.undo.length).toBe(3);
+				expect(instance.redo.length).toBe(0);
+			});
+			it('3 objects added, two deleted, clicked undo, added one more.', function(){
+				$("#test [data-action='line']").click();
+				instance.canvas.trigger('mouse:down');
+				expect($('#test [data-action="undo"]').hasClass('disabled')).toBeFalsy();
+				$("#test [data-action='line']").click();
+				instance.canvas.trigger('mouse:down');
+				$("#test [data-action='line']").click();
+				instance.canvas.trigger('mouse:down');
+				expect(instance.undo.length).toBe(3);
+				instance.canvas.setActiveObject(instance.canvas.item(0));
+				$('#test [data-action="trash"]').click();
+				expect(instance.canvas.getObjects().length).toBe(2)
+				expect(instance.undo.length).toBe(4);
+				instance.canvas.setActiveObject(instance.canvas.item(0));
+				$('#test [data-action="trash"]').click();
+				expect(instance.undo.length).toBe(5);
+				expect(instance.canvas.getObjects().length).toBe(1);
+				$('#test [data-action="undo"]').click();
+
+				expect(instance.undo.length).toBe(4);
+				expect(instance.redo.length).toBe(1);
+				$('#test [data-action="undo"]').click();
+				expect(instance.undo.length).toBe(3);
+				expect(instance.redo.length).toBe(2);
+				expect(instance.canvas.getObjects().length).toBe(3);
+				$("#test [data-action='line']").click();
+				instance.canvas.trigger('mouse:down');
+				expect(instance.undo.length).toBe(4);
+				expect(instance.redo.length).toBe(0);
+			});
+			it('2 object added, undo, modified one', function(){
+				$("#test [data-action='circle']").click();
+				instance.canvas.trigger('mouse:down');
+				expect($('#test [data-action="undo"]').hasClass('disabled')).toBeFalsy();
+				$("#test [data-action='line']").click();
+				instance.canvas.trigger('mouse:down');
+				expect(instance.undo.length).toBe(2);
+				$('#test [data-action="undo"]').click();
+				expect(instance.undo.length).toBe(1);
+				expect(instance.redo.length).toBe(1);
+				instance.selectedObject=[{'itemType':'Group','action':'3','itemProperties':''}];
+				instance.canvas.trigger('object:modified');
+				expect(instance.undo.length).toBe(2);
+				expect(instance.redo.length).toBe(0);
+				expect($("#test [data-action='redo']").hasClass('disabled')).toBeTruthy();
+
+			});
+		});
+		describe('tests undo redo button', function(){
+			it('place three lines, group them and walkthrough undo, then redo', function(){
+				$("#test [data-action='line']").click();
+				instance.canvas.trigger('mouse:down');
+				instance.currentTool='line';
+				instance.canvas.trigger('mouse:down');
+				instance.currentTool='line';
+				instance.canvas.trigger('mouse:down');
+				var obj1 = instance.canvas.item(0);
+				var obj2 = instance.canvas.item(1);
+				var obj3 = instance.canvas.item(2);
+				var group = new fabric.Group();
+				group.addWithUpdate(obj1);
+				group.addWithUpdate(obj2);
+				group.addWithUpdate(obj3);
+            	instance.canvas.setActiveGroup(group);
+				$('#test [data-action="trash"]').click();
+
+				expect(instance.canvas.getObjects().length).toBe(0);
+				expect(instance.canvas.isEmpty()).toBeTruthy();
+				$('#test [data-action="undo"]').click();
+				expect(instance.canvas.getObjects().length).toBe(3);
+				$('#test [data-action="undo"]').click();
+				expect(instance.canvas.getObjects().length).toBe(2);
+				$('#test [data-action="undo"]').click();
+				expect(instance.canvas.getObjects().length).toBe(1);
+				$('#test [data-action="undo"]').click();
+				expect(instance.canvas.getObjects().length).toBe(0);
+				expect(instance.undo.length).toBe(0);
+				$('#test [data-action="redo"]').click();
+				expect(instance.canvas.getObjects().length).toBe(1);
+				$('#test [data-action="redo"]').click();
+				expect(instance.canvas.getObjects().length).toBe(2);
+				$('#test [data-action="redo"]').click();
+				expect(instance.canvas.getObjects().length).toBe(3);
+				$('#test [data-action="redo"]').click();
+				expect(instance.canvas.getObjects().length).toBe(0);
+				expect(instance.redo.length).toBe(0);	
+			});
+		});
     });
-	describe('Reset redo buffer', function(){
-        var instance;
-        beforeEach(function(){
-            instance = ScratchPad.init("#test", {menu:["undo","text","shapes"]});
-            instance.canvas.getPointer = function(obj) {return {x:2,y:3};};
-        });
-		it('3 objects added, clicked undo and added another object', function(){
-            $("#test [data-action='line']").click();
-            instance.canvas.trigger('mouse:down');
-			expect($('#test [data-action="undo"]').hasClass('disabled')).toBeFalsy();
-			$("#test [data-action='line']").click();
-			instance.canvas.trigger('mouse:down');
-			$("#test [data-action='line']").click();
-			instance.canvas.trigger('mouse:down');
-            expect(instance.canvas).toBeDefined();
-            expect(instance.undo.length).toBe(3);
-			$('#test [data-action="undo"]').click();
-			expect(instance.undo.length).toBe(2);
-			expect(instance.redo.length).toBe(1);
-			$("#test [data-action='line']").click();
-			instance.canvas.trigger('mouse:down');
-            expect(instance.undo.length).toBe(3);
-			expect(instance.redo.length).toBe(0);
-        });
-		it('3 objects added, two deleted, clicked undo, added one more.', function(){
-			$("#test [data-action='line']").click();
-            instance.canvas.trigger('mouse:down');
-			expect($('#test [data-action="undo"]').hasClass('disabled')).toBeFalsy();
-			$("#test [data-action='line']").click();
-			instance.canvas.trigger('mouse:down');
-			$("#test [data-action='line']").click();
-			instance.canvas.trigger('mouse:down');
-			expect(instance.undo.length).toBe(3);
-			instance.canvas.setActiveObject(instance.canvas.item(0));
-			$('#test [data-action="trash"]').click();
-			expect(instance.canvas.getObjects().length).toBe(2)
-			expect(instance.undo.length).toBe(4);
-			instance.canvas.setActiveObject(instance.canvas.item(0));
-			$('#test [data-action="trash"]').click();
-			expect(instance.undo.length).toBe(5);
-			expect(instance.canvas.getObjects().length).toBe(1);
-			$('#test [data-action="undo"]').click();
-			
-			expect(instance.undo.length).toBe(4);
-			expect(instance.redo.length).toBe(1);
-			$('#test [data-action="undo"]').click();
-			expect(instance.undo.length).toBe(3);
-			expect(instance.redo.length).toBe(2);
-			expect(instance.canvas.getObjects().length).toBe(3);
-			$("#test [data-action='line']").click();
-			instance.canvas.trigger('mouse:down');
-			expect(instance.undo.length).toBe(4);
-			expect(instance.redo.length).toBe(0);
-		});
-		it('2 object added, undo, modified one', function(){
-			$("#test [data-action='circle']").click();
-            instance.canvas.trigger('mouse:down');
-			expect($('#test [data-action="undo"]').hasClass('disabled')).toBeFalsy();
-			$("#test [data-action='line']").click();
-			instance.canvas.trigger('mouse:down');
-			expect(instance.undo.length).toBe(2);
-			$('#test [data-action="undo"]').click();
-			expect(instance.undo.length).toBe(1);
-			expect(instance.redo.length).toBe(1);
-			instance.selectedObject=[{'itemType':'Group','action':'3','itemProperties':''}];
-            instance.canvas.trigger('object:modified');
-			expect(instance.undo.length).toBe(2);
-			expect(instance.redo.length).toBe(0);
-			expect($("#test [data-action='redo']").hasClass('disabled')).toBeTruthy();
-			
-		});
-	});
     describe("Change Color", function(){
         var instance;
         beforeEach(function(){

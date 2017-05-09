@@ -461,8 +461,20 @@ function ScratchPadBuilder() {
                 items: [menuItems.selector],
                 type: "group"
             },
-            pencil: {
+			trash:{
                 menuId: 0,
+                cssClass:'sp-menu-basic',
+                items:[menuItems.trash],
+                type:"group"
+            },
+            undo: {
+                menuId: 0,
+                cssClass: "sp-menu-undo",
+                items: [menuItems.undo, menuItems.redo],
+                type: "group"
+            },
+            pencil: {
+                menuId: 1,
                 cssClass: "sp-menu-basic sp-menu-pencil sp-permanent",
                 items:[
                     menuItems.pencilSize2px,
@@ -477,32 +489,7 @@ function ScratchPadBuilder() {
 				action: menuItems.pencil,
 				group:5
             },
-            trash:{
-                menuId: 0,
-                cssClass:'sp-menu-basic',
-                items:[menuItems.trash],
-                type:"group"
-            },
-            undo: {
-                menuId: 1,
-                cssClass: "sp-menu-undo",
-                items: [menuItems.undo, menuItems.redo],
-                type: "group"
-            },
-            colors: {
-                menuId: 2,
-                cssClass: "sp-menu-color sp-permanent",
-                items: [
-                    menuItems.black, menuItems.white, menuItems.darkblue, menuItems.grey,
-                    menuItems.red, menuItems.yellow, menuItems.orange, menuItems.pink,
-                    menuItems.green, menuItems.lightblue, menuItems.brown, menuItems.purple
-
-                ],
-                type: "dropdown",
-                title: "Colors",
-                icon: "fa fa-eyedropper"
-            },
-            text: {
+			text: {
                 menuId: 3,
                 cssClass: "sp-menu-text sp-permanent",
                 items: [menuItems.text16, menuItems.text24, menuItems.text30],
@@ -522,6 +509,19 @@ function ScratchPadBuilder() {
                 type: "dropdown",
                 title: "Shapes",
                 icon: "sp-icon shapes-icon"
+            },
+			colors: {
+                menuId: 2,
+                cssClass: "sp-menu-color sp-permanent",
+                items: [
+                    menuItems.black, menuItems.white, menuItems.darkblue, menuItems.grey,
+                    menuItems.red, menuItems.yellow, menuItems.orange, menuItems.pink,
+                    menuItems.green, menuItems.lightblue, menuItems.brown, menuItems.purple
+
+                ],
+                type: "dropdown",
+                title: "Colors",
+                icon: "fa fa-eyedropper"
             },
             backgrounds: {
                 menuId: 5,
@@ -604,12 +604,14 @@ function ScratchPadBuilder() {
             var $menu = $(instance.wrapper).find(".sp-menu");
             var divider = "<span class='vertical-divider'></span>";
             var menuId = 0;
-            Object.keys(menuChunks).forEach(function(key) {
-                if(menuId !== menuChunks[key].menuId){
+			var defaultMenu = getDefaultMenu();
+            Object.keys(menuChunks).forEach(function(key, index, keys) {
+		
+                if(menuId !== menuChunks[key].menuId ){
                     menuId = menuChunks[key].menuId;
                     $(divider).appendTo($menu);
                 }
-                if( menuId === 0 || instance.menu.indexOf(key) !== -1) {
+                if( defaultMenu.indexOf(key) || instance.menu.indexOf(key) !== -1) {
                     var $chunk;
                     if(menuChunks[key].type === "dropdown") {
                         $chunk = _buildMenuDropDown(menuChunks[key]);
@@ -617,7 +619,10 @@ function ScratchPadBuilder() {
                         $chunk = _buildMenuChunk(menuChunks[key]);
                     }
                     $chunk.appendTo($menu);
-                }
+					if(index === (keys.length-1)){
+						$(divider).appendTo($menu);
+					}
+				}
             });
 
             if (instance.menu.indexOf("text") !== -1) {

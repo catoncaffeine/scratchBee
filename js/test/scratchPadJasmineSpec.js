@@ -160,6 +160,20 @@ describe("Editable Scratch Pad - ", function(){
         describe("Default items", function(){
 
         });
+		describe("Menu order", function(){
+			it('tests menu order', function(){
+				var menus = $(instance.wrapper).find('.sp-menu').children().not('.vertical-divider');
+				expect(menus.length).toBe(8);
+				expect($(menus[0]).hasClass('sp-menu-basic')).toBeTruthy();
+				expect($(menus[1]).hasClass('sp-menu-basic')).toBeTruthy();
+				expect($(menus[2]).hasClass('sp-menu-undo')).toBeTruthy();
+				expect($(menus[3]).hasClass('sp-menu-pencil')).toBeTruthy();
+				expect($(menus[4]).hasClass('sp-menu-text')).toBeTruthy();
+				expect($(menus[5]).hasClass('sp-menu-shapes')).toBeTruthy();
+				expect($(menus[6]).hasClass('sp-menu-color')).toBeTruthy();
+				expect($(menus[7]).hasClass('sp-menu-backgrounds')).toBeTruthy();
+			});
+		});
         describe("Shapes Menu", function(){
             it("has 4 rows of shapes", function(){
                 var $shapesmenu = $(instance.wrapper).find(".sp-dropdown.sp-menu-shapes"),

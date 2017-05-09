@@ -461,17 +461,17 @@ function ScratchPadBuilder() {
                 items: [menuItems.selector],
                 type: "group"
             },
-			trash:{
-                menuId: 0,
-                cssClass:'sp-menu-basic',
-                items:[menuItems.trash],
-                type:"group"
-            },
             undo: {
                 menuId: 0,
                 cssClass: "sp-menu-undo",
                 items: [menuItems.undo, menuItems.redo],
                 type: "group"
+            },
+			trash:{
+                menuId: 0,
+                cssClass:'sp-menu-basic',
+                items:[menuItems.trash],
+                type:"group"
             },
             pencil: {
                 menuId: 1,

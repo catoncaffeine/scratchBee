@@ -165,8 +165,8 @@ describe("Editable Scratch Pad - ", function(){
 				var menus = $(instance.wrapper).find('.sp-menu').children().not('.vertical-divider');
 				expect(menus.length).toBe(8);
 				expect($(menus[0]).hasClass('sp-menu-basic')).toBeTruthy();
-				expect($(menus[1]).hasClass('sp-menu-basic')).toBeTruthy();
-				expect($(menus[2]).hasClass('sp-menu-undo')).toBeTruthy();
+				expect($(menus[1]).hasClass('sp-menu-undo')).toBeTruthy();
+				expect($(menus[2]).hasClass('sp-menu-basic')).toBeTruthy();
 				expect($(menus[3]).hasClass('sp-menu-pencil')).toBeTruthy();
 				expect($(menus[4]).hasClass('sp-menu-text')).toBeTruthy();
 				expect($(menus[5]).hasClass('sp-menu-shapes')).toBeTruthy();

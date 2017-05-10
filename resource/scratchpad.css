@@ -93,6 +93,7 @@
 	padding: 5px;
 	text-align: center;
 	vertical-align: middle;
+	margin: 1px;
 }
 
 .sp-shape {
@@ -450,7 +451,6 @@
 
 	.sp-wrapper.sp-readonly:not(.sp-hidden) {
 		touch-action: auto;
-		overflow: scroll;
 	}
 
 	.sp-title {

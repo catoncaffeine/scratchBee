@@ -104,7 +104,11 @@
 	display: inline-block;
 }
 
-.sp-menu .sp-shape:hover, .sp-menu .sp-line:hover, .sp-menu .sp-textsize:hover, .sp-menu .sp-pencil-size:hover{
+.sp-menu .sp-shape:hover,
+.sp-menu .sp-line:hover,
+.sp-menu .sp-textsize:hover,
+.sp-menu .sp-color:hover,
+.sp-menu .sp-pencil-size:hover{
 	border-left: 1px solid lightgray;
 	border-left: 1px solid lightgray;
 	border-radius: 2px;
@@ -229,24 +233,13 @@
 }
 
 .sp-eq-triangle {
-	width: 0;
-	height: 0;
-	border-left: 7px solid transparent;
-	border-right: 7px solid transparent;
-	border-bottom: 15px solid black;
+	background: url('img/triangle.png') no-repeat;
 }
 .sp-scalene {
-	width: 0;
-	height: 0;
-	border-left: 10px solid transparent;
-	border-right: 4px solid transparent;
-	border-bottom: 13px solid black;
+	background: url('img/scalene-triangle.png') no-repeat;
 }
 .sp-right-triangle {
-	width: 0;
-	height: 0;
-	border-right: 7px solid transparent;
-	border-bottom: 15px solid black;
+	background: url('img/right-triangle.png') no-repeat;
 }
 
 .sp-textarea {
@@ -422,7 +415,7 @@
 }
 
 /*.sp-line-paper-icon {*/
-	/*background: url('img/linePaperIcon.png') no-repeat;*/
+/*background: url('img/linePaperIcon.png') no-repeat;*/
 /*}*/
 
 .sp-ruler-paper-icon {
@@ -431,4 +424,72 @@
 
 .sp-alphabet-paper-icon {
 	background: url('img/alphabetPaperIcon.png') no-repeat;
+}
+
+@media (max-width: 768px) {
+	.sp-wrapper.sp-hidden {
+		z-index: 0;
+	}
+
+	.sp-hide {
+		font-size: 100px;
+	}
+
+	.sp-wrapper:not(.sp-hidden) {
+		touch-action: none;
+		background-color: black;
+		position: fixed;
+		top: 0;
+		left: 0;
+		background-color: rgba(0, 0, 0, 0.7);
+		width: 100%;
+		height: 100%;
+		z-index: 1;
+	}
+
+	.sp-panel {
+		border: none;
+	}
+
+	.sp-wrapper.sp-readonly:not(.sp-hidden) {
+		touch-action: auto;
+		overflow: scroll;
+	}
+
+	.sp-wrapper.sp-menu {
+		width: 100%;
+	}
+
+	.sp-panel {
+		border-radius: 0;
+		border: none;
+	}
+
+	.sp-menu {
+		border-radius: 0;
+		padding-right: 40px;
+	}
+
+	.sp-wrapper .sp-icon, .sp-wrapper .fa {
+		background-size: 22px;
+		width: 22px;
+		height: 22px;
+		font-size: 22px;
+	}
+
+	.sp-shape {
+		width: 30px;
+		height: 30px;
+	}
+
+	.sp-wrapper .sp-canvas-wrapper {
+		background-color: rgba(0, 0, 0, 0.7);
+		padding: 5px;
+		display: block;
+	}
+
+	.sp-wrapper .canvas-container {
+		margin: auto;
+		background-color: white;
+	}
 }

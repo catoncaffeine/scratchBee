@@ -57,6 +57,7 @@ var ScratchPad = { // allows the client to create, manipulate, and destroy scrat
 
 function ScratchPadBuilder() {
     var drawer = null,
+        isSmallScreen = false,
         resourceImported = false,
         resourceBasePath = "",
 
@@ -559,11 +560,23 @@ function ScratchPadBuilder() {
             var identifier = new Date().getTime();
             var instance = {id: "sp_" + identifier};
             var config = config || {};
+            var wrapperClass = "sp-wrapper";
             instance.domElement = $(wrapper)[0];
             instance.readonly = !!config.readonly;
             instance.dimension = config.dimension || getDefaultDimension();
-            instance.toggleable = !!config.toggleable;
-            instance.wrapper = $("<div class='sp-wrapper' data-sp-id='"+instance.id+"'></div>")[0];
+
+            if(isSmallScreen) {
+                instance.toggleable = true;
+                instance.collapsed = true;
+                wrapperClass = wrapperClass + " sp-hidden";
+            } else {
+                instance.toggleable = !!config.toggleable;
+                instance.collapsed = !!config.collapsed;
+            }
+
+            if(instance.readonly) wrapperClass = wrapperClass + " sp-readonly";
+
+            instance.wrapper = $("<div class='"+wrapperClass+"' data-sp-id='"+instance.id+"'></div>")[0];
             $(instance.wrapper).append("<div class='sp-panel panel panel-default'></div>");
 
             if(!instance.readonly) {
@@ -577,7 +590,7 @@ function ScratchPadBuilder() {
                 if(instance.menu.indexOf("backgrounds") !== -1) {
                     instance.backgrounds = {};
                     instance.currentBackground = menuItems.background_nobg
-                };
+                }
             }
 
             return instance;
@@ -604,9 +617,9 @@ function ScratchPadBuilder() {
             var $menu = $(instance.wrapper).find(".sp-menu");
             var divider = "<span class='vertical-divider'></span>";
             var menuId = 0;
-			var defaultMenu = getDefaultMenu();
+            var defaultMenu = getDefaultMenu();
             Object.keys(menuChunks).forEach(function(key, index, keys) {
-		
+
                 if(menuId !== menuChunks[key].menuId ){
                     menuId = menuChunks[key].menuId;
                     $(divider).appendTo($menu);
@@ -619,10 +632,7 @@ function ScratchPadBuilder() {
                         $chunk = _buildMenuChunk(menuChunks[key]);
                     }
                     $chunk.appendTo($menu);
-					if(index === (keys.length-1)){
-						$(divider).appendTo($menu);
-					}
-				}
+                }
             });
 
             if (instance.menu.indexOf("text") !== -1) {
@@ -721,7 +731,7 @@ function ScratchPadBuilder() {
                 isDrawingMode: true,
                 stateful: true,
                 enableRetinaScaling: false,
-                allowTouchScrolling: true
+                allowTouchScrolling: false
             };
             instance.canvas = new fabric.Canvas(instance.id, canvasInitOptions);
             instance.canvas.freeDrawingBrush = new fabric.PencilBrush(instance.canvas);
@@ -797,7 +807,7 @@ function ScratchPadBuilder() {
         _changeCurrentTool = function(instance, action) {
             instance.currentTool = action;
             if(action.indexOf("pencil") !== -1){
-                instance.currentTool = 'pencil'
+                instance.currentTool = 'pencil';
                 instance.canvas.isDrawingMode = true;
             } else {
                 instance.canvas.isDrawingMode = false;
@@ -805,12 +815,15 @@ function ScratchPadBuilder() {
         },
         _bindToggleEvents = function(instance) {
             $(instance.wrapper).on("click", ".sp-toggle-btn", function(){
-                var $wrapper = $(instance.wrapper),
-                    width = instance.dimension.width,
-                    left = $wrapper.hasClass("sp-hidden") ? "auto": (width-28) + "px";
-
-                $(instance.wrapper).toggleClass("sp-hidden");
-                $(instance.wrapper).css({left: left});
+                var $wrapper = $(instance.wrapper);
+                if(!isSmallScreen) {
+                    var width = instance.dimension.width,
+                        left = $wrapper.hasClass("sp-hidden") ? "auto": (width-28) + "px";
+                    $(instance.wrapper).toggleClass("sp-hidden");
+                    $(instance.wrapper).css({left: left});
+                } else {
+                    $wrapper.toggleClass("sp-hidden");
+                }
             });
         },
         _bindMenuEvents = function(instance, drawer) {
@@ -880,6 +893,21 @@ function ScratchPadBuilder() {
         };
 
     var build = function(wrapper, config){
+            // if(window.innerWidth < 480 && !config.readonly) {
+            //
+            //     //WYSIWYG FOR EDITABLE//
+            //
+            //     return;
+            // }
+
+            if(window.innerWidth <= 768) { //bootstrap xs
+                isSmallScreen = true;
+
+                if((config.dimension && config.dimension.width > window.width)) {
+                    return;
+                }
+            }
+
             if (!resourceImported) {
                 _importResource();
             }
@@ -920,6 +948,9 @@ function ScratchPadBuilder() {
             return [menuItems.selector, menuItems.pencil, menuItems.trash];
         },
         getDefaultDimension = function() {
+            if(isSmallScreen) {
+                return {width: window.innerWidth - 50, height: window.innerHeight*0.8};
+            }
             return {width: 500, height: 500};
         },
         getDefaultAction = function() {

@@ -451,6 +451,7 @@
 
 	.sp-wrapper.sp-readonly:not(.sp-hidden) {
 		touch-action: auto;
+		overflow: scroll;
 	}
 
 	.sp-title {
@@ -488,12 +489,14 @@
 	}
 
 	.sp-wrapper.sp-readonly .sp-canvas-wrapper {
-		background-color: transparent;
 		overflow: scroll;
 	}
 
 	.sp-wrapper .canvas-container {
+		touch-action: none;
+		height: 100%;
 		margin: auto;
 		background-color: white;
+		overflow: hidden;
 	}
 }

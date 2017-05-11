@@ -561,9 +561,10 @@ function ScratchPadBuilder() {
             var instance = {id: "sp_" + identifier};
             var config = config || {};
             var wrapperClass = "sp-wrapper";
+            var defaultDimension  = getDefaultDimension();
             instance.domElement = $(wrapper)[0];
             instance.readonly = !!config.readonly;
-            instance.dimension = config.dimension || getDefaultDimension();
+            instance.dimension = config.dimension || defaultDimension;
 
             if(isSmallScreen) {
                 instance.toggleable = true;
@@ -580,6 +581,9 @@ function ScratchPadBuilder() {
             $(instance.wrapper).append("<div class='sp-panel panel panel-default'></div>");
 
             if(!instance.readonly) {
+
+                if(isSmallScreen) _wysiwyg(instance, defaultDimension.width, defaultDimension.height);
+
                 instance.menu = config.menu || getDefaultMenu();
                 instance.defaultAction = config.defaultAction || getDefaultAction();
                 instance.pencilSize = menuItems.pencilSize2px.size;
@@ -594,6 +598,14 @@ function ScratchPadBuilder() {
             }
 
             return instance;
+        },
+        _wysiwyg = function(instance, maxWidth, maxHeight) {
+            if(maxWidth  < instance.dimension.width) {
+                instance.dimension.width = maxWidth;
+            }
+            if(maxHeight < instance.dimension.height) {
+                instance.dimension.height = maxHeight;
+            }
         },
         _buildToggleButton = function(instance) {
             $(instance.wrapper).append(""
@@ -865,6 +877,18 @@ function ScratchPadBuilder() {
                 var menuItem = $(instance.wrapper).find("[data-action='"+menuItem.action+"']");
                 _changeConfigMenu(menuItem, menuItem.hasClass("selected"));
             });
+
+            if(isSmallScreen) { // fixing bootstrap dropdown out of screen issue
+                $(instance.wrapper).on("click", ".sp-dropdown:not(.positioned)", function(){
+                    var $ul = $(this).find("ul"),
+                        left = $(this).offset().left,
+                        width = $ul.width();
+                    if((left+width) > $(window).width()) {
+                        $ul.addClass("dropdown-menu-right");
+                    }
+                    $(this).addClass("positioned");
+                });
+            }
         },
         _setupDefaultInMenu = function(instance) {
             $(instance.wrapper).find('[data-action="'+instance.defaultAction+'"]').addClass('active');
@@ -893,19 +917,12 @@ function ScratchPadBuilder() {
         };
 
     var build = function(wrapper, config){
-            // if(window.innerWidth < 480 && !config.readonly) {
-            //
-            //     //WYSIWYG FOR EDITABLE//
-            //
-            //     return;
-            // }
+            var deviceWidth = window.innerWidth || screen.width;
 
-            if(window.innerWidth <= 768) { //bootstrap xs
+            if(deviceWidth <= 768) {
                 isSmallScreen = true;
-
-                if((config.dimension && config.dimension.width > window.width)) {
-                    return;
-                }
+            } else if(deviceWidth < 320 ) {
+                return; //below iPhone 4.. too small to support
             }
 
             if (!resourceImported) {
@@ -949,7 +966,9 @@ function ScratchPadBuilder() {
         },
         getDefaultDimension = function() {
             if(isSmallScreen) {
-                return {width: window.innerWidth - 50, height: window.innerHeight*0.8};
+                var deviceWidth = window.innerWidth || screen.width,
+                    deviceHeight = window.innerHeight || screen.height;
+                return {width: deviceWidth - 50, height: deviceHeight * 0.8};
             }
             return {width: 500, height: 500};
         },

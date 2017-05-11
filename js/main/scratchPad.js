@@ -836,6 +836,7 @@ function ScratchPadBuilder() {
                 } else {
                     $wrapper.toggleClass("sp-hidden");
                 }
+                drawer.hideTextArea(instance);
             });
         },
         _bindMenuEvents = function(instance, drawer) {
@@ -921,8 +922,8 @@ function ScratchPadBuilder() {
 
             if(deviceWidth <= 768) {
                 isSmallScreen = true;
-            } else if(deviceWidth < 320 ) {
-                return; //below iPhone 4.. too small to support
+            } else if(deviceWidth < 320 && !config.readonly) {
+                return false; //below iPhone 4.. too small to support
             }
 
             if (!resourceImported) {
@@ -1099,8 +1100,13 @@ function ScratchPadDrawer(resourceBasePath) {
         },
         showTextArea = function (instance, activeTextArea, pointer) {
             var $textarea = $(instance.wrapper).find(".sp-textarea");
+            var left, top, cols;
+
             $textarea[0].canvasObject = activeTextArea;
-            var left, top;
+            $textarea[0].value = activeTextArea.getText();
+            $textarea[0].setAttribute("textsize", activeTextArea.getFontSize());
+            $textarea[0].setAttribute("cols", Math.max(activeTextArea._textLines[0].length, 10));
+
             if (pointer.y - $textarea.outerHeight() < 0) {
                 top = $textarea.outerHeight() - 13;
             } else {
@@ -1112,11 +1118,13 @@ function ScratchPadDrawer(resourceBasePath) {
                 left = pointer.x;
             }
 
-            $textarea[0].value = activeTextArea.getText();
-            $textarea[0].setAttribute("textsize", activeTextArea.getFontSize());
-
             $textarea.css({left: left, top: top}).show(function () {
-                if($textarea[0].value === _textPlaceholder) $textarea[0].select();
+                if($textarea[0].value === _textPlaceholder) {
+                    $textarea[0].selectionStart = 0;
+                } else {
+                    $textarea[0].selectionStart = 999;
+                }
+                $textarea[0].selectionEnd = 999;
                 $textarea.focus();
             });
         },

@@ -707,20 +707,20 @@ function ScratchPadBuilder() {
             return $chunk;
         },
         _buildDropdownIcons = function(permanent, genericChunk) {
-            var primaryIcon = "";
+            var primaryIcon = "", tooltip = isSmallScreen ? "" : "data-toggle='tooltip' ";
             if(permanent) {
-                primaryIcon = "<i class='sp-dropdown-icon "+genericChunk.icon+"' data-toggle='tooltip' title='"+genericChunk.title+"'></i>";
+                primaryIcon = "<i class='sp-dropdown-icon "+genericChunk.icon+"' "+tooltip+" title='"+genericChunk.title+"'></i>";
             } else {
-                primaryIcon = "<i class='sp-menu-blank "+genericChunk.icon+"' data-toggle='tooltip' title='"+genericChunk.title+"'></i>";
+                primaryIcon = "<i class='sp-menu-blank "+genericChunk.icon+"' "+tooltip+" title='"+genericChunk.title+"'></i>";
             }
-            return primaryIcon + "<i class='sp-menu-selected' data-toggle='tooltip' title='"+genericChunk.title+"'></i>";
+            return primaryIcon + "<i class='sp-menu-selected' "+tooltip+" title='"+genericChunk.title+"'></i>";
         },
         _buildMenuButton = function(menuItem) {
-            var iconText = menuItem.iconText || "";
+            var iconText = menuItem.iconText || "", tooltip = isSmallScreen ? "" : "data-toggle='tooltip' ";
             return ""
                 +"<div class='sp-menu-action "+menuItem.cssClass + "' "
                 +"data-action='"+menuItem.action+"' "
-                +"data-toggle='tooltip' "
+                +tooltip
                 +"title='"+menuItem.title+"'"
                 +">"
                 +"<i class='"+menuItem.icon+"'>"+iconText+"</i>"

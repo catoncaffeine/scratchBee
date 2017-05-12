@@ -57,20 +57,65 @@ var ScratchPad = { // allows the client to create, manipulate, and destroy scrat
 
 function ScratchPadBuilder() {
     var drawer = null,
-        isSmallScreen = false,
         resourceImported = false,
         resourceBasePath = "",
+        deviceWidth = window.innerWidth || screen.width,
+        isSmallScreen = deviceWidth <= 768,
+        isTouchScreen;
 
-        /* Format for menu Items
-            action : same as its key value, intended to be used as id, added to data-action attribute to the menu button
-            cssClass: class appended to the outer div of the button, can be used for both styling and events
-            title: tooltip title
-            icon: icon that goes inside the button for display, either use fa or custom image, not functional, no events
-            menuActionType: see menuActionType section
-            other attributes are specific to that particular menu item
-        * */
+    var _importResource = function() {
+            var $jsFile = $("script[src*='scratchPad.js']");
 
-        menuItems = {
+            if($jsFile.length) {
+
+                var jsPath = $jsFile.attr("src").toString(), cssPath, cssFile, cssName = "scratchpad.css";
+                if(jsPath.indexOf("?")!== -1){
+                    cssName += jsPath.substr(jsPath.indexOf("?"));
+                }
+                resourceBasePath = jsPath.substr(0, jsPath.indexOf("js/main/scratchPad.js")) + "resource/";
+
+                cssPath = resourceBasePath + cssName;
+                cssFile = document.createElement("link");
+                cssFile.setAttribute("rel", "stylesheet");
+                cssFile.setAttribute("href", cssPath);
+                $jsFile.after($(cssFile));
+                resourceImported = true;
+            }
+        },
+        _setupBuilder = function() {
+            if (!resourceImported) {
+                _importResource();
+            }
+            if(!drawer) {
+                drawer = new ScratchPadDrawer(resourceBasePath);
+            }
+
+            $(window).on("orientationchange", function () {
+                deviceWidth = window.innerWidth || screen.width;
+                isSmallScreen = deviceWidth <= 768;
+                if(isSmallScreen) $(".sp-wrapper").addClass("sp-hidden");
+            });
+
+            try {
+                document.createEvent("TouchEvent");
+                isTouchScreen = true;
+            } catch (e) {
+                isTouchScreen = false;
+            }
+        };
+
+    _setupBuilder();
+
+    /* Format for menu Items
+     action : same as its key value, intended to be used as id, added to data-action attribute to the menu button
+     cssClass: class appended to the outer div of the button, can be used for both styling and events
+     title: tooltip title
+     icon: icon that goes inside the button for display, either use fa or custom image, not functional, no events
+     menuActionType: see menuActionType section
+     other attributes are specific to that particular menu item
+     * */
+
+    var menuItems = {
             selector: {
                 action: "selector",
                 cssClass: "sp-selector",
@@ -442,18 +487,18 @@ function ScratchPadBuilder() {
             }
         },
         /* Format for menu Chunks
-             menuId: used to determine wither there should be a vertical divider (append one when menu id changes)
-             type: either group or dropdown (for now)
-                - group: a list of buttons that will be shown together on menu (e.g. selector + trash + pencil)
-                - dropdown: a list of buttons that hides behind a display button. The display button can be either actionable or just for display
-             action: used if the display button in the dropdown is actionable (e.g. pencil, text)
-             items: the group of actionable items that goes into that chunk (group/dropdown)
-             cssClass: the css class for the whole group
-                - sp-permanent: actionable items in this group will permanently change the config of the canvas
-                  (e.g. pencil size, color, text size)
-             title: title for tooltip to be put on the display icon
-             icon: the display button for dropdown, this icon will be displayed when nothing in this dropdown is selected
-             group: how many items goes into 1 row in the dropdown
+         menuId: used to determine wither there should be a vertical divider (append one when menu id changes)
+         type: either group or dropdown (for now)
+         - group: a list of buttons that will be shown together on menu (e.g. selector + trash + pencil)
+         - dropdown: a list of buttons that hides behind a display button. The display button can be either actionable or just for display
+         action: used if the display button in the dropdown is actionable (e.g. pencil, text)
+         items: the group of actionable items that goes into that chunk (group/dropdown)
+         cssClass: the css class for the whole group
+         - sp-permanent: actionable items in this group will permanently change the config of the canvas
+         (e.g. pencil size, color, text size)
+         title: title for tooltip to be put on the display icon
+         icon: the display button for dropdown, this icon will be displayed when nothing in this dropdown is selected
+         group: how many items goes into 1 row in the dropdown
          * */
         menuChunks = {
             basic: {
@@ -468,7 +513,7 @@ function ScratchPadBuilder() {
                 items: [menuItems.undo, menuItems.redo],
                 type: "group"
             },
-			trash:{
+            trash:{
                 menuId: 0,
                 cssClass:'sp-menu-basic',
                 items:[menuItems.trash],
@@ -487,10 +532,10 @@ function ScratchPadBuilder() {
                 type: "dropdown",
                 title: "Pencil Size",
                 icon: "fa fa-pencil",
-				action: menuItems.pencil,
-				group:5
+                action: menuItems.pencil,
+                group:5
             },
-			text: {
+            text: {
                 menuId: 3,
                 cssClass: "sp-menu-text sp-permanent",
                 items: [menuItems.text16, menuItems.text24, menuItems.text30],
@@ -511,7 +556,7 @@ function ScratchPadBuilder() {
                 title: "Shapes",
                 icon: "sp-icon shapes-icon"
             },
-			colors: {
+            colors: {
                 menuId: 2,
                 cssClass: "sp-menu-color sp-permanent",
                 items: [
@@ -542,12 +587,12 @@ function ScratchPadBuilder() {
         },
 
         /*
-        Action Type Explained -
-            immediate: take an immediate action on the canvas, but don't change current tool (e.g. undo, redo)
-            defer: no immediate action is taken, change current tool and WHAT canvas draws (e.g. pencil, text, all shapes)
-            sticky: take an immediate action and change current tool (e.g. trash)
-            permanent: no action taken, change HOW canvas draws (e.g. pencil size, text size, color)
-        */
+         Action Type Explained -
+         immediate: take an immediate action on the canvas, but don't change current tool (e.g. undo, redo)
+         defer: no immediate action is taken, change current tool and WHAT canvas draws (e.g. pencil, text, all shapes)
+         sticky: take an immediate action and change current tool (e.g. trash)
+         permanent: no action taken, change HOW canvas draws (e.g. pencil size, text size, color)
+         */
 
         menuActionType = {
             "immediate": 0,
@@ -555,6 +600,8 @@ function ScratchPadBuilder() {
             "sticky": 2,
             "permanent": 3
         };
+
+
 
     var _buildInstance = function(wrapper, config) {
             var identifier = new Date().getTime();
@@ -645,6 +692,9 @@ function ScratchPadBuilder() {
                     }
                     $chunk.appendTo($menu);
                 }
+                if(index === (keys.length-1)){
+                    $menu.append("<div class='sp-drag-handle' width='50px'>&nbsp;</div>");
+                }
             });
 
             if (instance.menu.indexOf("text") !== -1) {
@@ -660,20 +710,20 @@ function ScratchPadBuilder() {
         },
 
         /*
-            Dropdowns -
-                can contain a list of actionable items, each item in such dropdown changes WHAT canvas draws
-                    e.g. Shapes dropdown
-                can also contain a list of config items, each item in such dropdown changes HOW canvas draws
-                    e.g. Colors dropdown
-            The icon(s) for the Dropdowns -
-                can be simple for presentation to indicate what is selected
-                    e.g. Shapes and Colors
-                can be an actionable item
-                    e.g. Pencil and Text
-                    This means simply clicking on the Pencil dropdown changes the current tool to pencil
-                    with pencil size set to the most recently selected size
-                    and will also show the list of pencil sizes available, most recently selected size highlighted
-        * */
+         Dropdowns -
+         can contain a list of actionable items, each item in such dropdown changes WHAT canvas draws
+         e.g. Shapes dropdown
+         can also contain a list of config items, each item in such dropdown changes HOW canvas draws
+         e.g. Colors dropdown
+         The icon(s) for the Dropdowns -
+         can be simple for presentation to indicate what is selected
+         e.g. Shapes and Colors
+         can be an actionable item
+         e.g. Pencil and Text
+         This means simply clicking on the Pencil dropdown changes the current tool to pencil
+         with pencil size set to the most recently selected size
+         and will also show the list of pencil sizes available, most recently selected size highlighted
+         * */
         _buildMenuDropDown = function(chunk) {
             var itemsInGroup = chunk.group || 4,
                 permanent = chunk.cssClass.indexOf("sp-permanent") !== -1,
@@ -707,7 +757,7 @@ function ScratchPadBuilder() {
             return $chunk;
         },
         _buildDropdownIcons = function(permanent, genericChunk) {
-            var primaryIcon = "", tooltip = isSmallScreen ? "" : "data-toggle='tooltip' ";
+            var primaryIcon = "", tooltip = isTouchScreen ? "" : "data-toggle='tooltip' ";
             if(permanent) {
                 primaryIcon = "<i class='sp-dropdown-icon "+genericChunk.icon+"' "+tooltip+" title='"+genericChunk.title+"'></i>";
             } else {
@@ -716,7 +766,7 @@ function ScratchPadBuilder() {
             return primaryIcon + "<i class='sp-menu-selected' "+tooltip+" title='"+genericChunk.title+"'></i>";
         },
         _buildMenuButton = function(menuItem) {
-            var iconText = menuItem.iconText || "", tooltip = isSmallScreen ? "" : "data-toggle='tooltip' ";
+            var iconText = menuItem.iconText || "", tooltip = isTouchScreen ? "" : "data-toggle='tooltip' ";
             return ""
                 +"<div class='sp-menu-action "+menuItem.cssClass + "' "
                 +"data-action='"+menuItem.action+"' "
@@ -757,23 +807,23 @@ function ScratchPadBuilder() {
             });
         },
         /*
-            If a menu dropdown is marked with .sp-permanent, and the item inside has actionType of permanent (3)
-            clicking an item inside that dropdown permanently changes HOW canvas draws (e.g. pencil size)
-            until another item inside the same dropdown is selected
-            One of the items in such dropdowns have to be selected
-            Making a selection on this dropdown does not affect other dropdowns
-            Selected items in such dropdowns is indicated with class .selected
-            e.g.
-                pencil size 1px is currently selected,
-                clicking 5px will change drawing brush size to 5px and mark 5px as selected
-                clicking inside canvas will now scratch with 5px wide lines
-                but will NOT affect drawing color
-        * */
+         If a menu dropdown is marked with .sp-permanent, and the item inside has actionType of permanent (3)
+         clicking an item inside that dropdown permanently changes HOW canvas draws (e.g. pencil size)
+         until another item inside the same dropdown is selected
+         One of the items in such dropdowns have to be selected
+         Making a selection on this dropdown does not affect other dropdowns
+         Selected items in such dropdowns is indicated with class .selected
+         e.g.
+         pencil size 1px is currently selected,
+         clicking 5px will change drawing brush size to 5px and mark 5px as selected
+         clicking inside canvas will now scratch with 5px wide lines
+         but will NOT affect drawing color
+         * */
         _changeConfigMenu = function(clickedElement, deselect) {
             var $dropdown = $(clickedElement).closest(".sp-permanent"),
-            icon = $(clickedElement).find("i"),
-            currentSelect = deselect ?  false : $(clickedElement).data("action"),
-            iconClass = deselect ? "" : $(icon).attr("class");
+                icon = $(clickedElement).find("i"),
+                currentSelect = deselect ?  false : $(clickedElement).data("action"),
+                iconClass = deselect ? "" : $(icon).attr("class");
 
             $dropdown.find(".sp-dropdown-icon").attr("current-selected", currentSelect);
             $dropdown.find(".selected").removeClass("selected");
@@ -783,16 +833,16 @@ function ScratchPadBuilder() {
         },
 
         /*
-            If a menu dropdown is NOT marked with .sp-permanenet, and the item inside has actionType of deferred (1)
-            clicking an item inside that dropdown will change the current tool and WHAT canvas draws
-            The clicked item will be marked with class .active
-            and all other tools with class .active will have this class removed
-            e.g.
-                pencil is the active current tool
-                circle under shapes menu is clicked
-                pencil is no longer the active current tool, and circle is
-                clicking inside canvas will draw a circle
-        * */
+         If a menu dropdown is NOT marked with .sp-permanenet, and the item inside has actionType of deferred (1)
+         clicking an item inside that dropdown will change the current tool and WHAT canvas draws
+         The clicked item will be marked with class .active
+         and all other tools with class .active will have this class removed
+         e.g.
+         pencil is the active current tool
+         circle under shapes menu is clicked
+         pencil is no longer the active current tool, and circle is
+         clicking inside canvas will draw a circle
+         * */
         _toggleActiveMenu =  function(instance, clickedElement){
             var $menu = $(instance.wrapper).find(".sp-menu"),
                 $dropdown = $(clickedElement).closest(".sp-dropdown:not(.sp-permanent)");
@@ -829,7 +879,7 @@ function ScratchPadBuilder() {
             $(instance.wrapper).on("click", ".sp-toggle-btn", function(){
                 var $wrapper = $(instance.wrapper);
                 if(!isSmallScreen) {
-                    var width = instance.dimension.width,
+                    var width = Math.min($(instance.domElement).width(), instance.dimension.width),
                         left = $wrapper.hasClass("sp-hidden") ? "auto": (width-28) + "px";
                     $(instance.wrapper).toggleClass("sp-hidden");
                     $(instance.wrapper).css({left: left});
@@ -885,7 +935,7 @@ function ScratchPadBuilder() {
                         left = $(this).offset().left,
                         width = $ul.width();
                     if((left+width) > $(window).width()) {
-                        $ul.addClass("dropdown-menu-right");
+                        $ul.addClass("dropdown-menu-right pull-right");
                     }
                     $(this).addClass("positioned");
                 });
@@ -896,41 +946,11 @@ function ScratchPadBuilder() {
             instance.currentTool = instance.defaultAction;
             if(instance.textsize) $(instance.wrapper).find("[data-action='text"+instance.textsize+"']").click();
             if(instance.pencilSize) $(instance.wrapper).find("[data-action='pencilSize"+instance.pencilSize+"px']").click();
-        },
-        _importResource = function() {
-            var $jsFile = $("script[src*='scratchPad.js']");
-			
-            if($jsFile.length) {
-				
-                var jsPath = $jsFile.attr("src").toString(), cssPath, cssFile, cssName = "scratchpad.css";
-				if(jsPath.indexOf("?")!== -1){
-					cssName += jsPath.substr(jsPath.indexOf("?"));
-				}
-                resourceBasePath = jsPath.substr(0, jsPath.indexOf("js/main/scratchPad.js")) + "resource/";
-
-                cssPath = resourceBasePath + cssName;
-                cssFile = document.createElement("link");
-                cssFile.setAttribute("rel", "stylesheet");
-                cssFile.setAttribute("href", cssPath);
-                $jsFile.after($(cssFile));
-                resourceImported = true;
-            }
         };
 
     var build = function(wrapper, config){
-            var deviceWidth = window.innerWidth || screen.width;
-
-            if(deviceWidth <= 768) {
-                isSmallScreen = true;
-            } else if(deviceWidth < 320 && !config.readonly) {
+            if(deviceWidth < 320) {
                 return false; //below iPhone 4.. too small to support
-            }
-
-            if (!resourceImported) {
-                _importResource();
-            }
-            if(!drawer) {
-                drawer = new ScratchPadDrawer(resourceBasePath);
             }
 
             var instance = _buildInstance(wrapper, config);
@@ -968,8 +988,10 @@ function ScratchPadBuilder() {
         getDefaultDimension = function() {
             if(isSmallScreen) {
                 var deviceWidth = window.innerWidth || screen.width,
-                    deviceHeight = window.innerHeight || screen.height;
-                return {width: deviceWidth - 50, height: deviceHeight * 0.8};
+                    deviceHeight = window.innerHeight || screen.height,
+                    width = Math.min(deviceWidth - 50, 500),
+                    height = Math.min(deviceHeight * 0.8, 500);
+                return {width: width, height: height};
             }
             return {width: 500, height: 500};
         },
@@ -1061,16 +1083,16 @@ function ScratchPadDrawer(resourceBasePath) {
         _makeTextBox = function(instance) {
             var textsize = instance.textsize || 16,
                 textbox = new fabric.Textbox(_textPlaceholder, {
-                fontSize: textsize,
-                width:150,
-                fontFamily: "sans-serif"
-            });
+                    fontSize: textsize,
+                    width:150,
+                    fontFamily: "sans-serif"
+                });
             textbox.off();
             textbox.on("mousedown",function(e) {
                 if(instance.currentTool === 'trash'){
                     var index = instance.canvas.getObjects().indexOf(this);
 
-					pushToUndoBuffer(instance, {
+                    pushToUndoBuffer(instance, {
                         itemIndex: index,
                         items:[this],
                         itemType: 'Object',
@@ -1118,7 +1140,18 @@ function ScratchPadDrawer(resourceBasePath) {
                 left = pointer.x;
             }
 
-            $textarea.css({left: left, top: top}).show(function () {
+            $textarea[0].style.left = left;
+            $textarea[0].style.top = top;
+            $textarea[0].style.display = "inline";
+            $textarea.css({
+                top: top,
+                left: left,
+                display: "inline"
+            });
+
+            setTimeout(function(){
+                // hate this..
+                // but seems like the only way to make it work consistently across device
                 if($textarea[0].value === _textPlaceholder) {
                     $textarea[0].selectionStart = 0;
                 } else {
@@ -1126,7 +1159,7 @@ function ScratchPadDrawer(resourceBasePath) {
                 }
                 $textarea[0].selectionEnd = 999;
                 $textarea.focus();
-            });
+            }, 100);
         },
         hideTextArea = function (instance) {
             var $textarea = $(instance.wrapper).find("textarea");
@@ -1144,7 +1177,7 @@ function ScratchPadDrawer(resourceBasePath) {
                     $textarea[0].value = "";
                     $textarea[0].canvasObject = null;
                 }
-                $textarea.hide();
+                $textarea.css({"display": "none"});
             }
         },
         _makeLine = function(instance, pointer) {
@@ -1310,19 +1343,18 @@ function ScratchPadDrawer(resourceBasePath) {
             var canvas = instance.canvas;
             canvas.setBackgroundImage(imageObj, canvas.renderAll.bind(canvas), {
                 originX: 'left',
-                originY: 'top',
-                crossOrigin: 'anonymous'
+                originY: 'top'
             });
         },
-		pushToUndoBuffer = function(instance, object){
+        pushToUndoBuffer = function(instance, object){
             $(instance.wrapper).find('.sp-undo').removeClass('disabled');
             if(instance.undo.length === 10){
                 instance.undo.shift();
             }
-			instance.redo=[];
-			$(instance.wrapper).find("[data-action='redo']").addClass('disabled');
-			instance.undo.push(object);	
-		},
+            instance.redo=[];
+            $(instance.wrapper).find("[data-action='redo']").addClass('disabled');
+            instance.undo.push(object);
+        },
         _trash = function(instance, event){
             if(event.target && event.target.type==='textbox'){
                 return;
@@ -1361,7 +1393,7 @@ function ScratchPadDrawer(resourceBasePath) {
             });
             if(itemNums.length>0){
 
-               pushToUndoBuffer(instance,{
+                pushToUndoBuffer(instance,{
                     "action" : _delete,
                     "itemIndex": itemNums,
                     "itemType":'Object',
@@ -1382,7 +1414,7 @@ function ScratchPadDrawer(resourceBasePath) {
                 var activeGroup = instance.canvas.getActiveGroup();
                 if(activeGroup){
 
-					pushToUndoBuffer(instance, instance.selectedObject.pop());
+                    pushToUndoBuffer(instance, instance.selectedObject.pop());
                     if(activeGroup){
                         _captureSelectedObject(instance, activeGroup);
                     }
@@ -1394,7 +1426,7 @@ function ScratchPadDrawer(resourceBasePath) {
 
                         $.extend(selectedObject,{'action':action});
 
-						pushToUndoBuffer(instance, selectedObject);
+                        pushToUndoBuffer(instance, selectedObject);
                         if(activeObject){
                             activeObject.saveState();
                             //track further changes while still selected (anything other than text objects).
@@ -1404,7 +1436,7 @@ function ScratchPadDrawer(resourceBasePath) {
                 }
 
             }else{
-				pushToUndoBuffer(instance, {
+                pushToUndoBuffer(instance, {
                     itemId: [object.id],
                     action: action,
                     itemIndex: [objects.length - 1],
@@ -1419,7 +1451,7 @@ function ScratchPadDrawer(resourceBasePath) {
             if(instance.currentTool !== 'selector'){
                 $(instance.wrapper).find("[data-action='selector']").click();
             }
-			
+
             var buttonOn = $(event.currentTarget),
                 menuAction = buttonOn.data("action"),
                 antiAction = menuAction === "undo" ?  "redo" : "undo",
@@ -1506,15 +1538,15 @@ function ScratchPadDrawer(resourceBasePath) {
         _findAndRemove = function(ids, canvas){
             var _foundObjects = [];
             if(ids){
-				
+
                 canvas.getObjects().forEach(function(object){
                     if(object && ids.indexOf(object.id) !== -1){
                         _foundObjects.push(object);
                     }
                 });
-				_foundObjects.forEach(function (object){
-					canvas.remove(object);
-				});
+                _foundObjects.forEach(function (object){
+                    canvas.remove(object);
+                });
             }
             return _foundObjects;
         },
@@ -1544,13 +1576,13 @@ function ScratchPadDrawer(resourceBasePath) {
             instance.textsize = size;
             $(instance.wrapper).find(".sp-textarea").attr("textsize", size);
         },
-		_changePencilSize = function(instance, size) {
-			if(!size){
-				size = menuItem.pencilSize2px.size;
-			}
-			instance.pencilSize =size;
-			instance.canvas.freeDrawingBrush.width = size;
-		};
+        _changePencilSize = function(instance, size) {
+            if(!size){
+                size = menuItem.pencilSize2px.size;
+            }
+            instance.pencilSize =size;
+            instance.canvas.freeDrawingBrush.width = size;
+        };
 
     var bindCanvasEvents = function(instance, menuItems) {
             _bindMouseDownEvents(instance, menuItems);
@@ -1594,7 +1626,7 @@ function ScratchPadDrawer(resourceBasePath) {
         changeDrawConfig = function(instance, menuItem) {
             if(menuItem.cssClass.indexOf("sp-color") !== -1) _changeColor(instance, menuItem.hex);
             if(menuItem.cssClass.indexOf("sp-textsize") !== -1) _changeTextsize(instance, menuItem.size);
-			if(menuItem.cssClass.indexOf('sp-pencil-size') !== -1) _changePencilSize(instance, menuItem.size);
+            if(menuItem.cssClass.indexOf('sp-pencil-size') !== -1) _changePencilSize(instance, menuItem.size);
             if(menuItem.action.indexOf("background") !== -1) _changeBackground(instance, menuItem);
         },
         loadImage = function(instance, imageUrl, imageAltUrl) {

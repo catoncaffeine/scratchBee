@@ -75,6 +75,13 @@
 	vertical-align: middle;
 }
 
+.sp-menu .sp-drag-handle {
+	opacity: 0;
+	display: inline-block;
+	width: calc(100% - 350px);
+	height:	32px;
+}
+
 .sp-menu .disabled {
 	color:lightgray;
 	cursor: default;
@@ -116,7 +123,8 @@
 	box-shadow: 1px 1px 1px;
 }
 
-.sp-wrapper .active{
+.sp-wrapper .active,
+.sp-wrapper .sp-menu-action:active:not(.disabled){
 	background-color: darkgray;
 	border-radius: 2px;
 }
@@ -368,18 +376,25 @@
 
 .sp-menu-text .sp-textsize i, .sp-textarea[textsize] {
 	font-family: sans-serif;
+	font-size: 16px;
 }
 
-.sp-menu-text .sp-text16 i, .sp-textarea[textsize='16'] {
+.sp-menu-text .sp-text16 i,
+.sp-textarea[textsize='16'],
+.sp-textarea[textsize='16']:focus {
 	font-size: 16px;
 }
 
 
-.sp-menu-text .sp-text24 i, .sp-textarea[textsize='24'] {
+.sp-menu-text .sp-text24 i,
+.sp-textarea[textsize='24'],
+.sp-textarea[textsize='24']:focus {
 	font-size: 24px;
 }
 
-.sp-menu-text .sp-text30 i, .sp-textarea[textsize='30'] {
+.sp-menu-text .sp-text30 i,
+.sp-textarea[textsize='30'],
+.sp-textarea[textsize='30']:focus {
 	font-size: 30px;
 }
 
@@ -428,24 +443,15 @@
 }
 
 @media (max-width: 768px) {
-	.sp-wrapper.sp-hidden {
-		z-index: 0;
-	}
-
-	.sp-hide {
-		font-size: 100px;
-	}
-
 	.sp-wrapper:not(.sp-hidden) {
 		touch-action: none;
 		background-color: black;
 		position: fixed;
-		top: 0;
-		left: 0;
+		top: 0 !important;
+		left: 0 !important;
 		background-color: rgba(0, 0, 0, 0.7);
 		width: 100%;
 		height: 100%;
-		z-index: 1;
 		padding: 2px;
 	}
 

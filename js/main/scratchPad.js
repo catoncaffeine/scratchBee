@@ -59,7 +59,7 @@ function ScratchPadBuilder() {
     var drawer = null,
         resourceImported = false,
         resourceBasePath = "",
-        deviceWidth = window.innerWidth || screen.width,
+        deviceWidth = $(window).width() || screen.width,
         isSmallScreen = deviceWidth <= 768,
         isTouchScreen;
 
@@ -91,7 +91,7 @@ function ScratchPadBuilder() {
             }
 
             $(window).on("orientationchange", function () {
-                deviceWidth = window.innerWidth || screen.width;
+                deviceWidth = $(window).width() || screen.width;
                 isSmallScreen = deviceWidth <= 768;
                 if(isSmallScreen) $(".sp-wrapper").addClass("sp-hidden");
             });
@@ -987,8 +987,8 @@ function ScratchPadBuilder() {
         },
         getDefaultDimension = function() {
             if(isSmallScreen) {
-                var deviceWidth = window.innerWidth || screen.width,
-                    deviceHeight = window.innerHeight || screen.height,
+                var deviceWidth = $(window).width() || screen.width,
+                    deviceHeight = $(window).height() || screen.height,
                     width = Math.min(deviceWidth - 50, 500),
                     height = Math.min(deviceHeight * 0.8, 500);
                 return {width: width, height: height};

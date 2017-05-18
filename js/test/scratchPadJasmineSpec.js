@@ -1,13 +1,19 @@
 describe("Scratch Pad", function () {
+    beforeEach(function () {
+        this.removeAllSpies();
+        ScratchPad.builder = null;
+        $("<div id='test'></div>").appendTo('body');
+    });
+    afterEach(function(){
+        this.removeAllSpies();
+        ScratchPad.builder = null;
+        ScratchPad.destroyAll();
+        $('#test').remove();
+    });
     describe("Editable Scratch Pad - ", function(){
         beforeEach(function(){
-            $("<div id='test'></div>").appendTo('body');
-            window.innerWidth = 800;
-            window.innerHeight = 800;
-        });
-        afterEach(function(){
-            ScratchPad.destroyAll();
-            $('#test').remove();
+            spyOn($.fn, "width").andReturn(800);
+            spyOn($.fn, "height").andReturn(800);
         });
         describe('Test Build ScratchPad',function(){
             it('tests buildMenu ', function(){
@@ -322,7 +328,7 @@ describe("Scratch Pad", function () {
                 instance.canvas.getPointer = function (obj) {
                     return {x: 2, y: 3};
                 };
-                spyOn($.fn, "css");
+                spyOn($.fn, "css").andCallThrough();
             });
             it('adds text just one time', function(){
                 $("#test [data-action='text']").click();
@@ -1059,7 +1065,7 @@ describe("Scratch Pad", function () {
 
         describe("Scratch Pad Toggleable Setup - ", function(){
             beforeEach(function(){
-                ScratchPad.init("#test", {toggleable: true});
+                ScratchPad.init("#test", {toggleable: true, collapsed: false});
             });
             it("adds hide/show buttons if toggleable setup is enabled", function(){
                 expect($("#test .sp-hide").length).toBe(1);
@@ -1077,13 +1083,6 @@ describe("Scratch Pad", function () {
 
     describe("Readonly Scratch Pad", function(){
         var instance, wrapper;
-        beforeEach(function(){
-            $("<div id='test'></div>").appendTo('body');
-        });
-        afterEach(function(){
-            ScratchPad.destroyAll();
-            $('#test').remove();
-        });
         describe("Build Scratch Pad - ", function(){
             beforeEach(function(){
                 spyOn(fabric, "Canvas");
@@ -1118,25 +1117,21 @@ describe("Scratch Pad", function () {
 
     describe("Scratch Pad Responsive", function () {
         var instance;
-        beforeEach(function(){
-            $("<div id='test'></div>").appendTo('body');
-        });
-        afterEach(function () {
-            ScratchPad.builder = null;
-        });
         describe("Smaller than 768 pixel", function () {
-            it("collapse opened scratch pad if there is an orientation change", function () {
-                window.innerWidth = 1000;
+            it("collapses opened scratch pad if there is an orientation change", function () {
+                spyOn($.fn, "width").andReturn(1000);
                 instance = ScratchPad.init("#test");
                 expect($(instance.wrapper).attr("class").indexOf("sp-hidden")).toBe(-1);
 
-                window.innerWidth = 767;
+                this.removeAllSpies();
+
+                spyOn($.fn, "width").andReturn(767);
                 $(window).trigger("orientationchange");
                 expect($(instance.wrapper).attr("class").indexOf("sp-hidden")).not.toBe(-1);
             });
             it("initializes scratch pad as toggleable and collapse it when it is small screen", function () {
-                window.innerWidth = 767;
-                window.innerHeight = 800;
+                spyOn($.fn, "width").andReturn(767);
+                spyOn($.fn, "height").andReturn(800);
                 instance = ScratchPad.init("#test");
                 expect(instance.dimension.width).toBe(500);
                 expect(instance.dimension.height).toBe(500);
@@ -1145,8 +1140,8 @@ describe("Scratch Pad", function () {
                 expect($(instance.wrapper).attr("class").indexOf("sp-hidden")).not.toBe(-1);
             });
             it("adjusts size for wysiwyg", function () {
-                window.innerWidth = 767;
-                window.innerHeight = 800;
+                spyOn($.fn, "width").andReturn(767);
+                spyOn($.fn, "height").andReturn(800);
                 instance = ScratchPad.init("#test", {
                     dimension: {
                         width: 800,
@@ -1157,8 +1152,8 @@ describe("Scratch Pad", function () {
                 expect(instance.dimension.height).toBe(500);
             });
             it("adjust for screen if screen is small than 500 pixel", function () {
-                window.innerWidth = 450;
-                window.innerHeight = 450;
+                spyOn($.fn, "width").andReturn(450);
+                spyOn($.fn, "height").andReturn(450);
                 instance = ScratchPad.init("#test", {
                     dimension: {
                         width: 800,
@@ -1170,8 +1165,8 @@ describe("Scratch Pad", function () {
             });
             it("Smaller than 320 pixel is too small for scratch pad to show", function () {
                 ScratchPad.builder = null;
-                window.innerWidth = 200;
-                window.innerHeight = 200;
+                spyOn($.fn, "width").andReturn(200);
+                spyOn($.fn, "height").andReturn(200);
                 instance = ScratchPad.init("#test");
                 expect(instance).toBe(false);
             });
